@@ -1,0 +1,79 @@
+/* miniprogram/styles/ds-buttons.wxss — DS 化 双态文本按钮统一样式
+ * 用法: 各 scene wxss 顶部 @import '../../../styles/ds-buttons.wxss';
+ * 双态 = normal (半透明深色胶囊) + active (蓝边高亮, 选中/按下常驻)
+ * 按下瞬态反馈用 hover-class="ds-btn-hover"
+ *
+ * 尺寸变体:
+ *   .ds-btn       基础 (自适应 padding, 适合列表/小行)
+ *   .ds-btn-lg    大按钮 (主菜单模式 / Start 类)
+ *   .ds-btn-sm    小按钮 (难度 chips / 返回)
+ *   .ds-btn-key   方块键 (数独数字键盘)
+ *   .ds-btn-ghost 幽灵 (弱化文字链接样)
+ */
+
+/* ---------- normal 基础 ---------- */
+.ds-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: rgba(22, 42, 66, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #c8d5e8;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  transition: background 0.08s ease, border-color 0.08s ease, color 0.08s ease;
+}
+
+/* 按下瞬态 (配合 hover-class="ds-btn-hover") */
+.ds-btn-hover {
+  background: rgba(77, 184, 255, 0.12);
+  border-color: rgba(77, 184, 255, 0.4);
+  color: #ffffff;
+}
+
+/* ---------- active / selected 常驻 ---------- */
+.ds-btn-active {
+  background: rgba(77, 184, 255, 0.22);
+  border-color: #4db8ff;
+  box-shadow: 0 0 0 1px #4db8ff, 0 3px 10px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+}
+
+/* ---------- 尺寸变体 ---------- */
+.ds-btn-lg {
+  width: 200px;
+  height: 56px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+.ds-btn-sm {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.ds-btn-key {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 9px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+/* 行内 icon 位 (纯 CSS, 无图片) */
+.ds-btn-arrow {
+  margin-left: 6px;
+  font-size: 14px;
+  color: #4db8ff;
+}

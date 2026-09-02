@@ -3,18 +3,11 @@
   <view class="game-header">
     <view class="header-left">
       <view
-        class="return-btn"
-        bindtouchstart="onBackTouchStart"
-        bindtouchend="onBackTouchEnd"
+        class="ds-btn return-btn"
+        hover-class="ds-btn-hover"
+        hover-stay-time="80"
         bindtap="onBackMenu"
-      >
-        <image
-          class="return-image"
-          src="{{returnPressed ? returnSelectedUrl : returnNormalUrl}}"
-          mode="aspectFit"
-          lazy-load
-        ></image>
-      </view>
+      >返回</view>
       <text class="diff-label">{{difficultyLabel}}</text>
     </view>
     <view class="header-right">
@@ -57,32 +50,25 @@
     </view>
   </view>
 
-  <!-- 数字键盘 1-9 (原版 select1.nbm 按钮图标) -->
+  <!-- 数字键盘 1-9 (双态文本按钮) -->
   <view class="number-pad">
     <view class="pad-row">
       <view
         wx:for="{{[1,2,3,4,5,6,7,8,9]}}"
         wx:key="*this"
-        class="pad-key {{selectedValue === item ? 'pad-key-active' : ''}}"
+        class="ds-btn ds-btn-key pad-key {{selectedValue === item ? 'ds-btn-active' : ''}}"
+        hover-class="ds-btn-hover"
+        hover-stay-time="80"
         data-num="{{item}}"
         bindtap="onTapNumber"
-      >
-        <image
-          class="pad-key-image"
-          src="{{selectedValue === item ? numberIconUrls[item].selected : numberIconUrls[item].normal}}"
-          mode="aspectFit"
-          lazy-load
-        ></image>
-      </view>
+      >{{item}}</view>
     </view>
     <view class="pad-tools">
-      <view class="tool-key {{canUndo ? '' : 'tool-key-disabled'}}" bindtap="onUndo">撤销</view>
-      <view class="tool-key {{canRedo ? '' : 'tool-key-disabled'}}" bindtap="onRedo">重做</view>
-      <view class="tool-key {{notesMode ? 'tool-key-active' : ''}}" bindtap="onToggleNotesMode">笔记</view>
-      <view class="tool-key tool-key-clear" bindtap="onTapClear">
-        <image class="tool-key-icon" src="{{clearIconUrl}}" mode="heightFix" lazy-load></image>
-      </view>
-      <view class="tool-key tool-key-primary" bindtap="onTapHint">提示</view>
+      <view class="tool-key ds-btn {{canUndo ? '' : 'tool-key-disabled'}}" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onUndo">撤销</view>
+      <view class="tool-key ds-btn {{canRedo ? '' : 'tool-key-disabled'}}" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onRedo">重做</view>
+      <view class="tool-key ds-btn {{notesMode ? 'ds-btn-active' : ''}}" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onToggleNotesMode">笔记</view>
+      <view class="tool-key ds-btn" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onTapClear">清除</view>
+      <view class="tool-key ds-btn tool-key-primary" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onTapHint">提示</view>
     </view>
   </view>
 </view>

@@ -1,4 +1,6 @@
-/* picture-scene.wxss — 图画谜题玩法样式 (V0.19 DS 深色主题) */
+/* picture-scene.wxss — 图画谜题玩法样式 (V0.19 DS 深色主题 + 双态文本按钮) */
+@import '../../../styles/ds-buttons.wxss';
+
 .picture-page {
   display: flex;
   flex-direction: column;
@@ -246,37 +248,57 @@
   border-color: transparent;
 }
 
-/* 调色板 (每项 = 原 DS numclo_00.nbm 按钮切片 + 下方剩余待涂计数) */
+/* 调色板 (CSS 色块双态: 0=擦除斜线, 1-5=画笔色, 选中蓝框) */
 .palette {
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap: 6px;
+  gap: 8px;
   margin-top: 10px;
   justify-content: center;
 }
 
 .palette-item {
-  width: 46px;
+  width: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+.palette-item-hover {
+  opacity: 0.85;
+}
+
 .palette-key {
-  width: 46px;
-  height: 15px;
-  border-radius: 4px;
+  width: 36px;
+  height: 28px;
+  border-radius: 6px;
+  border: 2px solid;
   box-sizing: border-box;
-  background-size: 100% 100%;
   background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  transition: transform 0.12s ease;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* 擦除 = 白色块 + 红色斜线 (纯 CSS, 不再用 NBM 切片) */
+.palette-key-erase {
+  background-image: linear-gradient(135deg, transparent 44%, #e5494d 44%, #e5494d 56%, transparent 56%);
 }
 
 .palette-item-active .palette-key {
-  transform: scale(1.08);
+  transform: scale(1.1);
+  border-color: #4db8ff;
   box-shadow: 0 0 0 2px #4db8ff, 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.palette-tool-label {
+  margin-top: 4px;
+  font-size: 10px;
+  color: #c8d5e8;
+  line-height: 16px;
+  height: 16px;
 }
 
 .palette-need {
@@ -297,7 +319,7 @@
   background: #1e8e3e;
 }
 
-/* 工具行 (V0.19: 文字按钮改深色胶囊 + 清空画板改为纯 DS clear 图标按钮) */
+/* 工具行 (ds-btn 双态文本按钮) */
 .tool-row {
   width: 100%;
   display: flex;
@@ -308,39 +330,15 @@
 
 .tool-key {
   flex: 1;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  border-radius: 7px;
-  transition: transform 0.08s ease, filter 0.08s ease;
+  height: 38px;
+  padding: 0 8px;
+  font-size: 13px;
+  border-radius: 8px;
 }
 
-/* 文字按钮: 深色半透明底 + 浅色文字 */
-.tool-key-text {
-  color: #c8d5e8;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.tool-key-text:active {
-  transform: scale(0.97);
-  background: rgba(255, 255, 255, 0.14);
-}
-
-/* 清空画板: 纯 DS numclo_00.nbm clear 图标按钮 */
-.tool-key-clear {
-  flex: 0 0 48px;
-  width: 48px;
-  background-color: transparent;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-}
-
-.tool-key-clear:active {
-  transform: scale(0.92);
-  filter: brightness(0.88);
+.tool-key-danger {
+  color: #ffb4b4;
+  border-color: rgba(229, 73, 77, 0.45);
 }
 
 /* 教程模式提示图 */
@@ -391,25 +389,6 @@
   padding: 6px 14px;
   border-radius: 6px;
   border: 1px solid rgba(30, 142, 62, 0.25);
-}
-
-/* 原 DS numclo_00.nbm banner */
-.picture-banner {
-  width: 100%;
-  height: 90px;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 8px;
-  background: rgba(22, 42, 66, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.picture-banner-image {
-  width: 100%;
-  height: 100%;
 }
 
 /* 已通关标记 (标题旁) */

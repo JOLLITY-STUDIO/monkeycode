@@ -45,11 +45,12 @@
   padding: 10px 0;
 }
 
-.option-label-icon {
+.option-label-text {
   flex-shrink: 0;
-  height: 18px;
-  width: auto;
-  max-width: 120px;
+  width: 64px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #c8d5e8;
 }
 
 .option-slider {
@@ -92,30 +93,10 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-.option-action-icon {
-  flex-shrink: 0;
-  height: 18px;
-  width: auto;
-  max-width: 120px;
-}
-
-.option-action-icon-missing {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 20px;
-  padding: 0 12px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 11px;
-  font-weight: 700;
-  color: #9fb6d3;
-  letter-spacing: 0.5px;
-}
-
 .option-action-hint {
   flex: 1;
   text-align: right;
-  font-size: 13px;
-  color: #8a9bb0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f0f4f8;
 }

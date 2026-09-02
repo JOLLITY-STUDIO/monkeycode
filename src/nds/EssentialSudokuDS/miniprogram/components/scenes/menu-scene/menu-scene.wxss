@@ -1,3 +1,5 @@
+@import '../../../styles/ds-buttons.wxss';
+
 .menu-page {
   display: flex;
   flex-direction: column;
@@ -54,32 +56,14 @@
   letter-spacing: 2px;
 }
 
+/* 模式按钮 (复用 ds-btn-lg 双态) */
 .mode-btn {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  width: 220px;
   margin-bottom: 10px;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: transform 0.08s ease, filter 0.08s ease;
 }
 
 .mode-btn:last-child {
   margin-bottom: 0;
-}
-
-.mode-btn-image {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 10px;
-}
-
-.mode-btn:active {
-  transform: scale(0.98);
-  filter: brightness(0.92);
 }
 
 .bottom-links {
@@ -94,18 +78,6 @@
 }
 
 .link-btn {
-  font-size: 12px;
-  color: #c8d5e8;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 7px 13px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin: 2px;
   white-space: nowrap;
-  transition: background 0.08s ease, transform 0.08s ease;
-}
-
-.link-btn:active {
-  background: rgba(255, 255, 255, 0.16);
-  transform: scale(0.97);
 }

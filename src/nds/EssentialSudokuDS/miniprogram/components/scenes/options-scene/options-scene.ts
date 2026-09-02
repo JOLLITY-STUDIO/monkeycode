@@ -1,13 +1,7 @@
 // components/scenes/options-scene/options-scene.ts — 选项场景组件
 // BGM/SE 音量持久化 + 清除数据 + 评分/制作/关于 (跳转 triggerEvent)
+// 深色主题 + 文本标签 (不再使用 NBM select3 图标)
 
-import {
-  NBM_SELECT3_BGM_VOLUME_NORMAL,
-  NBM_SELECT3_SE_VOLUME_NORMAL,
-  NBM_SELECT3_CLEAR_NORMAL,
-  NBM_SELECT3_RATE_NORMAL,
-  NBM_SELECT3_CREDITS_NORMAL,
-} from '../../../utils/sudoku/nbmAssets';
 import { audioService } from '../../../utils/audio/audioService';
 
 const BGM_VOLUME_KEY = 'esds_bgm_volume';
@@ -17,11 +11,6 @@ Component({
   data: {
     bgmVolume: 100,
     seVolume: 100,
-    bgmVolumeIconUrl: NBM_SELECT3_BGM_VOLUME_NORMAL,
-    seVolumeIconUrl: NBM_SELECT3_SE_VOLUME_NORMAL,
-    clearIconUrl: NBM_SELECT3_CLEAR_NORMAL,
-    rateIconUrl: NBM_SELECT3_RATE_NORMAL,
-    creditsIconUrl: NBM_SELECT3_CREDITS_NORMAL,
   },
 
   lifetimes: {

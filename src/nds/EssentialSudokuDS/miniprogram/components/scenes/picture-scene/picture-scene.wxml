@@ -4,11 +4,6 @@
     <text class="scene-bar-text">← 返回主菜单</text>
   </view>
 
-  <!-- 顶部图画谜题 banner: 原 DS numclo_00.nbm -->
-  <view class="picture-banner">
-    <image class="picture-banner-image" src="/assets/nbm/numclo_00.nbm.png" mode="aspectFit" lazy-load></image>
-  </view>
-
   <!-- 顶部: 谜题名 + 通关标记 + 序号 + 计时 -->
   <view class="game-header">
     <view class="header-left">
@@ -92,27 +87,32 @@
     <text class="progress-text">已正确 {{correctCount}} / {{cells.length}}</text>
   </view>
 
-  <!-- 调色板 (0=擦除 + 5 画笔色; 使用原 DS numclo_00.nbm 按钮切片) -->
+  <!-- 调色板 (0=擦除 CSS 斜线 + 5 画笔色 CSS 色块, 选中态蓝框) -->
   <view class="palette">
     <view
       wx:for="{{palette}}"
       wx:key="id"
       class="palette-item {{selectedColor === item.id ? 'palette-item-active' : ''}}"
+      hover-class="palette-item-hover"
+      hover-stay-time="80"
       data-id="{{item.id}}"
       bindtap="onTapPalette"
     >
-      <view class="palette-key" wx:if="{{item.imageUrl}}" style="background-image: url({{item.imageUrl}});"></view>
-      <view class="palette-key" wx:else style="background-color: {{item.color}};"></view>
-      <text wx:if="{{item.id > 0}}" class="palette-need {{paletteNeed[item.id] === 0 ? 'palette-need-zero' : ''}}">{{paletteNeed[item.id]}}</text>
+      <view
+        class="palette-key {{item.id === 0 ? 'palette-key-erase' : ''}}"
+        style="background-color: {{item.color}}; border-color: {{item.border}};"
+      ></view>
+      <text wx:if="{{item.id === 0}}" class="palette-tool-label">擦除</text>
+      <text wx:else class="palette-need {{paletteNeed[item.id] === 0 ? 'palette-need-zero' : ''}}">{{paletteNeed[item.id]}}</text>
     </view>
   </view>
 
-  <!-- 工具: 显示答案 / 撤销 / 重做 / 清空画板 -->
+  <!-- 工具: 显示答案 / 撤销 / 重做 / 清空画板 (统一 ds-btn 双态) -->
   <view class="tool-row">
-    <view class="tool-key tool-key-text" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
-    <view class="tool-key tool-key-text" bindtap="onUndo">撤销</view>
-    <view class="tool-key tool-key-text" bindtap="onRedo">重做</view>
-    <view class="tool-key tool-key-clear" style="background-image: url({{toolImages.clear}});" bindtap="onClearAll"></view>
+    <view class="ds-btn tool-key" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
+    <view class="ds-btn tool-key" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onUndo">撤销</view>
+    <view class="ds-btn tool-key" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onRedo">重做</view>
+    <view class="ds-btn tool-key tool-key-danger" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onClearAll">清空</view>
   </view>
 
   <!-- 完成提示条 -->

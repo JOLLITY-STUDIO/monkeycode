@@ -14,14 +14,6 @@ import {
   clearProgress,
   recordCompleted,
 } from '../../../utils/sudoku/picture_progress';
-import {
-  NBM_NUMCLO00_COLOR_1_RED,
-  NBM_NUMCLO00_COLOR_2_YELLOW,
-  NBM_NUMCLO00_COLOR_3_BLUE,
-  NBM_NUMCLO00_COLOR_4_GREEN,
-  NBM_NUMCLO00_ERASE,
-  NBM_NUMCLO00_CLEAR,
-} from '../../../utils/sudoku/nbmAssets';
 
 /** 自动保存防抖 (ms): 每次涂色后延迟写入 storage, 避免连点刷盘 */
 const AUTO_SAVE_MS = 400;
@@ -43,27 +35,6 @@ const PALETTE_HEX = ['#ffffff', '#f80000', '#f8f800', '#4868f8', '#48b048', '#18
 const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
 /** 边框深色 = numclo_00.nbm 按钮暗边 idx7-10 (红黄蓝绿) + waku 灰 #606060 (黑) */
 const PALETTE_BORDERS = ['#c8d0d8', '#c00000', '#c8c800', '#000090', '#308830', '#606060'];
-/**
- * 原 DS numclo_00.nbm 下屏 HUD 经 V0.13 扫描验证:
- * 左列只有 4 个真实彩色按钮 (红/黄/蓝/绿), 没有紫色按钮.
- * V0.14 补充: big_5 (白色按钮) 用作擦除切片, big_4 (灰色 X) 用作清空画板工具图标.
- * V0.15: color id 5 经单色剪影题 (Cat/Raccoon Dog 全 5) + Fox 黑描边验证 = 黑色,
- *        无原图按钮素材, 继续由 PALETTE_HEX 纯色 (#181818) 回退渲染.
- */
-const PALETTE_IMAGES = [
-  NBM_NUMCLO00_ERASE, // 0 = 擦除: 原 DS 白色空白按钮
-  NBM_NUMCLO00_COLOR_1_RED,
-  NBM_NUMCLO00_COLOR_2_YELLOW,
-  NBM_NUMCLO00_COLOR_3_BLUE,
-  NBM_NUMCLO00_COLOR_4_GREEN,
-  '', // 5 = 黑色: 无原图素材, 用 #181818 纯色
-];
-
-/** 工具行按钮背景 (原 DS 切片 + 纯色回退). */
-const TOOL_IMAGES = {
-  clear: NBM_NUMCLO00_CLEAR,
-};
-
 /** 15 个类别 (numclo0-9 主题库 + numclo_00-03 附加 + numclo_tu 教程) */
 const CATEGORIES: Array<{ key: string; label: string }> = [
   { key: 'numclo0.data', label: '动物' },
@@ -150,7 +121,6 @@ Component({
       color,
       label: PALETTE_LABELS[id],
       border: PALETTE_BORDERS[id],
-      imageUrl: PALETTE_IMAGES[id],
     })),
     selectedColor: 1 as number,
     timerText: '00:00',
@@ -172,8 +142,6 @@ Component({
     redoStack: [] as Array<{ i: number; from: CellColor; to: CellColor }>,
     /** 教程提示图是否被用户关闭 */
     tutorialClosed: false,
-    /** 工具行按钮背景图 (原 DS 切片) */
-    toolImages: TOOL_IMAGES,
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,

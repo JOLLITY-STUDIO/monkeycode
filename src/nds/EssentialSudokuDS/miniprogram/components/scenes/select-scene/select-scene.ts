@@ -1,23 +1,9 @@
 // components/scenes/select-scene/select-scene.ts — 数独选题场景组件
-// V0.16: 改用 select1.nbm 原版按钮: Difficulty A-D + 上下箭头 + Start + Return
-// 难度 A/B/C/D → easy/medium/hard/expert; E 按钮当前不启用
+// V0.20: select1.nbm 原版按钮全部改文本标签双态 (ds-buttons.wxss 统一规范)
+// 难度 A/B/C/D → 简单/中等/困难/专家; 上下箭头 → −/+; Start/Return → 开始/返回
+// 标题横幅 → 文本头部 (不再使用 NBM 图)
 
 import { getPuzzleById } from '../../../utils/sudoku/numple_puzzles';
-import {
-  NBM_SELECT1,
-  NBM_SELECT1_START_NORMAL,
-  NBM_SELECT1_START_SELECTED,
-  NBM_SELECT1_RETURN_NORMAL,
-  NBM_SELECT1_RETURN_SELECTED,
-  NBM_SELECT1_DIFF_A_NORMAL,
-  NBM_SELECT1_DIFF_B_NORMAL,
-  NBM_SELECT1_DIFF_C_NORMAL,
-  NBM_SELECT1_DIFF_D_NORMAL,
-  NBM_SELECT1_UP_NORMAL,
-  NBM_SELECT1_UP_SELECTED,
-  NBM_SELECT1_DOWN_NORMAL,
-  NBM_SELECT1_DOWN_SELECTED,
-} from '../../../utils/sudoku/nbmAssets';
 import { audioService } from '../../../utils/audio/audioService';
 
 const DIFF_LABELS: Record<string, string> = {
@@ -48,36 +34,22 @@ function noToId(no: number): string {
 interface DifficultyButton {
   key: string;
   label: string;
-  iconUrl: string;
 }
 
 const DIFF_BUTTONS: DifficultyButton[] = [
-  { key: 'easy', label: 'A', iconUrl: NBM_SELECT1_DIFF_A_NORMAL },
-  { key: 'medium', label: 'B', iconUrl: NBM_SELECT1_DIFF_B_NORMAL },
-  { key: 'hard', label: 'C', iconUrl: NBM_SELECT1_DIFF_C_NORMAL },
-  { key: 'expert', label: 'D', iconUrl: NBM_SELECT1_DIFF_D_NORMAL },
+  { key: 'easy', label: '简单' },
+  { key: 'medium', label: '中等' },
+  { key: 'hard', label: '困难' },
+  { key: 'expert', label: '专家' },
 ];
 
 Component({
   data: {
-    bannerUrl: NBM_SELECT1,
     difficulty: 'easy' as string,
     diffButtons: DIFF_BUTTONS,
     diffLabels: DIFF_LABELS,
     puzzleNo: 1 as number,
     previewText: '',
-    startNormalUrl: NBM_SELECT1_START_NORMAL,
-    startSelectedUrl: NBM_SELECT1_START_SELECTED,
-    returnNormalUrl: NBM_SELECT1_RETURN_NORMAL,
-    returnSelectedUrl: NBM_SELECT1_RETURN_SELECTED,
-    upNormalUrl: NBM_SELECT1_UP_NORMAL,
-    upSelectedUrl: NBM_SELECT1_UP_SELECTED,
-    downNormalUrl: NBM_SELECT1_DOWN_NORMAL,
-    downSelectedUrl: NBM_SELECT1_DOWN_SELECTED,
-    startPressed: false,
-    returnPressed: false,
-    upPressed: false,
-    downPressed: false,
   },
 
   lifetimes: {
@@ -103,23 +75,16 @@ Component({
       this._setNoClamped(no);
     },
 
-    /** 减 1 (点按下压 120ms 后恢复) */
-    onDecStart() {
-      this.setData({ downPressed: true });
-      this._adjustNo(-1);
-      setTimeout(() => this.setData({ downPressed: false }), 120);
-    },
-
-    /** 加 1 */
-    onIncStart() {
-      this.setData({ upPressed: true });
-      this._adjustNo(1);
-      setTimeout(() => this.setData({ upPressed: false }), 120);
-    },
-
-    _adjustNo(delta: number) {
+    /** 减 1 (下箭头 / −) */
+    onMinus() {
       audioService.playSe('slide');
-      this._setNoClamped((this.data.puzzleNo || 1) + delta);
+      this._setNoClamped((this.data.puzzleNo || 1) - 1);
+    },
+
+    /** 加 1 (上箭头 / +) */
+    onPlus() {
+      audioService.playSe('slide');
+      this._setNoClamped((this.data.puzzleNo || 1) + 1);
     },
 
     _setNoClamped(no: number) {
@@ -144,37 +109,20 @@ Component({
     /** 开始数独 */
     onStart() {
       audioService.playSe('start');
-      this.setData({ startPressed: true });
-      setTimeout(() => {
-        this.setData({ startPressed: false });
-        const no = this.data.puzzleNo || 1;
-        const id = noToId(no);
-        const puzzle = getPuzzleById(id);
-        if (!puzzle) {
-          wx.showToast({ title: '题目不存在', icon: 'none' });
-          return;
-        }
-        this.triggerEvent('start', { id, no });
-      }, 120);
+      const no = this.data.puzzleNo || 1;
+      const id = noToId(no);
+      const puzzle = getPuzzleById(id);
+      if (!puzzle) {
+        wx.showToast({ title: '题目不存在', icon: 'none' });
+        return;
+      }
+      this.triggerEvent('start', { id, no });
     },
 
     /** 返回主菜单 */
     onBack() {
       audioService.playSe('back');
-      this.setData({ returnPressed: true });
-      setTimeout(() => {
-        this.setData({ returnPressed: false });
-        this.triggerEvent('back');
-      }, 120);
+      this.triggerEvent('back');
     },
-
-    onStartTouchStart() { this.setData({ startPressed: true }); },
-    onStartTouchEnd() { this.setData({ startPressed: false }); },
-    onReturnTouchStart() { this.setData({ returnPressed: true }); },
-    onReturnTouchEnd() { this.setData({ returnPressed: false }); },
-    onUpTouchStart() { this.setData({ upPressed: true }); this._adjustNo(1); },
-    onUpTouchEnd() { this.setData({ upPressed: false }); },
-    onDownTouchStart() { this.setData({ downPressed: true }); this._adjustNo(-1); },
-    onDownTouchEnd() { this.setData({ downPressed: false }); },
   },
 });

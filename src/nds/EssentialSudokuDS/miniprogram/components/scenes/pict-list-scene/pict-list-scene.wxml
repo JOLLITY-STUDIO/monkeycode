@@ -1,15 +1,14 @@
 <view class="pict-list-page">
-  <!-- 原 DS pazl_select.nbm 标题横幅 -->
-  <view class="pict-banner">
-    <image class="pict-banner-image" src="{{bannerUrl}}" mode="aspectFit" lazy-load></image>
+  <!-- 标题 (文本, 不再使用 NBM 横幅) -->
+  <view class="pict-header">
+    <text class="pict-title">图画谜题</text>
+    <text class="pict-subtitle">选择类别 · {{totalPuzzles}} 题</text>
+    <text wx:if="{{totalCompleted > 0}}" class="list-done">已通关 {{totalCompleted}}</text>
   </view>
 
   <!-- 类别列表 -->
   <view class="list-card">
-    <view class="list-label">
-      谜题类别 · {{totalPuzzles}} 题
-      <text wx:if="{{totalCompleted > 0}}" class="list-done">已通关 {{totalCompleted}}</text>
-    </view>
+    <view class="list-label">谜题类别</view>
     <scroll-view class="cat-scroll" scroll-y>
       <view
         wx:for="{{categories}}"
@@ -20,7 +19,7 @@
         data-key="{{item.key}}"
         bindtap="onTapCategory"
       >
-        <image wx:if="{{selectedKey === item.key}}" class="cat-arrow-icon" src="{{arrowUrl}}" mode="aspectFit" lazy-load></image>
+        <view wx:if="{{selectedKey === item.key}}" class="cat-dot"></view>
         <text class="cat-label">{{item.label}}</text>
         <text wx:if="{{item.completed > 0}}" class="cat-done {{item.completed === item.count ? 'cat-done-full' : ''}}">✓ {{item.completed}}/{{item.count}}</text>
         <text wx:else class="cat-count">{{item.count}} 题</text>
@@ -29,20 +28,13 @@
     </scroll-view>
   </view>
 
-  <!-- 底部 DS Return 按钮 (pazl_select2b.nbm 原版) -->
+  <!-- 底部 Return (双态文本按钮) -->
   <view class="action-row">
     <view
-      class="return-btn"
-      bindtouchstart="onReturnTouchStart"
-      bindtouchend="onReturnTouchEnd"
+      class="ds-btn return-btn"
+      hover-class="ds-btn-hover"
+      hover-stay-time="80"
       bindtap="onBack"
-    >
-      <image
-        class="return-image"
-        src="{{returnPressed ? returnSelectedUrl : returnNormalUrl}}"
-        mode="aspectFit"
-        lazy-load
-      ></image>
-    </view>
+    >返回</view>
   </view>
 </view>

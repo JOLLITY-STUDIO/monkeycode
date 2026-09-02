@@ -1,37 +1,31 @@
 <view class="select-page">
-  <!-- 原 DS select1.nbm 横幅 -->
-  <view class="select1-banner">
-    <image class="select1-image" src="{{bannerUrl}}" mode="aspectFit" lazy-load></image>
+  <!-- 标题 (文本, 不再使用 NBM 横幅) -->
+  <view class="select-header">
+    <text class="select-title">数独选题</text>
+    <text class="select-subtitle">全局题库 1-1000</text>
   </view>
 
-  <!-- 难度选择: A/B/C/D 原版按钮 -->
+  <!-- 难度选择: 简单/中等/困难/专家 (双态文本按钮) -->
   <view class="difficulty-row">
     <view
       wx:for="{{diffButtons}}"
       wx:key="key"
-      class="difficulty-key {{difficulty === item.key ? 'difficulty-key-active' : ''}}"
+      class="ds-btn difficulty-key {{difficulty === item.key ? 'ds-btn-active' : ''}}"
+      hover-class="ds-btn-hover"
+      hover-stay-time="80"
       data-diff="{{item.key}}"
       bindtap="onTapDiff"
-    >
-      <image class="difficulty-key-image" src="{{item.iconUrl}}" mode="aspectFit" lazy-load></image>
-      <text class="difficulty-key-label">{{diffLabels[item.key]}}</text>
-    </view>
+    >{{item.label}}</view>
   </view>
 
-  <!-- 题号选择: 上/下箭头 + 输入框 -->
+  <!-- 题号选择: − / 输入框 / + -->
   <view class="number-row">
     <view
-      class="arrow-btn"
-      bindtouchstart="onDownTouchStart"
-      bindtouchend="onDownTouchEnd"
-    >
-      <image
-        class="arrow-image"
-        src="{{downPressed ? downSelectedUrl : downNormalUrl}}"
-        mode="aspectFit"
-        lazy-load
-      ></image>
-    </view>
+      class="ds-btn ds-btn-key number-btn"
+      hover-class="ds-btn-hover"
+      hover-stay-time="80"
+      bindtap="onMinus"
+    >−</view>
     <view class="number-display">
       <input
         class="number-input"
@@ -42,48 +36,29 @@
       />
     </view>
     <view
-      class="arrow-btn"
-      bindtouchstart="onUpTouchStart"
-      bindtouchend="onUpTouchEnd"
-    >
-      <image
-        class="arrow-image"
-        src="{{upPressed ? upSelectedUrl : upNormalUrl}}"
-        mode="aspectFit"
-        lazy-load
-      ></image>
-    </view>
+      class="ds-btn ds-btn-key number-btn"
+      hover-class="ds-btn-hover"
+      hover-stay-time="80"
+      bindtap="onPlus"
+    >+</view>
   </view>
 
   <!-- 选中题目预览 -->
   <view class="preview-text" wx:if="{{previewText}}">{{previewText}}</view>
 
-  <!-- 底部操作: Start + Return -->
+  <!-- 底部操作: Return + Start -->
   <view class="action-row">
     <view
-      class="action-btn action-return"
-      bindtouchstart="onReturnTouchStart"
-      bindtouchend="onReturnTouchEnd"
-    >
-      <image
-        class="action-image"
-        src="{{returnPressed ? returnSelectedUrl : returnNormalUrl}}"
-        mode="aspectFit"
-        lazy-load
-      ></image>
-    </view>
+      class="ds-btn action-return"
+      hover-class="ds-btn-hover"
+      hover-stay-time="80"
+      bindtap="onBack"
+    >返回</view>
     <view
-      class="action-btn action-start"
-      bindtouchstart="onStartTouchStart"
-      bindtouchend="onStartTouchEnd"
+      class="ds-btn action-start"
+      hover-class="ds-btn-hover"
+      hover-stay-time="80"
       bindtap="onStart"
-    >
-      <image
-        class="action-image"
-        src="{{startPressed ? startSelectedUrl : startNormalUrl}}"
-        mode="aspectFit"
-        lazy-load
-      ></image>
-    </view>
+    >开始</view>
   </view>
 </view>

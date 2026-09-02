@@ -4,6 +4,37 @@ All notable changes to this project are documented here.
 
 ---
 
+## UI-DSBTN — 场景按钮全面"文本标签双态"统一 (弃用 NBM 按键图)
+
+### 2026-09-03
+
+#### 策略 (用户 2026-09-03 明确)
+- 不用原版 NBM 按键/按钮图当按钮底; 按钮 = 文本标签 + normal/active 两态
+  (深色主题 `#0d1b2a` + 激活蓝 `#4db8ff`), 或 CSS/画布自绘
+- 仅保留: 图画谜题通关结果图 + 橡皮擦/画笔工具图标 (后续接入)
+- 网格线可自绘, 不依赖 numclo_waku.nbm.png (待后续 canvas 落地)
+
+#### 公共样式
+- 新增 `miniprogram/styles/ds-buttons.wxss`: `.ds-btn` normal/hover/active 三态
+  + `.ds-btn-lg/.ds-btn-sm/.ds-btn-key` 尺寸变体 + `.ds-btn-hover` 按下反馈
+  (各 scene wxss `@import` 单点维护)
+
+#### 各场景替换 (menu / select / sudoku / pict-list / options / picture / picture-mode)
+- `picture-mode-scene`: 5 个子模式 NBM 竖菜单 + 手写热区 → `wx:for` 文本按钮双态
+- `menu-scene`: NUMBER/PICTURE select4.nbm 双帧图 → `.ds-btn-lg` 文本大按钮
+- `select-scene`: 难度 A-D/上下箭头/Start/Return select1 图 → 文本钮; 
+  select1.nbm 标题横幅 → 文本头部 (数独选题 1-1000)
+- `sudoku-scene`: Return/数字键盘 1-9/清除图 → `.ds-btn`/`.ds-btn-key` 文本钮
+  (返回触控 pressed 帧切换逻辑简化, 由 hover-class 双态取代)
+- `pict-list-scene`: pazl_select2b Return 图 → 文本钮; pazl_select.nbm 横幅 +
+  pazl_yajirusi 箭头图 → 文本头部 + CSS 选中圆点
+- `options-scene`: select3.nbm 音量标签图标 + 4 action 行图标 → 纯文本标签行
+- `picture-scene`: 调色板 numclo_00 切片 (5 色 + 擦除) → CSS 色块 (擦除=白块
+  红斜线), 选中蓝框; 清空画板 clear 图标钮 → ds-btn 文本钮 "清空";
+  numclo_00.nbm 顶部 banner → 删除
+- 验证: IDE 语言服务 0 诊断; scenes 目录 NBM 按钮引用清零
+  (仅 menu 顶部 title.nbm logo 装饰图 / picture waku 背景图 / 教程图保留)
+
 ## PERSIST-V0.1 — 数独进度存档 + 图画谜题重做
 
 ### 2026-09-03

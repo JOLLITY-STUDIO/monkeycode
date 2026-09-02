@@ -11,29 +11,6 @@ import {
   saveSudokuProgress,
   clearSudokuProgress,
 } from '../../../utils/sudoku/sudoku_progress';
-import {
-  NBM_SELECT1_N_1_NORMAL,
-  NBM_SELECT1_N_1_SELECTED,
-  NBM_SELECT1_N_2_NORMAL,
-  NBM_SELECT1_N_2_SELECTED,
-  NBM_SELECT1_N_3_NORMAL,
-  NBM_SELECT1_N_3_SELECTED,
-  NBM_SELECT1_N_4_NORMAL,
-  NBM_SELECT1_N_4_SELECTED,
-  NBM_SELECT1_N_5_NORMAL,
-  NBM_SELECT1_N_5_SELECTED,
-  NBM_SELECT1_N_6_NORMAL,
-  NBM_SELECT1_N_6_SELECTED,
-  NBM_SELECT1_N_7_NORMAL,
-  NBM_SELECT1_N_7_SELECTED,
-  NBM_SELECT1_N_8_NORMAL,
-  NBM_SELECT1_N_8_SELECTED,
-  NBM_SELECT1_N_9_NORMAL,
-  NBM_SELECT1_N_9_SELECTED,
-  NBM_SELECT1_CLEARED_NORMAL,
-  NBM_SELECT1_RETURN_NORMAL,
-  NBM_SELECT1_RETURN_SELECTED,
-} from '../../../utils/sudoku/nbmAssets';
 import { audioService } from '../../../utils/audio/audioService';
 
 interface ViewCell {
@@ -48,11 +25,6 @@ interface ViewCell {
   candidatesText: string; // 候选笔记文本, 便于 wxml 直接渲染
 }
 
-interface NumberIconPair {
-  normal: string;
-  selected: string;
-}
-
 const DIFF_LABELS: Record<string, string> = {
   easy: '简单',
   medium: '中等',
@@ -62,20 +34,6 @@ const DIFF_LABELS: Record<string, string> = {
 };
 
 const DIFF_ORDER: Array<Difficulty | 'daily'> = ['easy', 'medium', 'hard', 'expert', 'daily'];
-
-const NUMBER_ICON_PAIRS: Record<number, NumberIconPair> = {
-  1: { normal: NBM_SELECT1_N_1_NORMAL, selected: NBM_SELECT1_N_1_SELECTED },
-  2: { normal: NBM_SELECT1_N_2_NORMAL, selected: NBM_SELECT1_N_2_SELECTED },
-  3: { normal: NBM_SELECT1_N_3_NORMAL, selected: NBM_SELECT1_N_3_SELECTED },
-  4: { normal: NBM_SELECT1_N_4_NORMAL, selected: NBM_SELECT1_N_4_SELECTED },
-  5: { normal: NBM_SELECT1_N_5_NORMAL, selected: NBM_SELECT1_N_5_SELECTED },
-  6: { normal: NBM_SELECT1_N_6_NORMAL, selected: NBM_SELECT1_N_6_SELECTED },
-  7: { normal: NBM_SELECT1_N_7_NORMAL, selected: NBM_SELECT1_N_7_SELECTED },
-  8: { normal: NBM_SELECT1_N_8_NORMAL, selected: NBM_SELECT1_N_8_SELECTED },
-  9: { normal: NBM_SELECT1_N_9_NORMAL, selected: NBM_SELECT1_N_9_SELECTED },
-};
-
-const CLEAR_ICON_URL = NBM_SELECT1_CLEARED_NORMAL;
 
 const service = new SudokuGameService();
 
@@ -99,14 +57,6 @@ Component({
     notesMode: false, // V0.18 候选笔记模式
     canUndo: false,
     canRedo: false,
-    /** 数字键盘 1-9 的原版 select1.nbm 图标 (normal / selected). */
-    numberIconUrls: NUMBER_ICON_PAIRS,
-    /** 清除按钮的原版图标. */
-    clearIconUrl: CLEAR_ICON_URL,
-    /** 返回按钮原版图 (select1 Return 普通/选中态). */
-    returnNormalUrl: NBM_SELECT1_RETURN_NORMAL,
-    returnSelectedUrl: NBM_SELECT1_RETURN_SELECTED,
-    returnPressed: false,
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器/存档防抖句柄 */
     _attachedDone: false,
     _timer: 0,
@@ -144,19 +94,7 @@ Component({
     onBackMenu() {
       audioService.playSe('back');
       this._flushSave();
-      this.setData({ returnPressed: true });
-      setTimeout(() => {
-        this.setData({ returnPressed: false });
-        this.triggerEvent('back');
-      }, 120);
-    },
-
-    onBackTouchStart() {
-      this.setData({ returnPressed: true });
-    },
-
-    onBackTouchEnd() {
-      this.setData({ returnPressed: false });
+      this.triggerEvent('back');
     },
 
     /**
