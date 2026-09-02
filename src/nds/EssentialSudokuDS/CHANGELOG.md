@@ -4,6 +4,30 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.1 — 图画谜题子模式选择菜单 (pazl_select 原版菜单还原)
+
+### 2026-09-02
+
+#### 新增
+- ✅ `miniprogram/components/scenes/picture-mode-scene/` 新建组件:
+  - 使用原 DS `pazl_select.nbm` 竖向菜单图做背景
+  - 5 个透明热区覆盖菜单项: ナンクロ / ヌクロ / カード / ポピュレーション / チュートリアル
+  - ナンクロ → 进入类别列表 (`pictList`); チュートリアル → 直接开始 `numclo_tu.data` 教程题
+  - ヌクロ / カード / ポピュレーション 暂未解析数据, 点击 toast 提示
+- ✅ `pages/index/index.ts` 新增 `pictureMode` 场景 + 路由:
+  - `menu` → `pictureMode` (forward); `pictureMode` → `pictList` / `picture` (forward)
+  - `pictList` / `picture` 返回 → `pictureMode` (back); `pictureMode` 返回 → `menu` (back)
+- ✅ `pages/index/index.wxml` 注册 `<picture-mode-scene>` 组件节点
+- ✅ `miniprogram/utils/audio/soundManifest.ts` 增加 `pictureMode` 场景 BGM 映射 (复用 `SEQ_13.mp3`)
+
+#### 调整
+- 主菜单"图画谜题"入口从直接进入 `pictList` 改为先进入 `pictureMode`, 对齐原 DS 流程。
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0 (miniprogram 全量)
+
+---
+
 ## SOUND-V0.4 — 小程序播放接入: BGM/SE MP3 资产 + audioService + 场景音效
 
 ### 2026-09-02

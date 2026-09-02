@@ -1,0 +1,71 @@
+/* picture-mode-scene.wxss — 原 DS 图画谜题子模式选择菜单 */
+.picture-mode-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 8px 12px 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: #e9eef3;
+}
+
+.scene-bar {
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 7px;
+  border: 0.5px solid #e0e6ec;
+  margin-bottom: 12px;
+}
+
+.scene-bar-text {
+  font-size: 14px;
+  color: #1565c0;
+  font-weight: 600;
+}
+
+/* 原 DS 菜单图容器 */
+.menu-panel {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 0.5px solid #e0e6ec;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.menu-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 透明热区层: 5 等分覆盖菜单项 */
+.menu-hit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-hit {
+  flex: 1;
+  width: 100%;
+}
+
+.mode-hit-hover {
+  background: rgba(21, 101, 192, 0.12);
+}
+
+.hint-text {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #6b7a8a;
+}

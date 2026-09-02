@@ -7,7 +7,7 @@
  * BGM 映射为临时推测, 后续根据原 DS 实际场景音乐调用链校准。
  */
 
-/** 10 个场景名称 (与 pages/index/index.ts SceneName 保持一致)。 */
+/** 11 个场景名称 (与 pages/index/index.ts SceneName 保持一致)。 */
 export type AudioScene =
   | 'title'
   | 'menu'
@@ -15,6 +15,7 @@ export type AudioScene =
   | 'options'
   | 'sudoku'
   | 'picture'
+  | 'pictureMode'
   | 'pictList'
   | 'staff'
   | 'about'
@@ -40,6 +41,7 @@ export const BGM_MANIFEST: Record<AudioScene, string> = {
   options: '/assets/audio/bgm/SEQ_10.mp3',
   sudoku: '/assets/audio/bgm/SEQ_04.mp3',
   picture: '/assets/audio/bgm/SEQ_12.mp3',
+  pictureMode: '/assets/audio/bgm/SEQ_13.mp3',
   pictList: '/assets/audio/bgm/SEQ_13.mp3',
   tutorial: '/assets/audio/bgm/SEQ_15.mp3',
   staff: '/assets/audio/bgm/SEQ_14.mp3',

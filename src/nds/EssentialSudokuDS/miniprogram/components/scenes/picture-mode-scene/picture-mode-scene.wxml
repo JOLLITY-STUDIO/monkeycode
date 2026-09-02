@@ -1,0 +1,24 @@
+<view class="picture-mode-page">
+  <!-- 返回条 -->
+  <view class="scene-bar" bindtap="onBack">
+    <text class="scene-bar-text">← 返回主菜单</text>
+  </view>
+
+  <!-- 原 DS pazl_select.nbm 子模式菜单 -->
+  <view class="menu-panel">
+    <image class="menu-image" src="{{menuUrl}}" mode="widthFix" lazy-load></image>
+    <view class="menu-hit">
+      <view
+        wx:for="{{modes}}"
+        wx:key="id"
+        class="mode-hit"
+        hover-class="mode-hit-hover"
+        hover-stay-time="80"
+        data-id="{{item.id}}"
+        bindtap="onTapMode"
+      ></view>
+    </view>
+  </view>
+
+  <view class="hint-text">请选择图画谜题模式</view>
+</view>

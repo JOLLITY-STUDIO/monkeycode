@@ -15,6 +15,7 @@ type SceneName =
   | 'options'
   | 'sudoku'
   | 'picture'
+  | 'pictureMode'
   | 'staff'
   | 'about'
   | 'tutorial'
@@ -40,15 +41,21 @@ const SCENE_TRANSITIONS: Record<string, SceneEffect> = {
   // 进入下级: 新场景从右滑入, 旧场景向左滑出
   'menu-select': 'forward',
   'menu-pictList': 'forward',
+  'menu-pictureMode': 'forward',
   'menu-options': 'forward',
   'options-staff': 'forward',
   'options-about': 'forward',
+  'pictureMode-pictList': 'forward',
+  'pictureMode-picture': 'forward',
   // 返回上级: 反向
   'select-menu': 'back',
   'pictList-menu': 'back',
+  'pictList-pictureMode': 'back',
+  'pictureMode-menu': 'back',
   'options-menu': 'back',
   'staff-options': 'back',
   'about-options': 'back',
+  'picture-pictureMode': 'back',
   // 下钻进对局: 新场景从下滑入, 旧场景向上滑出
   'select-sudoku': 'drill',
   'pictList-picture': 'drill',
@@ -133,7 +140,7 @@ Page({
     this._switchScene('select');
   },
   onMenuOpenPicture() {
-    this._switchScene('pictList');
+    this._switchScene('pictureMode');
   },
   onMenuOpenTutorial() {
     this._switchScene('tutorial');
@@ -183,19 +190,30 @@ Page({
     this._switchScene('menu');
   },
 
-  // ---- pict-list-scene: open({ key }) → 图画对局; back → 主菜单 ----
+  // ---- picture-mode-scene: 子模式选择 ----
+  onPictureModeBack() {
+    this._switchScene('menu');
+  },
+  onPictureModeOpenNankuro() {
+    this._switchScene('pictList');
+  },
+  onPictureModeOpenTutorial() {
+    this._switchScene('picture', { fileKey: 'numclo_tu.data', puzzleIdx: 0 });
+  },
+
+  // ---- pict-list-scene: open({ key }) → 图画对局; back → 子模式选择 ----
   onPictListOpen(e: any) {
     const key = e.detail && e.detail.key;
     if (!key) return;
     this._switchScene('picture', { fileKey: String(key), puzzleIdx: 0 });
   },
   onPictListBack() {
-    this._switchScene('menu');
+    this._switchScene('pictureMode');
   },
 
-  // ---- picture-scene: back → 类别列表 ----
+  // ---- picture-scene: back → 子模式选择 ----
   onPictureBack() {
-    this._switchScene('pictList');
+    this._switchScene('pictureMode');
   },
 
   // ---- sudoku-scene: back → 选题页 ----

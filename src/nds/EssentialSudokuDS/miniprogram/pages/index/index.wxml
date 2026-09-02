@@ -48,6 +48,12 @@
     bind:open-options="onMenuOpenOptions"
     bind:back-title="onMenuBackTitle" />
 
+  <!-- 图画谜题子模式选择 -->
+  <picture-mode-scene wx:elif="{{s === 'pictureMode'}}"
+    bind:open-nankuro="onPictureModeOpenNankuro"
+    bind:open-tutorial="onPictureModeOpenTutorial"
+    bind:back="onPictureModeBack" />
+
   <!-- 数独选题 -->
   <select-scene wx:elif="{{s === 'select'}}"
     bind:start="onSelectStart"

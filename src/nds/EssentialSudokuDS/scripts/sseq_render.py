@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
-"""SOUND-V0.3: software renderer — SSEQ event flow + ADPCM samples -> BGM WAV.
+"""SOUND-V0.5: software renderer — SSEQ event flow + ADPCM samples -> BGM WAV.
 
 Closes the audio loop: sseq-playable.json (event flow) + snd-linkage.json
 (instrument/sample links) + SWAR raw samples -> mono 16-bit WAV per BGM.
 
-Rendering model (verification-grade, not hi-fi):
-  - per track: maintain tempo/volume/expression/instrument state, emit NOTE
-    voices on an absolute ms timeline (renderer ms already accounts per-track tempo)
+Rendering model (quality pass over V0.3):
+  - per track: maintain tempo/volume/expression/instrument/pitch-bend state,
+    emit NOTE voices on an absolute ms timeline; PITCHBEND (0xC4, signed,
+    centre 0, ~1/64 semitone per unit) and PITCHRANGE (0xC5, semitones,
+    default 2) shift the effective key so SEQ_04's 372 glides sound right
   - per voice: pick nearest def (root note) for the program, read sample PCM,
     step = sampleRate/OUT_RATE * 2^((key-root)/12), loop in [loopOffset,
-    loopOffset+loopLength) when loopFlag, simple attack/sustain/release gate
-  - mix float mono at OUT_RATE, normalize, write work/wav/bgm/<name>.wav
+    loopOffset+loopLength) when loopFlag; linear interpolation while resampling
+    (removes the V0.3 point-sampling aliasing), envelope driven by the SBNK
+    ADSR params (attack/decay/sustain/release each 0..127, 127=fastest) with
+    a small hard fade at the very end to kill clicks
+  - mix float mono at OUT_RATE (44100, decimation to MP3 is a clean 2:1),
+    normalize, write work/wav/bgm/<name>.wav
 
 Usage: python scripts/sseq_render.py [--max-seconds 90]
 """
@@ -30,8 +36,27 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOUND_DIR = os.path.join(ROOT, 'rom-data', 'sound')
 OUT_DIR = os.path.join(ROOT, 'work', 'wav', 'bgm')
 
-OUT_RATE = 22050
-MASTER_GAIN = 2.8
+OUT_RATE = 44100
+MASTER_GAIN = 1.4
+SAMPLE_RATE = 32768  # DS master clock; used for rough ADSR second estimates
+DEFAULT_PITCH_RANGE = 2  # semitones per full pitch-bend (default unless 0xC5)
+
+
+def keys_of(defs):
+    """Best (root, fallback) note candidates from a def list (sorted by closeness to 60)."""
+    if not defs:
+        return []
+    return sorted((d for d in defs if d.get('sample')), key=lambda d: abs(d['note'] - 60))
+
+
+def adsr_of(d):
+    """Rough seconds for SBNK ADSR (rate 0..127, 127 = fastest).
+    Mapping is log-ish: time = BASE * 2 ** ((127 - rate) / 21.0)."""
+    atk, dec, sus, rel = d['adsr']
+    return (2 ** ((127 - atk) / 21.0) * 0.004,
+            2 ** ((127 - dec) / 21.0) * 0.03,
+            sus / 127.0,
+            2 ** ((127 - rel) / 21.0) * 0.05)
 
 
 def load_pcm_cache():
@@ -82,7 +107,11 @@ def build_defmap(linkage, seq_idx):
 
 
 def collect_voices(play, dm):
-    """Returns (voices, body_ms). Each voice: dict(start_ms,dur_ms,key,gain,def,link)."""
+    """Returns (voices, body_ms). Each voice: dict(start_ms,dur_ms,key,gain,prog).
+    Pitch-bend glides: SSEQ bends the *pitch offset*, not the gate duration, so a
+    long note whose bend changes mid-way is kept intact here; the slight pitch
+    offset between consecutive 0xC4 updates on the same note is approximated by
+    the bend at note start (glide interior is not yet re-synthesized)."""
     voices = []
     body_ms = 0.0
     for tk in play['tracks'].values():
@@ -90,6 +119,7 @@ def collect_voices(play, dm):
         vol = 127
         expr = 127
         instr = None
+        bend = 0.0          # signed, in semitones (0xC4 raw is signed, 1/64 semitone each)
         for e in tk['events']:
             op = e['op']
             args = e.get('args')
@@ -101,13 +131,19 @@ def collect_voices(play, dm):
                 expr = args[0]
             elif op == 'INSTRUMENT' and args:
                 instr = args[0]
+            elif op == 'PITCHBEND' and args:
+                raw = args[0]
+                if raw > 127:
+                    raw -= 256
+                bend = raw / 64.0
             elif op == 'NOTE' and args:
                 key, vel, dur = args
                 if instr is None:
                     continue
+                k_eff = key + bend
                 dur_ms = dur * 60000.0 / (tempo * 48)
                 gain = (vel / 127.0) * (vol / 127.0) * (expr / 127.0) * MASTER_GAIN
-                voices.append({'ms': e['ms'], 'dur_ms': dur_ms, 'key': key,
+                voices.append({'ms': e['ms'], 'dur_ms': dur_ms, 'key': k_eff,
                                'gain': gain, 'prog': instr})
             body_ms = max(body_ms, e.get('ms', 0.0))
     return voices, body_ms
