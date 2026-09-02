@@ -109,7 +109,7 @@
   <view class="tool-row">
     <view class="tool-key" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
     <view class="tool-key" bindtap="onUndo">撤销</view>
-    <view class="tool-key tool-key-primary" bindtap="onClearAll">清空画板</view>
+    <view class="tool-key tool-key-clear" style="background-image: url({{toolImages.clear}});" bindtap="onClearAll">清空画板</view>
   </view>
 
   <!-- 完成提示条 -->

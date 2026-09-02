@@ -295,7 +295,7 @@
   background: #1e8e3e;
 }
 
-/* 工具行 */
+/* 工具行 (DS 风格: 白底灰边按钮 + 原切片强调按钮) */
 .tool-row {
   width: 100%;
   display: flex;
@@ -315,12 +315,28 @@
   background: #ffffff;
   border-radius: 7px;
   border: 0.5px solid #d0d8e0;
+  box-shadow: 0 1.5px 0 #b0b8c0;
 }
 
-.tool-key-primary {
-  background: #2b3a4a;
+.tool-key:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 0 0 #b0b8c0;
+}
+
+/* 清空画板: 原 DS numclo_00.nbm 灰色 X 按钮切片 + 白色文字 */
+.tool-key-clear {
+  background-color: #8e949a;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   color: #ffffff;
-  border-color: #2b3a4a;
+  font-weight: 700;
+  text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.45);
+  border-color: #6b727a;
+  box-shadow: 0 1.5px 0 #5a6068;
+}
+
+.tool-key-clear:active {
+  box-shadow: 0 0 0 #5a6068;
 }
 
 /* 教程模式提示图 */

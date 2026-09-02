@@ -75,14 +75,16 @@ SELECT4_SLICES = {
 
 # numclo_00.nbm 是 picture puzzle 下屏 HUD (256x128).
 # 经 V0.13 像素扫描验证: 左列只有 4 个真实彩色按钮, 从上到下为红/黄/蓝/绿;
-# 没有紫色大按钮, 也没有标准的擦除按钮 (下方是灰色功能图标/蓝色选中条/铅笔).
-# 因此只裁剪 4 个可复用的颜色切片; color id 5 (紫) 与擦除由 picture-scene 用
-# PALETTE_HEX 纯色回退渲染, 避免用错误切片误导玩家.
+# 没有紫色大按钮. 但 big_5 (白色按钮) 可用作"擦除/空白"切片,
+# big_4 (灰色带 X) 可用作"清空画板"工具按钮.
+# color id 5 (紫) 仍无对应原图素材, 继续由 picture-scene 用 PALETTE_HEX 纯色回退渲染.
 NUMCLO_00_SLICES = {
     'numclo00_color_1_red': (8, 1, 48, 14),
     'numclo00_color_2_yellow': (8, 15, 48, 28),
     'numclo00_color_3_blue': (8, 29, 48, 42),
     'numclo00_color_4_green': (8, 43, 48, 56),
+    'numclo00_erase': (12, 71, 43, 86),
+    'numclo00_clear': (12, 57, 43, 70),
 }
 
 

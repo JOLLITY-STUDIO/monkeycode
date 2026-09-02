@@ -4,6 +4,32 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.14 — picture-scene UI 进一步 DS 化
+
+### 2026-09-02
+
+#### 新增切片
+- `scripts/gen_nbm_assets_ts.py` 从 `numclo_00.nbm` 补充裁剪:
+  - `numclo00_erase`: 白色空白按钮 → 调色板"擦除"
+  - `numclo00_clear`: 灰色 X 按钮 → "清空画板"工具按钮背景
+- `miniprogram/utils/sudoku/nbmAssets.ts`: 重新生成, 新增上述常量并归入 `NBM_GROUP_PICTURE_PUZZLE`
+
+#### picture-scene 改造
+- `picture-scene.ts`:
+  - import `NBM_NUMCLO00_ERASE` / `NBM_NUMCLO00_CLEAR`
+  - `PALETTE_IMAGES[0]` 从纯色回退改为原 DS 白色按钮切片
+  - 新增 `TOOL_IMAGES` / `data.toolImages` 供 wxml 引用
+- `picture-scene.wxml`: "清空画板"按钮使用 `toolImages.clear` 背景图
+- `picture-scene.wxss`:
+  - 普通工具按钮加 DS 风格浅阴影 + active 下压动效
+  - `.tool-key-clear` 使用灰色 X 切片背景 + 白字 + 深色阴影
+
+#### Verification
+- IDE 语言服务 0 诊断 (picture-scene.ts / nbmAssets.ts)
+- Python 扫描/裁剪脚本验证切片坐标
+
+---
+
 ## PICTURE-V0.13 — 颜色语义对照: 修正 numclo_00.nbm 切片错位
 
 ### 2026-09-02

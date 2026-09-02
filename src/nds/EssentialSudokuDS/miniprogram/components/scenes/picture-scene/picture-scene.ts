@@ -19,6 +19,8 @@ import {
   NBM_NUMCLO00_COLOR_2_YELLOW,
   NBM_NUMCLO00_COLOR_3_BLUE,
   NBM_NUMCLO00_COLOR_4_GREEN,
+  NBM_NUMCLO00_ERASE,
+  NBM_NUMCLO00_CLEAR,
 } from '../../../utils/sudoku/nbmAssets';
 
 /** 自动保存防抖 (ms): 每次涂色后延迟写入 storage, 避免连点刷盘 */
@@ -35,18 +37,23 @@ const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
 const PALETTE_BORDERS = ['#c8d0d8', '#c62828', '#f9a825', '#1565c0', '#2e7d32', '#6a1b9a'];
 /**
  * 原 DS numclo_00.nbm 下屏 HUD 经 V0.13 扫描验证:
- * 左列只有 4 个真实彩色按钮 (红/黄/蓝/绿), 没有紫色按钮, 也没有标准擦除按钮.
- * 因此 color id 5 (紫) 与擦除 (id 0) 用 PALETTE_HEX 纯色回退渲染;
- * 1..4 仍使用原图切片保持 DS 风格.
+ * 左列只有 4 个真实彩色按钮 (红/黄/蓝/绿), 没有紫色按钮.
+ * V0.14 补充: big_5 (白色按钮) 用作擦除切片, big_4 (灰色 X) 用作清空画板工具图标.
+ * color id 5 (紫) 仍无对应原图素材, 继续由 PALETTE_HEX 纯色回退渲染.
  */
 const PALETTE_IMAGES = [
-  '', // 0 = 擦除: 无原图素材, 用 #ffffff 纯色
+  NBM_NUMCLO00_ERASE, // 0 = 擦除: 原 DS 白色空白按钮
   NBM_NUMCLO00_COLOR_1_RED,
   NBM_NUMCLO00_COLOR_2_YELLOW,
   NBM_NUMCLO00_COLOR_3_BLUE,
   NBM_NUMCLO00_COLOR_4_GREEN,
   '', // 5 = 紫色: 无原图素材, 用 #8e24aa 纯色
 ];
+
+/** 工具行按钮背景 (原 DS 切片 + 纯色回退). */
+const TOOL_IMAGES = {
+  clear: NBM_NUMCLO00_CLEAR,
+};
 
 /** 15 个类别 (numclo0-9 主题库 + numclo_00-03 附加 + numclo_tu 教程) */
 const CATEGORIES: Array<{ key: string; label: string }> = [
@@ -154,6 +161,8 @@ Component({
     history: [] as Array<{ i: number; prev: CellColor }>,
     /** 教程提示图是否被用户关闭 */
     tutorialClosed: false,
+    /** 工具行按钮背景图 (原 DS 切片) */
+    toolImages: TOOL_IMAGES,
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,
