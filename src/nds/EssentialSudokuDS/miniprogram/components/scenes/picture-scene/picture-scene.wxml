@@ -79,6 +79,12 @@
     </view>
   </view>
 
+  <!-- 教程模式提示图 (numclo_tu.data) -->
+  <view wx:if="{{currentFile === 'numclo_tu.data' && !tutorialClosed}}" class="tutorial-bar">
+    <image class="tutorial-image" src="/assets/nbm/tutorial_00.nbm.png" mode="aspectFit" lazy-load></image>
+    <view class="tutorial-close" bindtap="onCloseTutorial">×</view>
+  </view>
+
   <!-- 正确进度 -->
   <view class="progress-row">
     <text class="progress-text">已正确 {{correctCount}} / {{cells.length}}</text>

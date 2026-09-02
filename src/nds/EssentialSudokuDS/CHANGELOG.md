@@ -68,6 +68,22 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.9 — 教程模式 (numclo_tu.data) 叠加 tutorial_00.nbm 教学图
+
+### 2026-09-02
+
+#### 新增
+- `picture-scene` 当前类别为 `numclo_tu.data` 时,在网格下方显示原 DS 教学图 `tutorial_00.nbm`:
+  - 图片 128×256, 竖向显示, 高度 120px, 宽度按 aspect-fit 自适应
+  - 右上角加关闭按钮, 关闭后本局不再显示; 切换题目时自动重新显示
+  - 不影响网格触摸操作, 关闭按钮在图片上方
+- 新增 data 字段 `tutorialClosed` + 方法 `onCloseTutorial`
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## PICTURE-V0.1 — 图画谜题子模式选择菜单 (pazl_select 原版菜单还原)
 
 ### 2026-09-02

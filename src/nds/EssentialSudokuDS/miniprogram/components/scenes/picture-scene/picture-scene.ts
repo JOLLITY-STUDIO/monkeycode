@@ -112,6 +112,8 @@ Component({
     colClues: [] as ColorCount[][],
     /** 操作历史栈, 用于撤销 (undo) */
     history: [] as Array<{ i: number; prev: CellColor }>,
+    /** 教程提示图是否被用户关闭 */
+    tutorialClosed: false,
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,
@@ -153,6 +155,12 @@ Component({
       this.triggerEvent('back');
     },
 
+    /** 关闭教程提示图 */
+    onCloseTutorial() {
+      this.setData({ tutorialClosed: true });
+      audioService.playSe('tap');
+    },
+
     /** 开一题: fileKey + indexInFile */
     _startPuzzle(fileKey: string, indexInFile: number) {
       const res = service.startPuzzleInFile(fileKey, indexInFile);
@@ -192,6 +200,7 @@ Component({
         rowClues: clues.rows,
         colClues: clues.cols,
         history: [],
+        tutorialClosed: false,
       });
       this._startTimer();
     },
