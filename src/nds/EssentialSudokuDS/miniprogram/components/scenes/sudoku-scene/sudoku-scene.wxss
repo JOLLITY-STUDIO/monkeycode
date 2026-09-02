@@ -64,7 +64,6 @@
   font-size: 15px;
   font-weight: 600;
   color: #f0f4f8;
-  font-variant-numeric: tabular-nums;
 }
 
 /* 难度切换 chips (DS 深色胶囊) */
