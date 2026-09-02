@@ -26,6 +26,7 @@ import {
   NBM_SELECT1_N_9_SELECTED,
   NBM_SELECT1_CLEARED_NORMAL,
 } from '../../../utils/sudoku/nbmAssets';
+import { audioService } from '../../../utils/audio/audioService';
 
 interface ViewCell {
   r: number;         // 行
@@ -124,6 +125,7 @@ Component({
   methods: {
     /** 返回主菜单 */
     onBackMenu() {
+      audioService.playSe('back');
       this.triggerEvent('back');
     },
 
@@ -219,6 +221,7 @@ Component({
 
     /** 数字键盘 1-9 (笔记模式下 toggle 候选笔记) */
     onTapNumber(e: any) {
+      audioService.playSe('tap');
       const num = Number(e.currentTarget.dataset.num) as Value;
       const sel = this.data.selected;
       if (!sel) {
@@ -246,6 +249,7 @@ Component({
     onTapClear() {
       const sel = this.data.selected;
       if (!sel) return;
+      audioService.playSe('clear');
       service.clearAt(sel.row, sel.col);
       this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
       this._sync();
@@ -258,6 +262,7 @@ Component({
 
     /** 撤销 */
     onUndo() {
+      audioService.playSe('undo');
       if (service.undo()) {
         this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
         this._sync();
@@ -298,6 +303,7 @@ Component({
       if (res.complete) {
         this._stopTimer();
         this.setData({ complete: true });
+        audioService.playSe('complete');
         const info = service.getSessionInfo();
         wx.showModal({
           title: '🎉 完成!',

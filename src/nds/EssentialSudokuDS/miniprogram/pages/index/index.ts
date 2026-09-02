@@ -5,6 +5,9 @@
 //       动画结束后定时器移除 leavingScene 层 (wx:if 卸载组件)
 // 效果按场景流向自动选择 (SCENE_TRANSITIONS), 未配置的流向默认 fade
 
+import { audioService } from '../../utils/audio/audioService';
+import type { AudioScene } from '../../utils/audio/soundManifest';
+
 type SceneName =
   | 'title'
   | 'menu'
@@ -73,17 +76,22 @@ Page({
     // 首屏直达无需过渡 (title 从未显示过)
     if (query && query.id) {
       this.setData({ scene: 'sudoku', puzzleId: String(query.id) });
+      audioService.playBgmForScene('sudoku');
     } else if (query && query.file) {
       this.setData({
         scene: 'picture',
         fileKey: String(query.file),
         puzzleIdx: Number(query.idx || 0),
       });
+      audioService.playBgmForScene('picture');
+    } else {
+      audioService.playBgmForScene('title');
     }
   },
 
   onUnload() {
     this._clearLeaveTimer();
+    audioService.destroy();
   },
 
   /** 场景过渡切换引擎: 旧场景进入离场动画, 新场景进入进场动画 */
@@ -98,6 +106,7 @@ Page({
       effect,
       ...(extra || {}),
     });
+    audioService.playBgmForScene(next as AudioScene);
     // 离场动画结束后移除 leaving 层 (定时器兜底, animationend 在部分平台不可靠)
     this._clearLeaveTimer();
     this.data._leaveTimer = setTimeout(() => {

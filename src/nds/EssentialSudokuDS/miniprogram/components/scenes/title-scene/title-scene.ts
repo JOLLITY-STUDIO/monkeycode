@@ -2,6 +2,8 @@
 // 全屏 title.nbm + TAP TO START 脉冲提示
 // 点击 → triggerEvent('start') → 页面壳 navigateTo 主菜单
 
+import { audioService } from '../../../utils/audio/audioService';
+
 Component({
   data: {
     pulse: false,
@@ -27,6 +29,7 @@ Component({
   methods: {
     /** 点击任意处 → 通知页面进入主菜单 */
     onTapStart() {
+      audioService.playSe('start');
       this.triggerEvent('start');
     },
   },

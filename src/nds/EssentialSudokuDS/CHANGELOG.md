@@ -4,6 +4,34 @@ All notable changes to this project are documented here.
 
 ---
 
+## SOUND-V0.4 — 小程序播放接入: BGM/SE MP3 资产 + audioService + 场景音效
+
+### 2026-09-02
+
+#### 新增
+- ✅ `scripts/pack_audio_assets.py` 新建: ffmpeg 批量 WAV → MP3 (24kbps mono @ 22050)
+  - 产物 `miniprogram/assets/audio/bgm/SEQ_*.mp3` (9 首 ~1.1MB) + `se/*.mp3` (17 个 ~37KB)
+- ✅ `miniprogram/utils/audio/soundManifest.ts` 新建: 资源清单
+  - `BGM_MANIFEST`: 10 场景 → BGM 文件 (title→SEQ_01 / menu→SEQ_02 / select→SEQ_03 /
+    options+about→SEQ_10 / sudoku→SEQ_04 / picture→SEQ_12 / pictList→SEQ_13 /
+    tutorial→SEQ_15 / staff→SEQ_14) — 映射为临时推测, 后续按原 DS 调用链校准
+  - `SE_MANIFEST`: 9 事件 → SE 文件 (tap/back/start/decide/clear/paint/slide/complete/undo)
+- ✅ `miniprogram/utils/audio/audioService.ts` 新建: 单例音频控制器
+  - BGM 单例 InnerAudioContext loop, 同 src 不重置; SE 一次性 ctx 池化自动销毁
+  - 音量/开关持久化 `esds_*` 4 个 key (与 options-scene slider 双向同步)
+- ✅ 场景 BGM: index `onLoad` query 直达 + `_switchScene` 统一 `playBgmForScene(scene)`;
+  onUnload 调 `audioService.destroy()`
+- ✅ 场景 SE: title (start) / menu (decide/tap/back) / select (tap/slide/start/back) /
+  options (音量滑块) / pict-list (back/start) / sudoku (tap/clear/undo/complete) /
+  picture (paint/clear/tap/slide/decide/complete)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0 (miniprogram 全量)
+- ✅ lint 0 errors (pict-list/sudoku/picture/options/menu/select/title + index)
+- ✅ `python scripts/pack_audio_assets.py` — 26 个 MP3 全部转换成功, 文件名与 manifest 1:1
+
+---
+
 ## SOUND-V0.3 — 软件渲染闭环: SSEQ 事件流 + ADPCM sample → 可听 BGM/SE WAV
 
 ### 2026-09-02

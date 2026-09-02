@@ -3,6 +3,7 @@
 
 import { NBM_PAZL_SELECT, NBM_PAZL_YAJIRUSI } from '../../../utils/sudoku/nbmAssets';
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
+import { audioService } from '../../../utils/audio/audioService';
 
 const service = new PictureGameService();
 
@@ -59,6 +60,7 @@ Component({
   methods: {
     /** 返回主菜单 */
     onBack() {
+      audioService.playSe('back');
       this.triggerEvent('back');
     },
 
@@ -66,6 +68,7 @@ Component({
     onTapCategory(e: any) {
       const key = e.currentTarget.dataset.key as string;
       this.setData({ selectedKey: key });
+      audioService.playSe('start');
       this.triggerEvent('open', { key });
     },
   },

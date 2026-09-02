@@ -211,3 +211,30 @@ prog 10 与 16-27 (13 个槽位) = ftype=0 空 instrument → 对应 SSAR 记录
     defs; 渲染器必须 defs 为空时 skip, 不可硬凑
 11. 渲染输出 mono (未建模 pan), 采样率 22050 非 sample 原生 rate; 大 ratio 采样
     会降混叠, 属验证级品质, 不是 1:1 还原 (后续可加 pan/loop 段校准)
+
+## 15. 小程序端播放接入 (SOUND-V0.4)
+
+渲染闭环 (SOUND-V0.1~V0.3) 产出 `work/wav/bgm/*.wav` + `work/wav/se/*.wav`
+(mono 16-bit @ 22050)。V0.4 把它们打进制成品:
+
+- `scripts/pack_audio_assets.py` (新建): ffmpeg 批量 WAV → MP3 (24kbps mono, 主包体积友好)
+  - 产物 `miniprogram/assets/audio/bgm/SEQ_01..15.mp3` (9 首) + `se/00_botan..29_start.mp3` (17 个)
+  - 实测: 9 BGM 共 ~1.1MB + 17 SE 共 ~37KB
+- `miniprogram/utils/audio/soundManifest.ts` (新建): 资源清单
+  - `BGM_MANIFEST`: 10 场景 → 文件 (title→SEQ_01 / menu→SEQ_02 / select→SEQ_03 /
+    options+about→SEQ_10 / sudoku→SEQ_04 / picture→SEQ_12 / pictList→SEQ_13 /
+    tutorial→SEQ_15 / staff→SEQ_14)
+  - `SE_MANIFEST`: 9 事件 → 文件 (tap→00_botan / back→08_batu / start+complete→29_start /
+    decide→11_kettei / clear→06_kesu / paint→05_nuru / slide→01_slide / undo→04_idou)
+  - **BGM 场景映射为临时推测** (按 DS 首屏序编号猜), 后续需按原 DS 实际调用链校准
+- `miniprogram/utils/audio/audioService.ts` (新建): 单例控制器
+  - BGM: 单例 `InnerAudioContext` loop=true, 同 src 不重置; 切场景由 index `_switchScene`
+    统一调 `playBgmForScene(scene)`, onLoad query 直达也按 scene 播放
+  - SE: 每次新建 ctx → 播放完自动 destroy, 池化管理防并发回声
+  - 音量/开关持久化: `esds_bgm_volume` / `esds_se_volume` / `esds_bgm_enabled` /
+    `esds_se_enabled` (与 options-scene slider 共用 key, 双向同步)
+- 场景接入: title/menu/select/options 路由按钮 SE + sudoku-scene (数字 tap/clear/undo/
+  完成) + picture-scene (涂色 paint / 擦除 clear / 调色 tap / 换题 slide / 完成 complete)
+  + pict-list-scene (back/start)
+
+默认音量 BGM 0.5 / SE 0.8; onUnload 时 `audioService.destroy()` 释放全部 ctx。

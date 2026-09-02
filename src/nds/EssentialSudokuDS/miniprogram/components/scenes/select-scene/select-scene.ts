@@ -3,6 +3,7 @@
 
 import { getPuzzleById } from '../../../utils/sudoku/numple_puzzles';
 import { NBM_SELECT6 } from '../../../utils/sudoku/nbmAssets';
+import { audioService } from '../../../utils/audio/audioService';
 
 const DIFF_LABELS: Record<string, string> = {
   easy: '简单',
@@ -46,6 +47,7 @@ Component({
   methods: {
     /** 切难度: 题号跳转到该难度范围起点 */
     onTapDiff(e: any) {
+      audioService.playSe('tap');
       const d = e.currentTarget.dataset.diff as string;
       const [lo] = DIFF_RANGE[d];
       this.setData({ difficulty: d, puzzleNo: lo });
@@ -60,12 +62,14 @@ Component({
     },
 
     onNoDec() {
+      audioService.playSe('slide');
       const [lo] = DIFF_RANGE[this.data.difficulty];
       this.setData({ puzzleNo: Math.max(lo, (this.data.puzzleNo || 1) - 1) });
       this._refreshPreview();
     },
 
     onNoInc() {
+      audioService.playSe('slide');
       const [, hi] = DIFF_RANGE[this.data.difficulty];
       this.setData({ puzzleNo: Math.min(hi, (this.data.puzzleNo || 1) + 1) });
       this._refreshPreview();
@@ -85,6 +89,7 @@ Component({
 
     /** 开始数独 */
     onStart() {
+      audioService.playSe('start');
       const no = this.data.puzzleNo || 1;
       const id = noToId(no);
       const puzzle = getPuzzleById(id);
@@ -97,6 +102,7 @@ Component({
 
     /** 返回主菜单 */
     onBack() {
+      audioService.playSe('back');
       this.triggerEvent('back');
     },
   },

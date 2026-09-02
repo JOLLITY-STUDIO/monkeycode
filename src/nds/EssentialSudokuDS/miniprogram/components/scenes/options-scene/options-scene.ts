@@ -9,6 +9,7 @@ import {
   NBM_SELECT3_RATE_NORMAL,
   NBM_SELECT3_CREDITS_NORMAL,
 } from '../../../utils/sudoku/nbmAssets';
+import { audioService } from '../../../utils/audio/audioService';
 
 const BGM_VOLUME_KEY = 'esds_bgm_volume';
 const SE_VOLUME_KEY = 'esds_se_volume';
@@ -27,11 +28,9 @@ Component({
 
   lifetimes: {
     attached() {
-      const bgm = wx.getStorageSync(BGM_VOLUME_KEY);
-      const se = wx.getStorageSync(SE_VOLUME_KEY);
       this.setData({
-        bgmVolume: typeof bgm === 'number' ? bgm : 100,
-        seVolume: typeof se === 'number' ? se : 100,
+        bgmVolume: Math.round(audioService.bgmVolume * 100),
+        seVolume: Math.round(audioService.seVolume * 100),
       });
     },
   },
@@ -41,12 +40,16 @@ Component({
       const v = Number(e.detail.value);
       this.setData({ bgmVolume: v });
       wx.setStorageSync(BGM_VOLUME_KEY, v);
+      audioService.setBgmVolume(v / 100);
+      audioService.setBgmEnabled(v > 0);
     },
 
     onSeVolumeChange(e: any) {
       const v = Number(e.detail.value);
       this.setData({ seVolume: v });
       wx.setStorageSync(SE_VOLUME_KEY, v);
+      audioService.setSeVolume(v / 100);
+      audioService.setSeEnabled(v > 0);
     },
 
     /** 清除进度与设置 */
@@ -68,6 +71,10 @@ Component({
             wx.removeStorageSync(SE_VOLUME_KEY);
           }
           this.setData({ bgmVolume: 100, seVolume: 100 });
+          audioService.setBgmVolume(1);
+          audioService.setSeVolume(1);
+          audioService.setBgmEnabled(true);
+          audioService.setSeEnabled(true);
           wx.showToast({ title: '已清除', icon: 'success' });
         },
       });

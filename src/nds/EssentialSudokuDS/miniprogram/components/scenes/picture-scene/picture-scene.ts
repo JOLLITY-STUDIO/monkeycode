@@ -5,6 +5,7 @@
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
 import { CellColor } from '../../../utils/sudoku/numclo_puzzles';
 import { NUMCLO_ANSWERS } from '../../../utils/sudoku/numclo_answers';
+import { audioService } from '../../../utils/audio/audioService';
 
 const GRID = 15;
 const TOTAL_CELLS = GRID * GRID;
@@ -153,6 +154,7 @@ Component({
   methods: {
     /** 返回主菜单 */
     onBack() {
+      audioService.playSe('back');
       this.triggerEvent('back');
     },
 
@@ -202,11 +204,13 @@ Component({
     onTapCategory(e: any) {
       const key = e.currentTarget.dataset.key as string;
       if (key === this.data.currentFile) return;
+      audioService.playSe('decide');
       this._startPuzzle(key, 0);
     },
 
     /** 上一题 */
     onPrev() {
+      audioService.playSe('slide');
       const { currentFile, puzzleIndex, puzzleCount } = this.data;
       const idx = (puzzleIndex - 1 + puzzleCount) % puzzleCount;
       this._startPuzzle(currentFile, idx);
@@ -214,6 +218,7 @@ Component({
 
     /** 下一题 */
     onNext() {
+      audioService.playSe('slide');
       const { currentFile, puzzleIndex, puzzleCount } = this.data;
       const idx = (puzzleIndex + 1) % puzzleCount;
       this._startPuzzle(currentFile, idx);
@@ -221,6 +226,7 @@ Component({
 
     /** 随机一题 (当前类别) */
     onRandom() {
+      audioService.playSe('slide');
       const { currentFile, puzzleCount } = this.data;
       let idx = Math.floor(Math.random() * puzzleCount);
       if (puzzleCount > 1 && idx === this.data.puzzleIndex) {
@@ -244,6 +250,7 @@ Component({
       cell.bg = PALETTE_HEX[next];
       cell.border = PALETTE_BORDERS[next];
       this.setData({ cells });
+      audioService.playSe(next === 0 ? 'clear' : 'paint');
       this._checkComplete();
     },
 
@@ -252,6 +259,7 @@ Component({
       if (this.data.showingAnswer) return;
       const id = Number(e.currentTarget.dataset.id);
       this.setData({ selectedColor: id });
+      audioService.playSe('tap');
     },
 
     /** 显示/隐藏答案 */
@@ -275,6 +283,7 @@ Component({
     /** 清空画板 */
     onClearAll() {
       if (this.data.showingAnswer) return;
+      audioService.playSe('clear');
       const cells = this.data.cells.slice();
       for (const cell of cells) {
         cell.v = 0;
@@ -297,6 +306,7 @@ Component({
       if (res.complete) {
         this._stopTimer();
         this.setData({ complete: true });
+        audioService.playSe('complete');
         wx.showModal({
           title: '🎉 完成!',
           content: `${this.data.puzzleName} 用时 ${this.data.timerText}，${info?.moves ?? 0} 步。下一题?`,
