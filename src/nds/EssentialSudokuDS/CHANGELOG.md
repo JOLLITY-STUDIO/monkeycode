@@ -4,6 +4,36 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.13 — 颜色语义对照: 修正 numclo_00.nbm 切片错位
+
+### 2026-09-02
+
+#### 发现
+- 对 `numclo_00.nbm` 全图像素扫描后发现:
+  - 左列只有 4 个真实彩色按钮: 红/黄/蓝/绿 (y≈4..56)
+  - 没有紫色大按钮, 也没有标准擦除按钮
+  - 之前 V0.11 生成的 `numclo00_color_5_purple.png` 实际是灰色功能图标,
+    `numclo00_erase.png` 也是灰色图标, 与命名语义不符
+- 全 1525 道谜题 color 5 使用 52,537 格, 非常频繁, 不能省略
+
+#### 修正
+- `scripts/gen_nbm_assets_ts.py`: `NUMCLO_00_SLICES` 只保留 4 个真实颜色切片,
+  删除错误的 purple/erase 切片生成
+- 删除误导性 PNG:
+  - `miniprogram/assets/nbm/numclo00_color_5_purple.png`
+  - `miniprogram/assets/nbm/numclo00_erase.png`
+- `miniprogram/utils/sudoku/nbmAssets.ts`: 重新生成, 移除对应常量
+- `picture-scene.ts`:
+  - 移除 `NBM_NUMCLO00_COLOR_5_PURPLE` / `NBM_NUMCLO00_ERASE` import
+  - `PALETTE_IMAGES` index 0 与 5 置为空串, 回退到 `PALETTE_HEX` 纯色渲染
+- `picture-scene.wxml`: `palette-key` 有 `imageUrl` 时显示 DS 切片, 无则显示纯色块
+
+#### Verification
+- IDE 语言服务 0 诊断 (picture-scene.ts / nbmAssets.ts)
+- Python 像素扫描脚本验证原图布局
+
+---
+
 ## PICTURE-V0.12 — 调色板按钮视觉修正 + 清理死样式
 
 ### 2026-09-02

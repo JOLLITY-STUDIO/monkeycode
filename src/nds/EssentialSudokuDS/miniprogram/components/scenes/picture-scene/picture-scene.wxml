@@ -99,7 +99,8 @@
       data-id="{{item.id}}"
       bindtap="onTapPalette"
     >
-      <view class="palette-key" style="background-image: url({{item.imageUrl}});"></view>
+      <view class="palette-key" wx:if="{{item.imageUrl}}" style="background-image: url({{item.imageUrl}});"></view>
+      <view class="palette-key" wx:else style="background-color: {{item.color}};"></view>
       <text wx:if="{{item.id > 0}}" class="palette-need {{paletteNeed[item.id] === 0 ? 'palette-need-zero' : ''}}">{{paletteNeed[item.id]}}</text>
     </view>
   </view>

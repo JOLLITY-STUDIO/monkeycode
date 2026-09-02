@@ -73,17 +73,16 @@ SELECT4_SLICES = {
     'select4_picture_b': (0, 200, 128, 253),
 }
 
-# numclo_00.nbm 是 picture puzzle 下屏调色板 UI (256x128).
-# 左右两列对称; 每列从上到下: 红/黄/蓝/绿/紫 5 色按钮 + 擦除按钮, 底部是蓝色选中条/铅笔.
-# 这里取左列主体, 裁剪为单个按钮切片, 供 picture-scene 调色板使用.
+# numclo_00.nbm 是 picture puzzle 下屏 HUD (256x128).
+# 经 V0.13 像素扫描验证: 左列只有 4 个真实彩色按钮, 从上到下为红/黄/蓝/绿;
+# 没有紫色大按钮, 也没有标准的擦除按钮 (下方是灰色功能图标/蓝色选中条/铅笔).
+# 因此只裁剪 4 个可复用的颜色切片; color id 5 (紫) 与擦除由 picture-scene 用
+# PALETTE_HEX 纯色回退渲染, 避免用错误切片误导玩家.
 NUMCLO_00_SLICES = {
-    # 左列按钮区 y=1..86 共 6 个等分按钮 (每个约 14px), 去掉了左侧蓝色选中条.
     'numclo00_color_1_red': (8, 1, 48, 14),
     'numclo00_color_2_yellow': (8, 15, 48, 28),
     'numclo00_color_3_blue': (8, 29, 48, 42),
     'numclo00_color_4_green': (8, 43, 48, 56),
-    'numclo00_color_5_purple': (8, 57, 48, 70),
-    'numclo00_erase': (8, 71, 48, 86),
 }
 
 

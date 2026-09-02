@@ -15,12 +15,10 @@ import {
   recordCompleted,
 } from '../../../utils/sudoku/picture_progress';
 import {
-  NBM_NUMCLO00_ERASE,
   NBM_NUMCLO00_COLOR_1_RED,
   NBM_NUMCLO00_COLOR_2_YELLOW,
   NBM_NUMCLO00_COLOR_3_BLUE,
   NBM_NUMCLO00_COLOR_4_GREEN,
-  NBM_NUMCLO00_COLOR_5_PURPLE,
 } from '../../../utils/sudoku/nbmAssets';
 
 /** 自动保存防抖 (ms): 每次涂色后延迟写入 storage, 避免连点刷盘 */
@@ -35,13 +33,19 @@ const TOTAL_CELLS = GRID * GRID;
 const PALETTE_HEX = ['#ffffff', '#e53935', '#fdd835', '#1e88e5', '#43a047', '#8e24aa'];
 const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
 const PALETTE_BORDERS = ['#c8d0d8', '#c62828', '#f9a825', '#1565c0', '#2e7d32', '#6a1b9a'];
+/**
+ * 原 DS numclo_00.nbm 下屏 HUD 经 V0.13 扫描验证:
+ * 左列只有 4 个真实彩色按钮 (红/黄/蓝/绿), 没有紫色按钮, 也没有标准擦除按钮.
+ * 因此 color id 5 (紫) 与擦除 (id 0) 用 PALETTE_HEX 纯色回退渲染;
+ * 1..4 仍使用原图切片保持 DS 风格.
+ */
 const PALETTE_IMAGES = [
-  NBM_NUMCLO00_ERASE,
+  '', // 0 = 擦除: 无原图素材, 用 #ffffff 纯色
   NBM_NUMCLO00_COLOR_1_RED,
   NBM_NUMCLO00_COLOR_2_YELLOW,
   NBM_NUMCLO00_COLOR_3_BLUE,
   NBM_NUMCLO00_COLOR_4_GREEN,
-  NBM_NUMCLO00_COLOR_5_PURPLE,
+  '', // 5 = 紫色: 无原图素材, 用 #8e24aa 纯色
 ];
 
 /** 15 个类别 (numclo0-9 主题库 + numclo_00-03 附加 + numclo_tu 教程) */
