@@ -107,10 +107,11 @@
     </view>
   </view>
 
-  <!-- 工具: 显示答案 / 撤销 / 清空画板 -->
+  <!-- 工具: 显示答案 / 撤销 / 重做 / 清空画板 -->
   <view class="tool-row">
     <view class="tool-key tool-key-text" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
     <view class="tool-key tool-key-text" bindtap="onUndo">撤销</view>
+    <view class="tool-key tool-key-text" bindtap="onRedo">重做</view>
     <view class="tool-key tool-key-clear" style="background-image: url({{toolImages.clear}});" bindtap="onClearAll"></view>
   </view>
 

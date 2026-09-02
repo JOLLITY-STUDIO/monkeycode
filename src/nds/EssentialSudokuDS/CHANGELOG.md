@@ -4,6 +4,32 @@ All notable changes to this project are documented here.
 
 ---
 
+## PERSIST-V0.1 — 数独进度存档 + 图画谜题重做
+
+### 2026-09-03
+
+#### 数独进度持久化 (对齐图画谜题的 esds_pic_progress 模式)
+- 新增 `miniprogram/utils/sudoku/sudoku_progress.ts`: storage key `esds_sudoku_progress`,
+  `{ [puzzleId]: { puzzleId, difficulty, elapsedMs, board, updatedAt } }`
+- `board.ts` 加 `exportPersist()` / `importPersist()`: 导出/恢复完整盘面
+  (81 格 value + candidates + selected + moves + **undo/redo 全栈**),
+  given 不存 (puzzleId 重建)、isError 不存 (由值幂等重算);
+  `_validate()` 算法静态化抽出 `_validateGrid()` 供快照恢复重算
+- `game_service.ts` 加 `captureProgress()` / `restoreProgress()`: 捕获存档;
+  按 puzzleId 重建题目 → importPersist → startTime 前移续接计时
+- `sudoku-scene.ts` 挂点:
+  - select 直达题进场景发现存档 → 弹窗「继续上次 / 重新开始」(重新开始清档)
+  - 每次填数/清格/撤销/重做/提示后 400ms 防抖落盘; 返回选题页 & detached 立即 flush
+  - 通关自动清档 (重进原题 = 空白重解); 切难度主动换题 = 放弃当前题清档
+  - 仅 select 直达题参与存档 (`_persistEnabled`), 随机/每日局不写脏档
+- 恢复后 undo/redo 栈完整可用 (存档含全量快照栈)
+
+#### 图画谜题重做 (redo)
+- `picture-scene.ts`: 新增 `redoStack` (undo 弹出的操作压入, `{ i, from, to }`);
+  `onUndo` 反向记录 → 新 `onRedo` 恢复涂色并把项压回撤销栈;
+  新涂色/清空/切题打断重做链; 撤销/重做后照常防抖落盘
+- `picture-scene.wxml`: 工具行加「重做」文字按钮 (显示答案/撤销/重做/清空)
+
 ## SOUND-V0.5.1 — BGM 渲染音色修复: SWAR loop 单位换算 + 立体声 pan
 
 ### 2026-09-02

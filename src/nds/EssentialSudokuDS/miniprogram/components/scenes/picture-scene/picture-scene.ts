@@ -168,6 +168,8 @@ Component({
     colClues: [] as ColorCount[][],
     /** 操作历史栈, 用于撤销 (undo) */
     history: [] as Array<{ i: number; prev: CellColor }>,
+    /** 重做栈: undo 弹出的操作, from=撤销后格值, to=撤销前格值 (redo 恢复) */
+    redoStack: [] as Array<{ i: number; from: CellColor; to: CellColor }>,
     /** 教程提示图是否被用户关闭 */
     tutorialClosed: false,
     /** 工具行按钮背景图 (原 DS 切片) */
@@ -285,6 +287,7 @@ Component({
         rowClues: clues.rows,
         colClues: clues.cols,
         history: [],
+        redoStack: [],
         tutorialClosed: false,
       });
       this._startTimer();
@@ -370,7 +373,8 @@ Component({
       cell.border = PALETTE_BORDERS[next];
       const history = this.data.history.slice();
       history.push({ i, prev });
-      this.setData({ cells, history });
+      // 新涂色打断 redo 链 (标准编辑行为)
+      this.setData({ cells, history, redoStack: [] });
       this._scheduleSave();
       this._updatePaletteNeed(cells);
       audioService.playSe(next === 0 ? 'clear' : 'paint');
@@ -414,12 +418,12 @@ Component({
         cell.border = PALETTE_BORDERS[0];
       }
       service.clearGrid();
-      this.setData({ cells, moves: 0, history: [] });
+      this.setData({ cells, moves: 0, history: [], redoStack: [] });
       this._updatePaletteNeed(cells);
       this._flushSave();
     },
 
-    /** 撤销上一步涂色 */
+    /** 撤销上一步涂色 (被撤项压入重做栈) */
     onUndo() {
       if (this.data.showingAnswer || this.data.complete) return;
       const history = this.data.history.slice();
@@ -432,12 +436,47 @@ Component({
       const cells = this.data.cells.slice();
       const cell = cells[last.i];
       if (cell) {
+        const cur = cell.v as CellColor; // 撤销前格值 → 重做目标
         service.paint(cell.r, cell.c, last.prev);
         cell.v = last.prev;
         cell.bg = PALETTE_HEX[last.prev];
         cell.border = PALETTE_BORDERS[last.prev];
+        if (cur !== last.prev) {
+          const redoStack = this.data.redoStack.slice();
+          redoStack.push({ i: last.i, from: last.prev, to: cur });
+          this.setData({ cells, history, redoStack });
+        } else {
+          this.setData({ cells, history });
+        }
+      } else {
+        this.setData({ history });
       }
-      this.setData({ cells, history });
+      this._scheduleSave();
+      this._updatePaletteNeed(cells);
+      this._checkComplete();
+    },
+
+    /** 重做被撤销的一步涂色 (重做项压回撤销栈) */
+    onRedo() {
+      if (this.data.showingAnswer || this.data.complete) return;
+      const redoStack = this.data.redoStack.slice();
+      const entry = redoStack.pop();
+      if (!entry) {
+        wx.showToast({ title: '没有可重做的操作', icon: 'none' });
+        return;
+      }
+      audioService.playSe('undo');
+      const cells = this.data.cells.slice();
+      const cell = cells[entry.i];
+      const history = this.data.history.slice();
+      if (cell) {
+        service.paint(cell.r, cell.c, entry.to);
+        cell.v = entry.to;
+        cell.bg = PALETTE_HEX[entry.to];
+        cell.border = PALETTE_BORDERS[entry.to];
+        history.push({ i: entry.i, prev: entry.from });
+      }
+      this.setData({ cells, history, redoStack });
       this._scheduleSave();
       this._updatePaletteNeed(cells);
       this._checkComplete();

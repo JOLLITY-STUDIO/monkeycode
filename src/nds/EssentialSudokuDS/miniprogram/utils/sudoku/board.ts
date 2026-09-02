@@ -42,6 +42,22 @@ interface BoardSnapshot {
   moves: number;
 }
 
+/** 可 JSON 序列化的单步快照 (undo/redo 栈元素, 仅存可变数据) */
+export interface BoardPersistSnapshot {
+  /** 81 格当前值 (含 given) */
+  values: number[];
+  /** 81 格候选笔记 (非给定空格才有内容) */
+  cands: number[][];
+  selected: Coord | null;
+  moves: number;
+}
+
+/** 完整持久化状态 (含 undo/redo 栈), 供数独进度存档/恢复 (V0.19+) */
+export interface BoardPersistState extends BoardPersistSnapshot {
+  history: BoardPersistSnapshot[];
+  redoStack: BoardPersistSnapshot[];
+}
+
 export class SudokuBoard {
   cells: Cell[][] = [];
   selected: Coord | null = null;
@@ -248,19 +264,19 @@ export class SudokuBoard {
     this._moves = snapshot.moves;
   }
 
-  /** Recompute isError flags based on current cell values. */
-  private _validate(): void {
+  /** Recompute isError flags based on cell values (幂等: isError 只依赖 value). */
+  private static _validateGrid(grid: Cell[][]): void {
     // Reset all flags first
     for (let r = 0; r < SIZE; r++) {
       for (let c = 0; c < SIZE; c++) {
-        this.cells[r][c].isError = false;
+        grid[r][c].isError = false;
       }
     }
     // Row conflicts
     for (let r = 0; r < SIZE; r++) {
       const seen = new Map<Value, number[]>();
       for (let c = 0; c < SIZE; c++) {
-        const v = this.cells[r][c].value;
+        const v = grid[r][c].value;
         if (v === 0) continue;
         const arr = seen.get(v) ?? [];
         arr.push(c);
@@ -268,7 +284,7 @@ export class SudokuBoard {
       }
       for (const [, cols] of seen) {
         if (cols.length > 1) {
-          for (const c of cols) this.cells[r][c].isError = true;
+          for (const c of cols) grid[r][c].isError = true;
         }
       }
     }
@@ -276,7 +292,7 @@ export class SudokuBoard {
     for (let c = 0; c < SIZE; c++) {
       const seen = new Map<Value, number[]>();
       for (let r = 0; r < SIZE; r++) {
-        const v = this.cells[r][c].value;
+        const v = grid[r][c].value;
         if (v === 0) continue;
         const arr = seen.get(v) ?? [];
         arr.push(r);
@@ -284,7 +300,7 @@ export class SudokuBoard {
       }
       for (const [, rows] of seen) {
         if (rows.length > 1) {
-          for (const r of rows) this.cells[r][c].isError = true;
+          for (const r of rows) grid[r][c].isError = true;
         }
       }
     }
@@ -294,7 +310,7 @@ export class SudokuBoard {
         const seen = new Map<Value, Array<{ r: number; c: number }>>();
         for (let r = br; r < br + BOX_SIZE; r++) {
           for (let c = bc; c < bc + BOX_SIZE; c++) {
-            const v = this.cells[r][c].value;
+            const v = grid[r][c].value;
             if (v === 0) continue;
             const arr = seen.get(v) ?? [];
             arr.push({ r, c });
@@ -303,11 +319,104 @@ export class SudokuBoard {
         }
         for (const [, cells] of seen) {
           if (cells.length > 1) {
-            for (const { r, c } of cells) this.cells[r][c].isError = true;
+            for (const { r, c } of cells) grid[r][c].isError = true;
           }
         }
       }
     }
+  }
+
+  /** Recompute isError flags based on current cell values. */
+  private _validate(): void {
+    SudokuBoard._validateGrid(this.cells);
+  }
+
+  /**
+   * 导出完整可 JSON 序列化状态 (当前盘面 + 候选笔记 + undo/redo 栈) — 数独进度存档.
+   * given/puzzle/solution 不存 (由 puzzleId 重建), isError 不存 (由值幂等重算).
+   */
+  exportPersist(): BoardPersistState {
+    const ser = (s: BoardSnapshot): BoardPersistSnapshot => {
+      const values: number[] = [];
+      const cands: number[][] = [];
+      for (const row of s.grid) {
+        for (const cell of row) {
+          values.push(cell.value);
+          cands.push(cell.candidates.slice());
+        }
+      }
+      return {
+        values,
+        cands,
+        selected: s.selected ? { row: s.selected.row, col: s.selected.col } : null,
+        moves: s.moves,
+      };
+    };
+    const cur: BoardPersistSnapshot = ser(this._snapshot());
+    return {
+      ...cur,
+      history: this._history.map(ser),
+      redoStack: this._redoStack.map(ser),
+    };
+  }
+
+  /**
+   * 从 exportPersist() 产物恢复完整状态 (含 undo/redo 栈).
+   * 须在构造后的盘面 (puzzle/solution 一致) 上调用; given 格值永不变, 只覆盖玩家可变格.
+   * 返回 false 表示存档非法 (值越界/长度不符), 调用方应忽略存档。
+   */
+  importPersist(p: BoardPersistState | null | undefined): boolean {
+    if (!p) return false;
+    const valuesOk = (values: number[] | undefined | null): values is number[] => {
+      if (!Array.isArray(values) || values.length !== SIZE * SIZE) return false;
+      for (let i = 0; i < values.length; i++) {
+        const v = values[i] | 0;
+        if (v < 0 || v > 9 || values[i] !== v) return false;
+      }
+      return true;
+    };
+    const fromSer = (snap: BoardPersistSnapshot | null | undefined): BoardSnapshot | null => {
+      if (!snap || !valuesOk(snap.values)) return null;
+      const grid: Cell[][] = this.cells.map((row, r) =>
+        row.map((cell, c) => {
+          const idx = r * SIZE + c;
+          const v = cell.given ? cell.value : (snap.values[idx] | 0);
+          let candidates: Value[] = [];
+          if (v === 0 && Array.isArray(snap.cands) && Array.isArray(snap.cands[idx])) {
+            candidates = snap.cands[idx].filter(
+              (n) => typeof n === 'number' && n >= 1 && n <= 9 && Math.floor(n) === n
+            ).slice();
+          }
+          return { row: r, col: c, given: cell.given, value: v, isError: false, candidates };
+        })
+      );
+      SudokuBoard._validateGrid(grid);
+      return {
+        grid,
+        selected: snap.selected && snap.selected.row >= 0 && snap.selected.row < SIZE
+          && snap.selected.col >= 0 && snap.selected.col < SIZE
+          ? { row: snap.selected.row, col: snap.selected.col }
+          : null,
+        moves: Math.max(0, snap.moves | 0),
+      };
+    };
+    if (!valuesOk(p.values)) return false;
+    const cur = fromSer(p);
+    if (!cur) return false;
+    this._restore(cur);
+    const history: BoardSnapshot[] = [];
+    for (const s of p.history || []) {
+      const snap = fromSer(s);
+      if (snap) history.push(snap);
+    }
+    const redoStack: BoardSnapshot[] = [];
+    for (const s of p.redoStack || []) {
+      const snap = fromSer(s);
+      if (snap) redoStack.push(snap);
+    }
+    this._history = history;
+    this._redoStack = redoStack;
+    return true;
   }
 
   toJSON(): { grid: Cell[][]; selected: Coord | null; moves: number } {

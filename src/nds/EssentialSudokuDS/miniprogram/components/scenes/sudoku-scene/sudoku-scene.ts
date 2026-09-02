@@ -4,7 +4,13 @@
 
 import { SudokuGameService } from '../../../utils/sudoku/game_service';
 import { Coord, Value } from '../../../utils/sudoku/board';
-import { Difficulty, getPuzzleById } from '../../../utils/sudoku/numple_puzzles';
+import { Difficulty, NumplePuzzle, getPuzzleById } from '../../../utils/sudoku/numple_puzzles';
+import {
+  SudokuProgress,
+  loadSudokuProgress,
+  saveSudokuProgress,
+  clearSudokuProgress,
+} from '../../../utils/sudoku/sudoku_progress';
 import {
   NBM_SELECT1_N_1_NORMAL,
   NBM_SELECT1_N_1_SELECTED,
@@ -101,9 +107,12 @@ Component({
     returnNormalUrl: NBM_SELECT1_RETURN_NORMAL,
     returnSelectedUrl: NBM_SELECT1_RETURN_SELECTED,
     returnPressed: false,
-    /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
+    /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器/存档防抖句柄 */
     _attachedDone: false,
     _timer: 0,
+    _saveTimer: 0,
+    /** 仅 select 直达题参与进度存档 (随机/每日局无固定恢复语义, 不写脏档) */
+    _persistEnabled: false,
   },
 
   observers: {
@@ -124,14 +133,17 @@ Component({
     },
     detached() {
       this.data._attachedDone = false;
+      this._flushSave();
       this._stopTimer();
+      this._clearSaveTimer();
     },
   },
 
   methods: {
-    /** 返回选题页 */
+    /** 返回选题页 (先落盘当前进度, 返回后可从选题页原题恢复) */
     onBackMenu() {
       audioService.playSe('back');
+      this._flushSave();
       this.setData({ returnPressed: true });
       setTimeout(() => {
         this.setData({ returnPressed: false });
@@ -147,21 +159,67 @@ Component({
       this.setData({ returnPressed: false });
     },
 
-    /** 从选题页 id 启动 */
+    /**
+     * 从选题页 id 启动. 该题有未完成进度 → 弹窗询问「继续上次 / 重新开始」,
+     * 重新开始会清除旧存档 (玩家可主动重解同一题)。
+     */
     _startFromId(id: string) {
       const puzzle = getPuzzleById(id);
-      if (puzzle && service.startFromPuzzle(puzzle).ok) {
-        this.setData({
-          difficulty: puzzle.difficulty,
-          difficultyLabel: DIFF_LABELS[puzzle.difficulty],
-          moves: 0,
-          complete: false,
-        });
-        this._sync();
-        this._startTimer();
+      if (!puzzle) {
+        this._startGame('easy');
         return;
       }
-      this._startGame('easy');
+      const saved = loadSudokuProgress(id);
+      if (saved && saved.board) {
+        const sec = Math.floor((saved.elapsedMs || 0) / 1000);
+        const mm = String(Math.floor(sec / 60)).padStart(2, '0');
+        const ss = String(sec % 60).padStart(2, '0');
+        wx.showModal({
+          title: '发现未完成进度',
+          content: `已用时 ${mm}:${ss}，${saved.board.moves ?? 0} 步。继续上次进度?`,
+          confirmText: '继续',
+          cancelText: '重新开始',
+          success: (r) => {
+            if (r.confirm) {
+              this._launchPuzzle(puzzle, saved);
+            } else {
+              clearSudokuProgress(id);
+              this._launchPuzzle(puzzle);
+            }
+          },
+        });
+        return;
+      }
+      this._launchPuzzle(puzzle);
+    },
+
+    /** 载入题目开一局; saved 非空 → 恢复盘面 (含 undo/redo 栈) + 续接计时 */
+    _launchPuzzle(puzzle: NumplePuzzle, saved?: SudokuProgress | null) {
+      let ok = true;
+      if (saved && saved.board) {
+        const r = service.restoreProgress(saved);
+        if (!r.ok) {
+          // 存档非法 → 清脏存档, 走新开
+          clearSudokuProgress(saved.puzzleId);
+          ok = false;
+        }
+      } else {
+        ok = service.startFromPuzzle(puzzle).ok;
+      }
+      if (!ok) {
+        this._startGame('easy');
+        return;
+      }
+      this.data._persistEnabled = true;
+      const info = service.getSessionInfo();
+      this.setData({
+        difficulty: puzzle.difficulty,
+        difficultyLabel: DIFF_LABELS[puzzle.difficulty],
+        moves: info?.moves ?? 0,
+        complete: false,
+      });
+      this._sync();
+      this._startTimer();
     },
 
     /** 开始新一局 (difficulty 或 daily) */
@@ -173,6 +231,7 @@ Component({
         wx.showToast({ title: '题目加载失败', icon: 'none' });
         return;
       }
+      this.data._persistEnabled = false; // 随机/每日局不写进度存档
       this.setData({
         difficulty: diff,
         difficultyLabel: diff === 'daily' ? '每日一题' : DIFF_LABELS[diff],
@@ -261,6 +320,7 @@ Component({
       }
       this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
       this._sync();
+      this._scheduleSave();
     },
 
     /** 清除选中格 */
@@ -271,6 +331,7 @@ Component({
       service.clearAt(sel.row, sel.col);
       this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
       this._sync();
+      this._scheduleSave();
     },
 
     /** 切换笔记模式 (数字键盘变为 toggle candidate) */
@@ -284,6 +345,7 @@ Component({
       if (service.undo()) {
         this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
         this._sync();
+        this._scheduleSave();
       }
     },
 
@@ -292,6 +354,7 @@ Component({
       if (service.redo()) {
         this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
         this._sync();
+        this._scheduleSave();
       }
     },
 
@@ -306,12 +369,15 @@ Component({
       service.inputValue(h.row, h.col, h.value);
       this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
       this._sync();
+      this._scheduleSave();
       this._checkComplete();
     },
 
-    /** 难度切换 */
+    /** 难度切换 (主动换题 = 放弃当前题 → 清其进度再随机新题) */
     onTapDifficulty(e: any) {
       const d = e.currentTarget.dataset.diff as Difficulty | 'daily';
+      const oldId = service.getPuzzleId();
+      if (oldId) clearSudokuProgress(oldId);
       this._startGame(d);
     },
 
@@ -320,6 +386,8 @@ Component({
       const res = service.checkCompletion();
       if (res.complete) {
         this._stopTimer();
+        this._clearSaveTimer();
+        clearSudokuProgress(service.getPuzzleId() || '');
         this.setData({ complete: true });
         audioService.playSe('complete');
         const info = service.getSessionInfo();
@@ -357,6 +425,48 @@ Component({
         clearInterval(this.data._timer);
         this.data._timer = 0;
       }
+    },
+
+    /** 变更后延迟落盘 (400ms 防抖: 连点只写一次 storage) */
+    _scheduleSave() {
+      this._clearSaveTimer();
+      this.data._saveTimer = setTimeout(() => {
+        this._flushSave();
+      }, 400);
+    },
+
+    _clearSaveTimer() {
+      if (this.data._saveTimer) {
+        clearTimeout(this.data._saveTimer);
+        this.data._saveTimer = 0;
+      }
+    },
+
+    /** 立即落盘当前会话进度; 通关 / 零操作 / 非直达题 → 清除或不写进度 */
+    _flushSave() {
+      this._clearSaveTimer();
+      const id = service.getPuzzleId();
+      if (!id) return;
+      if (!this.data._persistEnabled) return;
+      if (this.data.complete) {
+        clearSudokuProgress(id);
+        return;
+      }
+      const info = service.getSessionInfo();
+      if (!info) return;
+      if ((info.moves ?? 0) === 0) {
+        clearSudokuProgress(id);
+        return;
+      }
+      const cap = service.captureProgress();
+      if (!cap) return;
+      saveSudokuProgress({
+        puzzleId: cap.puzzleId,
+        difficulty: cap.difficulty,
+        elapsedMs: cap.elapsedMs,
+        board: cap.board,
+        updatedAt: Date.now(),
+      });
     },
   },
 });

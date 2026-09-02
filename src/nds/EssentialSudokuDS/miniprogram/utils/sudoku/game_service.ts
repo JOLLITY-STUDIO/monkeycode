@@ -24,10 +24,11 @@
  * V0.15.1 todo: Add timer + per-session scoring (was implemented in NDS as minute counter)
  */
 
-import { SudokuBoard, Coord, Value } from './board';
+import { SudokuBoard, Coord, Value, BoardPersistState } from './board';
 import {
   NumplePuzzle,
   Difficulty,
+  getPuzzleById,
   getRandomPuzzle,
   getDailyPuzzle,
   cellsToGrid,
@@ -211,5 +212,36 @@ export class SudokuGameService {
     };
     this.session = null;
     return out;
+  }
+
+  /**
+   * 捕获当前会话存档 (数独进度持久化, V0.19+).
+   * 返回完整盘面快照 (含 undo/redo 栈); 无会话返回 null。
+   */
+  captureProgress(): { puzzleId: string; difficulty: Difficulty; elapsedMs: number; board: BoardPersistState } | null {
+    if (!this.session) return null;
+    return {
+      puzzleId: this.session.puzzleId,
+      difficulty: this.session.difficulty,
+      elapsedMs: Date.now() - this.session.startTime,
+      board: this.session.board.exportPersist(),
+    };
+  }
+
+  /**
+   * 恢复一段已保存进度: 按 puzzleId 重建题目 → 导入盘面快照 → 续接计时。
+   * 存档非法时返回 error, 调用方应回退为新开一局。
+   */
+  restoreProgress(saved: { puzzleId: string; elapsedMs: number; board: BoardPersistState }): { ok: boolean; error?: string } {
+    if (!saved || !saved.puzzleId) return { ok: false, error: 'empty_save' };
+    const puzzle = getPuzzleById(saved.puzzleId);
+    if (!puzzle) return { ok: false, error: 'puzzle_not_found' };
+    const started = this.startFromPuzzle(puzzle);
+    if (!started.ok || !this.session) return started;
+    if (!this.session.board.importPersist(saved.board)) {
+      return { ok: false, error: 'invalid_board_state' };
+    }
+    this.session.startTime = Date.now() - Math.max(0, saved.elapsedMs | 0);
+    return { ok: true };
   }
 }
