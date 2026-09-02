@@ -25,6 +25,8 @@ import {
   NBM_SELECT1_N_9_NORMAL,
   NBM_SELECT1_N_9_SELECTED,
   NBM_SELECT1_CLEARED_NORMAL,
+  NBM_SELECT1_RETURN_NORMAL,
+  NBM_SELECT1_RETURN_SELECTED,
 } from '../../../utils/sudoku/nbmAssets';
 import { audioService } from '../../../utils/audio/audioService';
 
@@ -95,6 +97,10 @@ Component({
     numberIconUrls: NUMBER_ICON_PAIRS,
     /** 清除按钮的原版图标. */
     clearIconUrl: CLEAR_ICON_URL,
+    /** 返回按钮原版图 (select1 Return 普通/选中态). */
+    returnNormalUrl: NBM_SELECT1_RETURN_NORMAL,
+    returnSelectedUrl: NBM_SELECT1_RETURN_SELECTED,
+    returnPressed: false,
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,
@@ -123,10 +129,22 @@ Component({
   },
 
   methods: {
-    /** 返回主菜单 */
+    /** 返回选题页 */
     onBackMenu() {
       audioService.playSe('back');
-      this.triggerEvent('back');
+      this.setData({ returnPressed: true });
+      setTimeout(() => {
+        this.setData({ returnPressed: false });
+        this.triggerEvent('back');
+      }, 120);
+    },
+
+    onBackTouchStart() {
+      this.setData({ returnPressed: true });
+    },
+
+    onBackTouchEnd() {
+      this.setData({ returnPressed: false });
     },
 
     /** 从选题页 id 启动 */

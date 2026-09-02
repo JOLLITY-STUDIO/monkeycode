@@ -1,17 +1,24 @@
 <view class="sudoku-page">
-  <!-- 顶部标题横幅: 原 DS title.nbm -->
-  <view class="title-banner">
-    <image class="title-image" src="/assets/nbm/title.nbm.png" mode="aspectFill" lazy-load></image>
-  </view>
-
-  <!-- 顶部: 难度 + 步数 + 计时 + 返回 -->
+  <!-- 顶部: 返回 + 难度 + 步数 + 计时 -->
   <view class="game-header">
     <view class="header-left">
+      <view
+        class="return-btn"
+        bindtouchstart="onBackTouchStart"
+        bindtouchend="onBackTouchEnd"
+        bindtap="onBackMenu"
+      >
+        <image
+          class="return-image"
+          src="{{returnPressed ? returnSelectedUrl : returnNormalUrl}}"
+          mode="aspectFit"
+          lazy-load
+        ></image>
+      </view>
       <text class="diff-label">{{difficultyLabel}}</text>
-      <text class="stat">步数 {{moves}}</text>
     </view>
     <view class="header-right">
-      <view class="mode-link mode-link-menu" bindtap="onBackMenu">← 返回</view>
+      <text class="stat">步数 {{moves}}</text>
       <text class="timer">{{timerText}}</text>
     </view>
   </view>

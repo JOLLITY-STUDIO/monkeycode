@@ -1,51 +1,89 @@
 <view class="select-page">
-  <!-- 返回条 -->
-  <view class="scene-bar" bindtap="onBack">
-    <text class="scene-bar-text">← 返回主菜单</text>
-  </view>
-
-  <!-- 原 DS select1 按钮精灵装饰 -->
+  <!-- 原 DS select1.nbm 横幅 -->
   <view class="select1-banner">
-    <image class="select1-image" src="/assets/nbm/select1.nbm.png" mode="aspectFit" lazy-load></image>
+    <image class="select1-image" src="{{bannerUrl}}" mode="aspectFit" lazy-load></image>
   </view>
 
-  <view class="select-card">
-    <!-- 难度选择 -->
-    <view class="section-label">难度</view>
-    <view class="diff-chips">
-      <view
-        wx:for="{{diffChips}}"
-        wx:key="*this"
-        class="diff-chip {{difficulty === item ? 'diff-chip-active' : ''}}"
-        data-diff="{{item}}"
-        bindtap="onTapDiff"
-      >{{diffLabels[item]}}</view>
+  <!-- 难度选择: A/B/C/D 原版按钮 -->
+  <view class="difficulty-row">
+    <view
+      wx:for="{{diffButtons}}"
+      wx:key="key"
+      class="difficulty-key {{difficulty === item.key ? 'difficulty-key-active' : ''}}"
+      data-diff="{{item.key}}"
+      bindtap="onTapDiff"
+    >
+      <image class="difficulty-key-image" src="{{item.iconUrl}}" mode="aspectFit" lazy-load></image>
+      <text class="difficulty-key-label">{{diffLabels[item.key]}}</text>
     </view>
+  </view>
 
-    <!-- 题号输入 -->
-    <view class="section-label">题号 (1-1000)</view>
-    <view class="num-input-row">
+  <!-- 题号选择: 上/下箭头 + 输入框 -->
+  <view class="number-row">
+    <view
+      class="arrow-btn"
+      bindtouchstart="onDownTouchStart"
+      bindtouchend="onDownTouchEnd"
+    >
+      <image
+        class="arrow-image"
+        src="{{downPressed ? downSelectedUrl : downNormalUrl}}"
+        mode="aspectFit"
+        lazy-load
+      ></image>
+    </view>
+    <view class="number-display">
       <input
-        class="num-input"
+        class="number-input"
         type="number"
         maxlength="4"
         value="{{puzzleNo}}"
-        placeholder="输入 1-1000"
         bindinput="onNoInput"
       />
-      <view class="num-actions">
-        <view class="num-btn" bindtap="onNoDec">-1</view>
-        <view class="num-btn" bindtap="onNoInc">+1</view>
-      </view>
     </view>
+    <view
+      class="arrow-btn"
+      bindtouchstart="onUpTouchStart"
+      bindtouchend="onUpTouchEnd"
+    >
+      <image
+        class="arrow-image"
+        src="{{upPressed ? upSelectedUrl : upNormalUrl}}"
+        mode="aspectFit"
+        lazy-load
+      ></image>
+    </view>
+  </view>
 
-    <!-- 已选题目预览 -->
-    <view class="pick-preview" wx:if="{{previewText}}">{{previewText}}</view>
+  <!-- 选中题目预览 -->
+  <view class="preview-text" wx:if="{{previewText}}">{{previewText}}</view>
 
-    <!-- 开始 -->
-    <view class="start-btn-wrap">
-      <image class="start-btn-bg" src="{{select6Url}}" mode="aspectFill" lazy-load></image>
-      <view class="start-btn" hover-class="start-btn-hover" hover-stay-time="80" bindtap="onStart">开始数独</view>
+  <!-- 底部操作: Start + Return -->
+  <view class="action-row">
+    <view
+      class="action-btn action-return"
+      bindtouchstart="onReturnTouchStart"
+      bindtouchend="onReturnTouchEnd"
+    >
+      <image
+        class="action-image"
+        src="{{returnPressed ? returnSelectedUrl : returnNormalUrl}}"
+        mode="aspectFit"
+        lazy-load
+      ></image>
+    </view>
+    <view
+      class="action-btn action-start"
+      bindtouchstart="onStartTouchStart"
+      bindtouchend="onStartTouchEnd"
+      bindtap="onStart"
+    >
+      <image
+        class="action-image"
+        src="{{startPressed ? startSelectedUrl : startNormalUrl}}"
+        mode="aspectFit"
+        lazy-load
+      ></image>
     </view>
   </view>
 </view>

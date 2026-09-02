@@ -1,4 +1,4 @@
-/* sudoku-scene.wxss — V0.16 数独玩法样式 (迁移自 pages/index/index.wxss) */
+/* sudoku-scene.wxss — V0.16 DS 化深色主题 (select1 原版按钮 + 深蓝底) */
 .sudoku-page {
   display: flex;
   flex-direction: column;
@@ -7,25 +7,10 @@
   padding: 8px 12px 20px;
   box-sizing: border-box;
   overflow-y: auto;
-  background: #f0f4f8;
+  background: #0d1b2a;
 }
 
-/* 原 DS title.nbm 标题横幅 */
-.title-banner {
-  width: 100%;
-  height: 120px;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 8px;
-  background: #1a4d2e;
-}
-
-.title-image {
-  width: 100%;
-  height: 100%;
-}
-
-/* 顶部信息栏 */
+/* 顶部信息栏: 返回按钮图 + 难度 + 步数 + 计时 */
 .game-header {
   width: 100%;
   display: flex;
@@ -39,6 +24,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .header-right {
@@ -46,49 +33,44 @@
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
-.mode-link {
-  font-size: 12px;
-  color: #8e24aa;
-  background: #f3e5f5;
-  padding: 4px 9px;
-  border-radius: 10px;
-  border: 0.5px solid #ce93d8;
-  white-space: nowrap;
+/* select1 Return 原版按钮 */
+.return-btn {
+  width: 88px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.mode-link-staff {
-  color: #1565c0;
-  background: #e3f2fd;
-  border-color: #90caf9;
-}
-
-.mode-link-menu {
-  color: #6a1b9a;
-  background: #f3e5f5;
-  border-color: #ce93d8;
+.return-image {
+  width: 100%;
+  height: 100%;
 }
 
 .diff-label {
   font-size: 16px;
   font-weight: 700;
-  color: #2b3a4a;
+  color: #f0f4f8;
+  white-space: nowrap;
 }
 
 .stat {
   font-size: 13px;
-  color: #6b7a8a;
-  margin-left: 10px;
+  color: #9aa7b4;
 }
 
 .timer {
   font-size: 15px;
   font-weight: 600;
-  color: #2b3a4a;
+  color: #f0f4f8;
+  font-variant-numeric: tabular-nums;
 }
 
-/* 难度切换 */
+/* 难度切换 chips (DS 深色胶囊) */
 .diff-row {
   width: 100%;
   display: flex;
@@ -103,28 +85,29 @@
   font-size: 12px;
   padding: 5px 0;
   border-radius: 6px;
-  background: #ffffff;
-  color: #6b7a8a;
-  border: 0.5px solid #d0d8e0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #c6d2de;
+  border: 0.5px solid rgba(255, 255, 255, 0.16);
 }
 
 .diff-chip-active {
-  background: #2b3a4a;
+  background: #2e6fc7;
   color: #ffffff;
-  border-color: #2b3a4a;
+  border-color: #3f83e0;
 }
 
-/* 9x9 棋盘 — 标准数独网格: 白底 + 深色粗 3x3 分块线 */
+/* 9x9 棋盘 — 标准数独网格: 白底 + 深色粗 3x3 分块线 (数独必须清晰, 保持白底) */
 .sudoku-grid {
   width: 100%;
   aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
   background: #ffffff;
-  border: 1.5px solid #2b3a4a;
+  border: 1.5px solid #1a2733;
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 .grid-row {
@@ -165,6 +148,11 @@
   background: #dbeafe;
 }
 
+.cell-sel .cell-text {
+  color: #0d47a1;
+  font-weight: 700;
+}
+
 .cell-same {
   background: #eef4fb;
 }
@@ -174,7 +162,7 @@
   font-weight: 700;
 }
 
-/* 数字键盘 */
+/* 数字键盘 (原版 select1.nbm 数字图) */
 .number-pad {
   width: 100%;
   margin-top: 12px;
@@ -219,19 +207,22 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: #2b3a4a;
-  background: #ffffff;
+  color: #e8eef4;
+  background: rgba(255, 255, 255, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 7px;
-  box-shadow: 0 1px 3px rgba(43, 58, 74, 0.08);
 }
 
 .tool-key-primary {
-  background: #2b3a4a;
+  background: #2e6fc7;
+  border-color: #3f83e0;
   color: #ffffff;
 }
 
 .tool-key-clear {
   padding: 0 8px;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: transparent;
 }
 
 .tool-key-icon {
@@ -251,9 +242,9 @@
 }
 
 .tool-key-active {
-  background: #e3f2fd;
-  color: #1565c0;
-  box-shadow: inset 0 0 0 1px #1565c0, 0 1px 3px rgba(21, 101, 192, 0.12);
+  background: #2e6fc7;
+  color: #ffffff;
+  border-color: #3f83e0;
 }
 
 .tool-key-disabled {

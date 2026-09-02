@@ -97,7 +97,7 @@ export const NBM_SELECT3_SE_VOLUME_NORMAL = '/assets/nbm/select3_se_volume_norma
 export const NBM_SELECT3_CREDITS_NORMAL = '/assets/nbm/select3_credits_normal.png';
 export const NBM_SELECT3_BGM_VOLUME_NORMAL = '/assets/nbm/select3_bgm_volume_normal.png';
 
-/** select1.nbm 切片: 数独数字键盘普通态/选中态 + 动作按钮. */
+/** select1.nbm 切片: 数独数字键盘/动作按钮/Difficulty A-E/上下箭头. */
 export const NBM_SELECT1_N_0_NORMAL = '/assets/nbm/select1_n_0_normal.png';
 export const NBM_SELECT1_N_1_NORMAL = '/assets/nbm/select1_n_1_normal.png';
 export const NBM_SELECT1_N_2_NORMAL = '/assets/nbm/select1_n_2_normal.png';
@@ -124,6 +124,15 @@ export const NBM_SELECT1_RETURN_NORMAL = '/assets/nbm/select1_return_normal.png'
 export const NBM_SELECT1_START_SELECTED = '/assets/nbm/select1_start_selected.png';
 export const NBM_SELECT1_CLEARED_SELECTED = '/assets/nbm/select1_cleared_selected.png';
 export const NBM_SELECT1_RETURN_SELECTED = '/assets/nbm/select1_return_selected.png';
+export const NBM_SELECT1_DIFF_A_NORMAL = '/assets/nbm/select1_diff_a_normal.png';
+export const NBM_SELECT1_DIFF_B_NORMAL = '/assets/nbm/select1_diff_b_normal.png';
+export const NBM_SELECT1_DIFF_C_NORMAL = '/assets/nbm/select1_diff_c_normal.png';
+export const NBM_SELECT1_DIFF_D_NORMAL = '/assets/nbm/select1_diff_d_normal.png';
+export const NBM_SELECT1_DIFF_E_NORMAL = '/assets/nbm/select1_diff_e_normal.png';
+export const NBM_SELECT1_UP_NORMAL = '/assets/nbm/select1_up_normal.png';
+export const NBM_SELECT1_UP_SELECTED = '/assets/nbm/select1_up_selected.png';
+export const NBM_SELECT1_DOWN_NORMAL = '/assets/nbm/select1_down_normal.png';
+export const NBM_SELECT1_DOWN_SELECTED = '/assets/nbm/select1_down_selected.png';
 
 /** select4.nbm 切片: 主菜单模式按钮 (Number/Picture × 2 帧动画). */
 export const NBM_SELECT4_NUMBER_A = '/assets/nbm/select4_number_a.png';
@@ -138,6 +147,10 @@ export const NBM_NUMCLO00_COLOR_3_BLUE = '/assets/nbm/numclo00_color_3_blue.png'
 export const NBM_NUMCLO00_COLOR_4_GREEN = '/assets/nbm/numclo00_color_4_green.png';
 export const NBM_NUMCLO00_ERASE = '/assets/nbm/numclo00_erase.png';
 export const NBM_NUMCLO00_CLEAR = '/assets/nbm/numclo00_clear.png';
+
+/** pazl_select2b.nbm 切片: 图画谜题菜单 Return 按钮 (普通/选中态). */
+export const NBM_PAZL_SELECT2B_RETURN_NORMAL = '/assets/nbm/pazl_select2b_return_normal.png';
+export const NBM_PAZL_SELECT2B_RETURN_SELECTED = '/assets/nbm/pazl_select2b_return_selected.png';
 
 /**
  * 模式资源归属（重要）:
@@ -173,6 +186,8 @@ export const NBM_GROUP_PICTURE_PUZZLE = [
   NBM_NUMCLO00_COLOR_4_GREEN,
   NBM_NUMCLO00_ERASE,
   NBM_NUMCLO00_CLEAR,
+  NBM_PAZL_SELECT2B_RETURN_NORMAL,
+  NBM_PAZL_SELECT2B_RETURN_SELECTED,
 ];
 
 /** 数独模式选择界面按钮 (select1/3/4/6). */
@@ -207,6 +222,15 @@ export const NBM_GROUP_MENU_SELECT = [
   NBM_SELECT1_START_SELECTED,
   NBM_SELECT1_CLEARED_SELECTED,
   NBM_SELECT1_RETURN_SELECTED,
+  NBM_SELECT1_DIFF_A_NORMAL,
+  NBM_SELECT1_DIFF_B_NORMAL,
+  NBM_SELECT1_DIFF_C_NORMAL,
+  NBM_SELECT1_DIFF_D_NORMAL,
+  NBM_SELECT1_DIFF_E_NORMAL,
+  NBM_SELECT1_UP_NORMAL,
+  NBM_SELECT1_UP_SELECTED,
+  NBM_SELECT1_DOWN_NORMAL,
+  NBM_SELECT1_DOWN_SELECTED,
   NBM_SELECT4_NUMBER_A,
   NBM_SELECT4_PICTURE_A,
   NBM_SELECT4_NUMBER_B,
@@ -332,10 +356,21 @@ export function nbmUrl(name: string): string | undefined {
     'SELECT1_START_SELECTED': NBM_SELECT1_START_SELECTED,
     'SELECT1_CLEARED_SELECTED': NBM_SELECT1_CLEARED_SELECTED,
     'SELECT1_RETURN_SELECTED': NBM_SELECT1_RETURN_SELECTED,
+    'SELECT1_DIFF_A_NORMAL': NBM_SELECT1_DIFF_A_NORMAL,
+    'SELECT1_DIFF_B_NORMAL': NBM_SELECT1_DIFF_B_NORMAL,
+    'SELECT1_DIFF_C_NORMAL': NBM_SELECT1_DIFF_C_NORMAL,
+    'SELECT1_DIFF_D_NORMAL': NBM_SELECT1_DIFF_D_NORMAL,
+    'SELECT1_DIFF_E_NORMAL': NBM_SELECT1_DIFF_E_NORMAL,
+    'SELECT1_UP_NORMAL': NBM_SELECT1_UP_NORMAL,
+    'SELECT1_UP_SELECTED': NBM_SELECT1_UP_SELECTED,
+    'SELECT1_DOWN_NORMAL': NBM_SELECT1_DOWN_NORMAL,
+    'SELECT1_DOWN_SELECTED': NBM_SELECT1_DOWN_SELECTED,
     'SELECT4_NUMBER_A': NBM_SELECT4_NUMBER_A,
     'SELECT4_PICTURE_A': NBM_SELECT4_PICTURE_A,
     'SELECT4_NUMBER_B': NBM_SELECT4_NUMBER_B,
     'SELECT4_PICTURE_B': NBM_SELECT4_PICTURE_B,
+    'PAZL_SELECT2B_RETURN_NORMAL': NBM_PAZL_SELECT2B_RETURN_NORMAL,
+    'PAZL_SELECT2B_RETURN_SELECTED': NBM_PAZL_SELECT2B_RETURN_SELECTED,
   };
   return map[constName];
 }

@@ -26,7 +26,9 @@ SELECT3_SLICES = {
 }
 
 # select1.nbm 是数独/图画谜题通用按钮 sprite sheet.
-# 数字 0-9 分普通态(light blue)与选中态(dark blue pressed); 右侧还有 Start/Already/User/Cleared/Return 等.
+# 数字 0-9 分普通态(light blue)与选中态(dark blue pressed);
+# 右侧还有 Start/Already/User/Cleared/Return 等动作按钮;
+# 底部有 Difficulty A-E 难度按钮与上下箭头.
 SELECT1_SLICES = {
     # 数字普通态 (light blue)
     'select1_n_0_normal': (134, 6, 158, 30),
@@ -61,6 +63,20 @@ SELECT1_SLICES = {
     'select1_start_selected': (4, 36, 62, 62),
     'select1_cleared_selected': (4, 164, 94, 190),
     'select1_return_selected': (100, 164, 190, 190),
+
+    # Difficulty A-E 普通态 (32x32 网格, 每格实际 30x30 按钮)
+    # A/B/C 在第一排 (y=193..223), D/E/- 在第二排 (y=225..255)
+    'select1_diff_a_normal': (81, 193, 111, 223),
+    'select1_diff_b_normal': (113, 193, 143, 223),
+    'select1_diff_c_normal': (145, 193, 175, 223),
+    'select1_diff_d_normal': (81, 225, 111, 255),
+    'select1_diff_e_normal': (113, 225, 143, 255),
+
+    # 上下箭头 (20x20), 用于题号 ±1 调整
+    'select1_up_normal': (202, 195, 222, 215),
+    'select1_up_selected': (226, 195, 246, 215),
+    'select1_down_normal': (200, 217, 222, 239),
+    'select1_down_selected': (224, 217, 246, 239),
 }
 
 # select4.nbm 是主菜单模式选择按钮 sheet (128x256).
@@ -71,6 +87,13 @@ SELECT4_SLICES = {
     'select4_picture_a': (0, 72, 128, 125),
     'select4_number_b': (0, 140, 128, 189),
     'select4_picture_b': (0, 200, 128, 253),
+}
+
+# pazl_select2b.nbm 是 picture puzzle 模式菜单按钮 sprite sheet.
+# 右下角有普通态/选中态 Return 按钮, 可替换自定义返回条.
+PAZL_SELECT2B_SLICES = {
+    'pazl_select2b_return_normal': (134, 198, 222, 222),
+    'pazl_select2b_return_selected': (132, 228, 222, 254),
 }
 
 # numclo_00.nbm 是 picture puzzle 下屏 HUD (256x128).
@@ -152,6 +175,22 @@ def generate_numclo00_slices() -> list[tuple[str, str]]:
     return generated
 
 
+def generate_pazl_select2b_slices() -> list[tuple[str, str]]:
+    """Crop pazl_select2b.nbm into picture puzzle menu Return button PNGs."""
+    src = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', 'pazl_select2b.nbm.png')
+    if not os.path.exists(src):
+        return []
+    im = Image.open(src).convert('RGBA')
+    generated: list[tuple[str, str]] = []
+    for name, (l, t, r, b) in PAZL_SELECT2B_SLICES.items():
+        out_name = f'{name}.png'
+        out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
+        crop = im.crop((l, t, r, b))
+        crop.save(out_path)
+        generated.append((name, out_name))
+    return generated
+
+
 def sanitize(name: str) -> str:
     # strip trailing '.nbm' so constants read like NBM_NUMCLO_WAKU
     base = re.sub(r'\.nbm$', '', name)
@@ -215,6 +254,15 @@ def main():
             numclo00_const_by_name[name] = const
             const_by_name[name] = const
 
+    # derived sprites from pazl_select2b.nbm (picture puzzle Return button)
+    pazl_select2b_slices = generate_pazl_select2b_slices()
+    pazl_select2b_const_by_name: dict[str, str] = {}
+    if pazl_select2b_slices:
+        for name, png in pazl_select2b_slices:
+            const = sanitize(name).upper()
+            pazl_select2b_const_by_name[name] = const
+            const_by_name[name] = const
+
     lines.append('')
     lines.append('/** Full flat list of all 42 NBM assets. */')
     lines.append('export const NBM_ALL = [')
@@ -233,7 +281,7 @@ def main():
 
     if select1_slices:
         lines.append('')
-        lines.append('/** select1.nbm 切片: 数独数字键盘普通态/选中态 + 动作按钮. */')
+        lines.append('/** select1.nbm 切片: 数独数字键盘/动作按钮/Difficulty A-E/上下箭头. */')
         for name, _png in select1_slices:
             const = select1_const_by_name[name]
             url = ROOT_PREFIX + name + '.png'
@@ -252,6 +300,14 @@ def main():
         lines.append('/** numclo_00.nbm 切片: 图画谜题调色板按钮 (5 色 + 擦除). */')
         for name, _png in numclo00_slices:
             const = numclo00_const_by_name[name]
+            url = ROOT_PREFIX + name + '.png'
+            lines.append(f"export const NBM_{const} = '{url}';")
+
+    if pazl_select2b_slices:
+        lines.append('')
+        lines.append('/** pazl_select2b.nbm 切片: 图画谜题菜单 Return 按钮 (普通/选中态). */')
+        for name, _png in pazl_select2b_slices:
+            const = pazl_select2b_const_by_name[name]
             url = ROOT_PREFIX + name + '.png'
             lines.append(f"export const NBM_{const} = '{url}';")
 
@@ -295,6 +351,11 @@ def main():
         const = numclo00_const_by_name[name]
         groups.setdefault('PICTURE_PUZZLE', []).append(f'NBM_{const}')
 
+    # add derived pazl_select2b slices to picture puzzle group
+    for name in pazl_select2b_const_by_name:
+        const = pazl_select2b_const_by_name[name]
+        groups.setdefault('PICTURE_PUZZLE', []).append(f'NBM_{const}')
+
     lines.append('')
     lines.append('/**')
     lines.append(' * 模式资源归属（重要）:')
@@ -334,6 +395,8 @@ def main():
         lines.append(f"    '{const}': NBM_{const},")
     for name, const in select4_const_by_name.items():
         lines.append(f"    '{const}': NBM_{const},")
+    for name, const in pazl_select2b_const_by_name.items():
+        lines.append(f"    '{const}': NBM_{const},")
     lines.append('  };')
     lines.append('  return map[constName];')
     lines.append('}')
@@ -347,7 +410,7 @@ def main():
     with open(OUT_PATH, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines))
 
-    extra = len(select3_slices) + len(select1_slices) + len(select4_slices)
+    extra = len(select3_slices) + len(select1_slices) + len(select4_slices) + len(pazl_select2b_slices)
     print(f'Wrote {OUT_PATH} ({len(entries)} entries + {extra} derived slices)')
 
 

@@ -1,7 +1,13 @@
 // components/scenes/pict-list-scene/pict-list-scene.ts — 图画谜题类别列表场景组件
-// V0.19.6: 接入 pazl_select 原版标题 + pazl_yajirusi 选择箭头; 题目数改为实际解析值.
+// V0.16: DS 化 — 原版 pazl_select.nbm 标题 + pazl_yajirusi 箭头 + pazl_select2b.nbm Return 按钮
+// 题目数为实际解析值, 行尾显示通关进度 ✓ n/m.
 
-import { NBM_PAZL_SELECT, NBM_PAZL_YAJIRUSI } from '../../../utils/sudoku/nbmAssets';
+import {
+  NBM_PAZL_SELECT,
+  NBM_PAZL_YAJIRUSI,
+  NBM_PAZL_SELECT2B_RETURN_NORMAL,
+  NBM_PAZL_SELECT2B_RETURN_SELECTED,
+} from '../../../utils/sudoku/nbmAssets';
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
 import { audioService } from '../../../utils/audio/audioService';
 import { countCompletedInFile } from '../../../utils/sudoku/picture_progress';
@@ -39,6 +45,9 @@ Component({
   data: {
     bannerUrl: NBM_PAZL_SELECT,
     arrowUrl: NBM_PAZL_YAJIRUSI,
+    returnNormalUrl: NBM_PAZL_SELECT2B_RETURN_NORMAL,
+    returnSelectedUrl: NBM_PAZL_SELECT2B_RETURN_SELECTED,
+    returnPressed: false,
     categories: [] as CategoryItem[],
     selectedKey: '',
     totalPuzzles: 0,
@@ -71,7 +80,19 @@ Component({
     /** 返回主菜单 */
     onBack() {
       audioService.playSe('back');
-      this.triggerEvent('back');
+      this.setData({ returnPressed: true });
+      setTimeout(() => {
+        this.setData({ returnPressed: false });
+        this.triggerEvent('back');
+      }, 120);
+    },
+
+    onReturnTouchStart() {
+      this.setData({ returnPressed: true });
+    },
+
+    onReturnTouchEnd() {
+      this.setData({ returnPressed: false });
     },
 
     /** 选择类别 → 通知页面打开 picture */

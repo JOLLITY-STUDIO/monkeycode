@@ -4,6 +4,43 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.16 — pict-list 分类页 DS 化 + select/sudoku 场景原版按钮落地 (两条线都做)
+
+### 2026-09-02
+
+#### 新增切片 (gen_nbm_assets_ts.py)
+- `PAZL_SELECT2B_SLICES` + `generate_pazl_select2b_slices()`:
+  - `pazl_select2b_return_normal` (134,198,222,222) / `pazl_select2b_return_selected` (132,228,222,254)
+- `miniprogram/utils/sudoku/nbmAssets.ts` 重新生成: 42 entries + 46 derived slices
+  (select1 Diff A-E + 上下箭头 + pazl_select2b Return 均归入对应 group)
+- 9 个 select1 新 PNG (diff_a-e_normal / up_normal+selected / down_normal+selected) 落盘
+
+#### pict-list-scene DS 化 (图画谜题列表页)
+- 移除自定义白底返回条 → 底部 `pazl_select2b` 原版 Return 按钮 (touch 按下切换选中态)
+- 背景改深蓝 `#0d1b2a` (与 select/picture 场景统一), 列表卡半透明深色 + 行 hover/选中高亮
+- 保留 pazl_select.nbm 标题横幅 + pazl_yajirusi 选中箭头 + 通关进度 ✓ n/m 徽标
+
+#### select-scene DS 化 (数独选题页)
+- Difficulty A/B/C/D 改 select1 原版按钮图 (30x30), 标签 A-D 加在按钮下方
+- 题号选择: 上/下箭头改 select1 原版图 (normal/selected), 按下 120ms 反馈
+- Start / Return 改 select1 原版按钮图, 背景深色 DS 主题
+
+#### sudoku-scene DS 化 (数独对局页)
+- 移除 title.nbm 大横幅 (对局页不留误导性 TECMO logo)
+- 返回从紫色文本链接 → select1 原版 Return 按钮图 (touch 按下切换选中态)
+- 深色 DS 主题: 背景 #0d1b2a, 棋盘白底保持清晰 (选中蓝高亮), 数字键盘沿用 select1 数字图,
+  工具条 (撤销/重做/笔记/清除/提示) 深色胶囊, 清除按钮保留原版 icon
+
+#### Verification
+- IDE 语言服务 0 诊断 (select-scene / pict-list-scene / sudoku-scene / nbmAssets)
+- gen 脚本幂等重跑成功 (42 + 46)
+
+#### 待真机确认 (记录在案, 不阻塞)
+- select1 Diff 按钮 A-E 与真机按钮排布 (D/E 第二排, 当前只用 A-D)
+- Return 按钮图在深色背景下的清晰度
+
+---
+
 ## PICTURE-V0.15 — 调色板颜色改为 DS 原版 NBM palette 真值 (color 5 修正为黑)
 
 ### 2026-09-02

@@ -1,14 +1,10 @@
 <view class="pict-list-page">
-  <!-- 返回条 -->
-  <view class="scene-bar" bindtap="onBack">
-    <text class="scene-bar-text">← 返回主菜单</text>
+  <!-- 原 DS pazl_select.nbm 标题横幅 -->
+  <view class="pict-banner">
+    <image class="pict-banner-image" src="{{bannerUrl}}" mode="aspectFit" lazy-load></image>
   </view>
 
-  <!-- 原 DS pazl_select.nbm 标题 -->
-  <view class="list-banner">
-    <image class="list-banner-image" src="{{bannerUrl}}" mode="aspectFit" lazy-load></image>
-  </view>
-
+  <!-- 类别列表 -->
   <view class="list-card">
     <view class="list-label">
       谜题类别 · {{totalPuzzles}} 题
@@ -31,5 +27,22 @@
         <text class="cat-arrow">›</text>
       </view>
     </scroll-view>
+  </view>
+
+  <!-- 底部 DS Return 按钮 (pazl_select2b.nbm 原版) -->
+  <view class="action-row">
+    <view
+      class="return-btn"
+      bindtouchstart="onReturnTouchStart"
+      bindtouchend="onReturnTouchEnd"
+      bindtap="onBack"
+    >
+      <image
+        class="return-image"
+        src="{{returnPressed ? returnSelectedUrl : returnNormalUrl}}"
+        mode="aspectFit"
+        lazy-load
+      ></image>
+    </view>
   </view>
 </view>
