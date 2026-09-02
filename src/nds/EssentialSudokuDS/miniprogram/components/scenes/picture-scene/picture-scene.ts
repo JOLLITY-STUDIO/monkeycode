@@ -322,6 +322,7 @@ Component({
 
     /** 撤销上一步涂色 */
     onUndo() {
+      if (this.data.showingAnswer || this.data.complete) return;
       const history = this.data.history.slice();
       const last = history.pop();
       if (!last) {
