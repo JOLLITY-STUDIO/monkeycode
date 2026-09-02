@@ -29,6 +29,7 @@ _*.log
 _*.out
 _*.err
 _*.py
+_*.ps1
 work/explore_*.py
 work/_*.py
 
