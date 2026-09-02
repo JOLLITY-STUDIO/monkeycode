@@ -3,8 +3,10 @@
   <image class="title-bg" src="/assets/nbm/title.nbm.png" mode="aspectFit" lazy-load></image>
 
   <!-- 底部开始提示 -->
-  <view class="tap-hint {{pulse ? 'pulse' : ''}}">
-    <text class="tap-hint-text">TAP TO START</text>
+  <view class="tap-hint-wrap">
+    <view class="tap-hint {{pulse ? 'pulse' : ''}}">
+      <text class="tap-hint-text">TAP TO START</text>
+    </view>
   </view>
 
   <!-- 版权角标 -->

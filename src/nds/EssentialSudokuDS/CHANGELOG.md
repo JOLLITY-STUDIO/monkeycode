@@ -4,6 +4,29 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.21-V0.24 — 标题页 DS 化 + 信息页深色风格统一
+
+### 2026-09-02
+
+#### title-scene DS 化 (标题页)
+- `title.nbm` 全屏显示 (`object-fit: contain`), 保持 DS 原版 4:3 比例, 居中露出深蓝背景
+- `TAP TO START` 提示移至底部, 改为半透明深色胶囊底 + 白色发光字, 脉冲动画保留
+- 版权信息改为淡蓝灰, 避免与标题画面冲突
+- 页面背景统一 `#0d1b2a`, 与其他 DS 化场景一致
+
+#### about-scene / staff-scene / tutorial-scene 风格统一
+- 三页背景统一改 `#0d1b2a`
+- 返回条统一为半透明深色卡片 (`rgba(22,42,66,0.85)`) + 淡蓝灰文字 `#c8d5e8`
+- about/tutorail 的图片/卡片容器改半透明深色底 + 细边框
+- tutorial 标题改亮蓝 `#4db8ff`, 正文/分割线改淡蓝灰
+- staff 图片加圆角深色边框, 底部 "End of Staff" 改淡蓝灰
+- 各页 `min-height: 100vh` 统一撑满屏幕
+
+#### Verification
+- IDE 语言服务 0 诊断 (title-scene / about-scene / staff-scene / tutorial-scene)
+
+---
+
 ## PICTURE-V0.19 — 主菜单/选项页 DS 化 + picture-scene 深色主题收尾
 
 ### 2026-09-02
