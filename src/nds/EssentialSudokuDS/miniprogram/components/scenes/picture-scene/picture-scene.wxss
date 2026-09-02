@@ -480,11 +480,11 @@
   animation: celebrate-fall 1.5s ease-out both;
 }
 
-.celebrate-confetti-1 { background: #e53935; left: 12%; animation-delay: 0.05s; }
-.celebrate-confetti-2 { background: #fdd835; left: 26%; animation-delay: 0.15s; }
-.celebrate-confetti-3 { background: #1e88e5; left: 42%; animation-delay: 0.25s; }
-.celebrate-confetti-4 { background: #43a047; left: 58%; animation-delay: 0.1s; }
-.celebrate-confetti-5 { background: #8e24aa; left: 74%; animation-delay: 0.2s; }
+.celebrate-confetti-1 { background: #f80000; left: 12%; animation-delay: 0.05s; }
+.celebrate-confetti-2 { background: #f8f800; left: 26%; animation-delay: 0.15s; }
+.celebrate-confetti-3 { background: #4868f8; left: 42%; animation-delay: 0.25s; }
+.celebrate-confetti-4 { background: #48b048; left: 58%; animation-delay: 0.1s; }
+.celebrate-confetti-5 { background: #181818; left: 74%; animation-delay: 0.2s; }
 .celebrate-confetti-6 { background: #ff9800; left: 88%; animation-delay: 0.3s; }
 
 @keyframes celebrate-fade-in {

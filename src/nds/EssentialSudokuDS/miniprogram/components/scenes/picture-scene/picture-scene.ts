@@ -31,15 +31,24 @@ const CELEBRATE_MS = 1600;
 const GRID = 15;
 const TOTAL_CELLS = GRID * GRID;
 
-/** 6 色调色板: 0=擦除(白底), 1..5=画笔色 */
-const PALETTE_HEX = ['#ffffff', '#e53935', '#fdd835', '#1e88e5', '#43a047', '#8e24aa'];
+/**
+ * 6 色调色板: 0=擦除(白底), 1..5=画笔色.
+ * V0.15 色值改为 DS 原版 NBM palette 真值 (rom-data 直接读 numclo_00.nbm 16 色 palette):
+ *   - 1..4 = numclo_00.nbm 按钮色心 idx1-4: 红 #f80000 / 黄 #f8f800 / 蓝 #4868f8 / 绿 #48b048
+ *   - 5     = 黑色 #181818 (numclo_waku.nbm idx12; 单色剪影题 Cat/Raccoon Dog 验证:
+ *             全色 5 题渲染为经典黑白剪影, Fox 等题用 5 做黑描边 + 彩色填充)
+ *   - 旧值 #e53935/#fdd835/#1e88e5/#43a047/#8e24aa(紫, V0.10 无 ROM 依据的猜测) 废弃
+ */
+const PALETTE_HEX = ['#ffffff', '#f80000', '#f8f800', '#4868f8', '#48b048', '#181818'];
 const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
-const PALETTE_BORDERS = ['#c8d0d8', '#c62828', '#f9a825', '#1565c0', '#2e7d32', '#6a1b9a'];
+/** 边框深色 = numclo_00.nbm 按钮暗边 idx7-10 (红黄蓝绿) + waku 灰 #606060 (黑) */
+const PALETTE_BORDERS = ['#c8d0d8', '#c00000', '#c8c800', '#000090', '#308830', '#606060'];
 /**
  * 原 DS numclo_00.nbm 下屏 HUD 经 V0.13 扫描验证:
  * 左列只有 4 个真实彩色按钮 (红/黄/蓝/绿), 没有紫色按钮.
  * V0.14 补充: big_5 (白色按钮) 用作擦除切片, big_4 (灰色 X) 用作清空画板工具图标.
- * color id 5 (紫) 仍无对应原图素材, 继续由 PALETTE_HEX 纯色回退渲染.
+ * V0.15: color id 5 经单色剪影题 (Cat/Raccoon Dog 全 5) + Fox 黑描边验证 = 黑色,
+ *        无原图按钮素材, 继续由 PALETTE_HEX 纯色 (#181818) 回退渲染.
  */
 const PALETTE_IMAGES = [
   NBM_NUMCLO00_ERASE, // 0 = 擦除: 原 DS 白色空白按钮
@@ -47,7 +56,7 @@ const PALETTE_IMAGES = [
   NBM_NUMCLO00_COLOR_2_YELLOW,
   NBM_NUMCLO00_COLOR_3_BLUE,
   NBM_NUMCLO00_COLOR_4_GREEN,
-  '', // 5 = 紫色: 无原图素材, 用 #8e24aa 纯色
+  '', // 5 = 黑色: 无原图素材, 用 #181818 纯色
 ];
 
 /** 工具行按钮背景 (原 DS 切片 + 纯色回退). */

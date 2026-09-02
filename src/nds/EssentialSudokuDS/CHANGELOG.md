@@ -4,6 +4,40 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.15 — 调色板颜色改为 DS 原版 NBM palette 真值 (color 5 修正为黑)
+
+### 2026-09-02
+
+#### 决定性验证 (本轮扫描/渲染证据)
+- `numclo_00.nbm` 原始 16 色 palette (ROM 直接读取): 只有 4 个彩色系按钮
+  红 `#f80000` / 黄 `#f8f800` / 蓝 `#4868f8` / 绿 `#48b048` (各带暗边 idx7-10) + 灰阶工具色, 无紫色
+- 全部 1399 道 numclo puzzle 颜色使用统计: **1052 题用到 color 5** (高频)
+- 单色剪影题渲染 (ASCII 形状验证):
+  - Cat (`numclo0.data_001`, 全色 5) = 经典黑猫脸剪影
+  - Raccoon Dog (`numclo0.data_002`, 全色 5) = 黑浣熊剪影
+  - Fox (`numclo0.data_011`, 色 2+5) = **5 做黑描边** + 2 做脸部填充
+  - ⇒ color 5 = 黑色 `#181818` (numclo_waku.nbm idx12), 不是旧猜测的紫 `#8e24aa`
+- Fox 填充用色 2 = 黄, 与 numclo_00 黄按钮吻合 → 1..4 = 红黄蓝绿顺序确认
+
+#### picture-scene 改造
+- `picture-scene.ts`:
+  - `PALETTE_HEX` 1..5 → DS 真值: `#f80000 / #f8f800 / #4868f8 / #48b048 / #181818`
+    (旧 Material 色 `#e53935/#fdd835/#1e88e5/#43a047` + 无据紫 `#8e24aa` 废弃)
+  - `PALETTE_BORDERS` 暗边 → numclo_00.nbm 按钮暗边 idx7-10:
+    `#c00000 / #c8c800 / #000090 / #308830`, 色 5 用 waku 灰 `#606060`
+  - 注释记录 palette 真值来源与验证过程
+- `picture-scene.wxss`: 通关彩带 1..5 颜色同步 DS 真值
+
+#### Verification
+- IDE 语言服务 0 诊断
+- Python 扫描/渲染脚本证据全部记录
+
+#### 待真机确认 (记录在案, 不阻塞)
+- color 5 黑色在 DS 真机调色板中的按钮外观 (H5 侧用纯色回退, 无原图素材)
+- 其余 NBM palette 主色与真机截图逐像素对照
+
+---
+
 ## PICTURE-V0.14 — picture-scene UI 进一步 DS 化
 
 ### 2026-09-02
