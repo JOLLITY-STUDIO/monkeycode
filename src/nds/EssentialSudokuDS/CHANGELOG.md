@@ -21,6 +21,22 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.4 — numclo_waku 网格与 15×15 单元格精确对齐
+
+### 2026-09-02
+
+#### 调整
+- `picture-scene.wxss` 重新定位 `waku-bg`:
+  - 原图 256×256, 内部网格区域为 `[64,184)` 共 120px
+  - 放大至 213.333% 并向左上偏移 -53.333%, 使 waku 黑线覆盖范围正好等于 15×15 单元格
+  - 透明度从 0.14 提至 0.22, 网格线更可见但仍不干扰上色
+- 单元格细线 (#e6ebf0) 与 waku 黑线叠加, 接近原 DS 网格观感
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## PICTURE-V0.1 — 图画谜题子模式选择菜单 (pazl_select 原版菜单还原)
 
 ### 2026-09-02

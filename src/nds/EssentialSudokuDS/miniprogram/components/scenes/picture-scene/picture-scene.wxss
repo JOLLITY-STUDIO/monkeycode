@@ -238,14 +238,17 @@
   border-color: transparent;
 }
 
-/* 原 DS numclo_waku.nbm 网格外框背景 */
+/* 原 DS numclo_waku.nbm 网格外框背景
+   图片 256x256, 内部 15x15 网格区域为 [64,184) 共 120px。
+   将图片放大 256/120 倍并把网格区域左上角对齐容器左上角,
+   使 waku 黑线与 15x15 单元格重合。 */
 .waku-bg {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.14;
+  left: -53.333%;
+  top: -53.333%;
+  width: 213.333%;
+  height: 213.333%;
+  opacity: 0.22;
   pointer-events: none;
 }
 
