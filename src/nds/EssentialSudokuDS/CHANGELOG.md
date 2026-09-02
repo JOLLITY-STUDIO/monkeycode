@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.3 — picture-scene 提示改为原 DS 每色计数 (ナンクロ / Number Cross)
+
+### 2026-09-02
+
+#### 调整
+- `picture-scene` 行列提示从 Nonogram "连续段" 改为ナンクロ/Number Cross 的"每色计数":
+  - 每行/列固定 5 条色带, 对应颜色 1..5
+  - 色带数字 = 该行/列中该颜色目标格的总数
+  - 与 `numclo_waku.nbm` 中 5 条提示带布局对齐
+- 提示条使用对应颜色背景 + 白色文字, 计数为 0 时留白
+- 保持 `numclo_waku.nbm` 作为网格 faint 底纹 (`waku-bg`)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## PICTURE-V0.1 — 图画谜题子模式选择菜单 (pazl_select 原版菜单还原)
 
 ### 2026-09-02

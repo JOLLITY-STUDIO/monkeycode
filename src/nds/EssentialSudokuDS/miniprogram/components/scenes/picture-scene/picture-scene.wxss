@@ -127,7 +127,7 @@
   border-color: #2b3a4a;
 }
 
-/* 15x15 彩色网格 + Nonogram 行列提示 */
+/* 15x15 彩色网格 + ナンクロ 每色计数行列提示 */
 .puzzle-area {
   width: 100%;
   display: flex;
@@ -145,6 +145,11 @@
   width: 60px;
   height: 60px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1px 2px 3px 1px;
+  box-sizing: border-box;
 }
 
 .col-clue {
@@ -154,9 +159,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  align-items: center;
-  gap: 1px;
-  padding-bottom: 2px;
+  align-items: stretch;
   box-sizing: border-box;
 }
 
@@ -179,25 +182,34 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  align-items: center;
-  gap: 2px;
-  padding-right: 4px;
+  align-items: stretch;
   box-sizing: border-box;
 }
 
-.run-chip {
+.clue-band {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 9px;
-  font-weight: 600;
-  padding: 1px 3px;
-  border-radius: 3px;
-  border: 0.5px solid;
+  font-weight: 700;
+  color: #ffffff;
   line-height: 1;
-  white-space: nowrap;
+  text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
 }
 
-.run-chip-empty {
-  color: #9aa7b4;
-  border-color: transparent;
+.clue-band-col {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.35);
+}
+
+.clue-band-row {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+  border-left: 0.5px solid rgba(255, 255, 255, 0.35);
 }
 
 .paint-grid {

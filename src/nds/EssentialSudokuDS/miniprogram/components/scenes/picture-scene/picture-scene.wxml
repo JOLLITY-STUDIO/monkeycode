@@ -38,7 +38,7 @@
     <view class="nav-key" bindtap="onNext">下一题</view>
   </view>
 
-  <!-- 15x15 彩色网格 + 行列提示 (Nonogram clues) -->
+  <!-- 15x15 彩色网格 + 行列提示 (ナンクロ / Number Cross 每色计数) -->
   <view class="puzzle-area">
     <view class="clue-header">
       <view class="clue-corner"></view>
@@ -46,10 +46,10 @@
         <view
           wx:for="{{item}}"
           wx:key="key"
-          wx:for-item="run"
-          class="run-chip {{run.color === 0 ? 'run-chip-empty' : ''}}"
-          style="color: {{clueColor(run.color)}}; border-color: {{clueColor(run.color)}};"
-        >{{run.color === 0 ? '·' : run.count}}</view>
+          wx:for-item="band"
+          class="clue-band clue-band-col"
+          style="background: {{clueColor(band.color)}};"
+        >{{band.count || ''}}</view>
       </view>
     </view>
     <view class="puzzle-body">
@@ -58,10 +58,10 @@
           <view
             wx:for="{{item}}"
             wx:key="key"
-            wx:for-item="run"
-            class="run-chip {{run.color === 0 ? 'run-chip-empty' : ''}}"
-            style="color: {{clueColor(run.color)}}; border-color: {{clueColor(run.color)}};"
-          >{{run.color === 0 ? '·' : run.count}}</view>
+            wx:for-item="band"
+            class="clue-band clue-band-row"
+            style="background: {{clueColor(band.color)}};"
+          >{{band.count || ''}}</view>
         </view>
       </view>
       <view class="paint-grid {{showingAnswer ? 'paint-grid-reveal' : ''}}">

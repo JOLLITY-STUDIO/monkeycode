@@ -44,46 +44,39 @@ interface PictureCell {
   border: string;  // 边框色 hex
 }
 
-/** 行列提示: 一条连续同色块 (Nonogram run)。color 0 = 占位(空行/列)。 */
-interface ClueRun {
-  color: number;
-  count: number;
-  key: number; // 列内唯一 key (wx:key)
+/** 行列提示: 某一行/列中某种颜色的总个数 (ナンクロ / Number Cross 风格)。 */
+interface ColorCount {
+  color: CellColor; // 1..5
+  count: number;    // 0..15
+  key: number;      // 列内唯一 key (wx:key)
+}
+
+/** 统计序列中颜色 1..5 的出现次数, 按颜色顺序返回 5 条提示。 */
+function countByColor(seq: number[]): ColorCount[] {
+  const hist = [0, 0, 0, 0, 0, 0];
+  for (const v of seq) {
+    if (v >= 0 && v <= 5) hist[v] += 1;
+  }
+  return [1, 2, 3, 4, 5].map((c, i) => ({ color: c as CellColor, count: hist[c], key: i }));
 }
 
 /**
- * 从目标网格计算 15 行 + 15 列的颜色 runs (Nonogram-style clues)。
- * 忽略背景色 0; 连续同色合并为一个 run; 全空行/列返回 [{color:0,count:0}] 占位。
+ * 从目标网格计算 15 行 + 15 列的每色计数。
+ * ナンクロ / Number Cross 规则: 提示只告诉每行/列里各颜色共有多少格,
+ * 不表示连续段, 与 numclo_waku.nbm 中 5 条色带提示布局对应。
  */
-function computeClues(target: CellColor[]): { rows: ClueRun[][]; cols: ClueRun[][] } {
-  const rows: ClueRun[][] = [];
-  const cols: ClueRun[][] = [];
+function computeClues(target: CellColor[]): { rows: ColorCount[][]; cols: ColorCount[][] } {
+  const rows: ColorCount[][] = [];
+  const cols: ColorCount[][] = [];
   for (let r = 0; r < GRID; r++) {
-    rows.push(runsOf(target.slice(r * GRID, r * GRID + GRID)));
+    rows.push(countByColor(target.slice(r * GRID, r * GRID + GRID)));
   }
   for (let c = 0; c < GRID; c++) {
     const col: number[] = [];
     for (let r = 0; r < GRID; r++) col.push(target[r * GRID + c]);
-    cols.push(runsOf(col));
+    cols.push(countByColor(col));
   }
   return { rows, cols };
-}
-
-function runsOf(seq: number[]): ClueRun[] {
-  const runs: ClueRun[] = [];
-  let cur = 0;
-  let count = 0;
-  for (const v of seq) {
-    if (v === cur) {
-      if (cur !== 0) count += 1;
-      continue;
-    }
-    if (cur !== 0) runs.push({ color: cur, count, key: runs.length });
-    cur = v;
-    count = v !== 0 ? 1 : 0;
-  }
-  if (cur !== 0) runs.push({ color: cur, count, key: runs.length });
-  return runs.length ? runs : [{ color: 0, count: 0, key: 0 }];
 }
 
 const service = new PictureGameService();
@@ -115,8 +108,8 @@ Component({
     complete: false,
     showingAnswer: false,
     correctCount: 0,           // 已正确格数 (进度)
-    rowClues: [] as ClueRun[][],
-    colClues: [] as ClueRun[][],
+    rowClues: [] as ColorCount[][],
+    colClues: [] as ColorCount[][],
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,
