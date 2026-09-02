@@ -10,7 +10,10 @@
   </view>
 
   <view class="list-card">
-    <view class="list-label">谜题类别 · {{totalPuzzles}} 题</view>
+    <view class="list-label">
+      谜题类别 · {{totalPuzzles}} 题
+      <text wx:if="{{totalCompleted > 0}}" class="list-done">已通关 {{totalCompleted}}</text>
+    </view>
     <scroll-view class="cat-scroll" scroll-y>
       <view
         wx:for="{{categories}}"
@@ -23,7 +26,8 @@
       >
         <image wx:if="{{selectedKey === item.key}}" class="cat-arrow-icon" src="{{arrowUrl}}" mode="aspectFit" lazy-load></image>
         <text class="cat-label">{{item.label}}</text>
-        <text class="cat-count">{{item.count}} 题</text>
+        <text wx:if="{{item.completed > 0}}" class="cat-done {{item.completed === item.count ? 'cat-done-full' : ''}}">✓ {{item.completed}}/{{item.count}}</text>
+        <text wx:else class="cat-count">{{item.count}} 题</text>
         <text class="cat-arrow">›</text>
       </view>
     </scroll-view>

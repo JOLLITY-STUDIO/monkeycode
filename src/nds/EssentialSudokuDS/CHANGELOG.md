@@ -4,6 +4,32 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.10 — 进度自动保存/恢复 + 通关标记 + 调色板剩余计数 + 完成动画
+
+### 2026-09-02
+
+#### 新增
+- ✅ 进度自动保存与恢复 (`utils/sudoku/picture_progress.ts` 新建):
+  - 每局 (类别 + 题号) 独立存储 `esds_pic_progress`: 涂色网格 + 步数 + 累计用时
+  - 涂色/撤销后 400ms 防抖落盘; 切题/清空/离开场景立即落盘
+  - 重开未通关题自动恢复上次网格/步数, 计时从累计值续走
+  - 通关或清空画板自动清除该题进度
+- ✅ 通关记录 `esds_pic_completed` + 完成标记:
+  - 完整涂对即记录成绩 (用时/步数)
+  - 列表页每类别显示 `✓ n/m` 已完成数, 全通关深绿高亮; 顶部汇总已通关总数
+  - 对局页标题旁显示 `✓ 已通关` 标记; 已通关题重开从空白重涂 (不恢复旧进度)
+- ✅ 调色板视觉: 每个颜色圆下方显示该色剩余待涂格数, 涂满变绿 (PICTURE-V0.3 每色计数提示的配套反馈)
+- ✅ 通关庆祝动画: 全屏遮罩 + 绿色 ✓ 弹出 + 6 条彩带飘落 (1.6s 后弹"下一题?"询问)
+- ✅ `PictureGameService` 新增 `restoreProgress` / `clearGrid`
+
+#### 修复
+- `onClearAll` 之前只清 UI 不清 service 会话 → 清空后内部网格/步数残留, 进度/通关判定错乱; 现同步 `clearGrid()` 并清除该题进度
+
+#### Verification
+- ✅ IDE 语言服务 0 诊断 (picture-scene / pict-list-scene / picture_progress / picture_game_service 全绿)
+
+---
+
 ## PICTURE-V0.3 — picture-scene 提示改为原 DS 每色计数 (ナンクロ / Number Cross)
 
 ### 2026-09-02

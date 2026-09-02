@@ -6,6 +6,19 @@ import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
 import { CellColor } from '../../../utils/sudoku/numclo_puzzles';
 import { NUMCLO_ANSWERS } from '../../../utils/sudoku/numclo_answers';
 import { audioService } from '../../../utils/audio/audioService';
+import {
+  isGridEmpty,
+  loadCompleted,
+  loadProgress,
+  saveProgress,
+  clearProgress,
+  recordCompleted,
+} from '../../../utils/sudoku/picture_progress';
+
+/** 自动保存防抖 (ms): 每次涂色后延迟写入 storage, 避免连点刷盘 */
+const AUTO_SAVE_MS = 400;
+/** 通关庆祝动画时长 (ms) */
+const CELEBRATE_MS = 1600;
 
 const GRID = 15;
 const TOTAL_CELLS = GRID * GRID;
@@ -106,8 +119,14 @@ Component({
     timerText: '00:00',
     moves: 0,
     complete: false,
+    /** 本题是否已通关 (完成标记: 标题旁 ✓) */
+    completed: false,
+    /** 通关庆祝动画中 */
+    celebrate: false,
     showingAnswer: false,
     correctCount: 0,           // 已正确格数 (进度)
+    /** 每色剩余待涂格数 paletteNeed[color] (color 0 恒为 0) */
+    paletteNeed: [0, 0, 0, 0, 0, 0],
     rowClues: [] as ColorCount[][],
     colClues: [] as ColorCount[][],
     /** 操作历史栈, 用于撤销 (undo) */
@@ -117,6 +136,8 @@ Component({
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,
+    _saveTimer: 0,
+    _celebrateTimer: 0,
   },
 
   observers: {
@@ -144,7 +165,10 @@ Component({
     },
     detached() {
       this.data._attachedDone = false;
+      this._flushSave();
       this._stopTimer();
+      this._clearSaveTimer();
+      this._clearCelebrateTimer();
     },
   },
 
@@ -161,8 +185,11 @@ Component({
       audioService.playSe('tap');
     },
 
-    /** 开一题: fileKey + indexInFile */
+    /** 开一题: fileKey + indexInFile (先落盘上一题进度, 再载入本题/恢复进度) */
     _startPuzzle(fileKey: string, indexInFile: number) {
+      // 切题前把上一题当前进度立即落盘 (会话即将被替换) + 取消待弹的庆祝弹窗
+      this._flushSave();
+      this._clearCelebrateTimer();
       const res = service.startPuzzleInFile(fileKey, indexInFile);
       if (!res.ok) {
         wx.showToast({ title: '题目加载失败', icon: 'none' });
@@ -187,16 +214,35 @@ Component({
           border: PALETTE_BORDERS[0],
         });
       }
+      // 已通关题目不恢复旧进度 (从空白重涂); 未通关则恢复上次涂色网格
+      const done = loadCompleted(fileKey, indexInFile);
+      const saved = done ? null : loadProgress(fileKey, indexInFile);
+      const hasSaved = !!(saved && !isGridEmpty(saved.grid));
+      let moves = 0;
+      if (hasSaved && saved) {
+        moves = saved.moves || 0;
+        service.restoreProgress(saved.grid, moves, saved.elapsedMs || 0);
+        for (let i = 0; i < TOTAL_CELLS; i++) {
+          const v = saved.grid[i] as CellColor;
+          cells[i].v = v;
+          cells[i].bg = PALETTE_HEX[v];
+          cells[i].border = PALETTE_BORDERS[v];
+        }
+      }
+      const need = this._computeNeed(cells);
       this.setData({
         cells,
         currentFile: fileKey,
         puzzleName: name,
         puzzleIndex: indexInFile,
         puzzleCount: list.length,
-        moves: 0,
+        moves,
         complete: false,
+        completed: !!done,
+        celebrate: false,
         showingAnswer: false,
-        correctCount: 0,
+        correctCount: hasSaved ? TOTAL_CELLS - this._countWrong(cells) : 0,
+        paletteNeed: need,
         rowClues: clues.rows,
         colClues: clues.cols,
         history: [],
@@ -286,6 +332,8 @@ Component({
       const history = this.data.history.slice();
       history.push({ i, prev });
       this.setData({ cells, history });
+      this._scheduleSave();
+      this._updatePaletteNeed(cells);
       audioService.playSe(next === 0 ? 'clear' : 'paint');
       this._checkComplete();
     },
@@ -316,9 +364,9 @@ Component({
       this.setData({ showingAnswer: showing, cells });
     },
 
-    /** 清空画板 */
+    /** 清空画板 (同步 service 会话 + 清除本题进度) */
     onClearAll() {
-      if (this.data.showingAnswer) return;
+      if (this.data.showingAnswer || this.data.complete) return;
       audioService.playSe('clear');
       const cells = this.data.cells.slice();
       for (const cell of cells) {
@@ -326,7 +374,10 @@ Component({
         cell.bg = PALETTE_HEX[0];
         cell.border = PALETTE_BORDERS[0];
       }
+      service.clearGrid();
       this.setData({ cells, moves: 0, history: [] });
+      this._updatePaletteNeed(cells);
+      this._flushSave();
     },
 
     /** 撤销上一步涂色 */
@@ -348,6 +399,8 @@ Component({
         cell.border = PALETTE_BORDERS[last.prev];
       }
       this.setData({ cells, history });
+      this._scheduleSave();
+      this._updatePaletteNeed(cells);
       this._checkComplete();
     },
 
@@ -356,38 +409,118 @@ Component({
       return PALETTE_HEX[color] || '#9aa7b4';
     },
 
-    /** 完成检测 */
-    _checkComplete() {
-      const info = service.getSessionInfo();
-      const res = service.checkComplete();
-      this.setData({ moves: info?.moves ?? 0, correctCount: TOTAL_CELLS - res.wrong });
-      if (res.complete) {
-        this._stopTimer();
-        this.setData({ complete: true });
-        audioService.playSe('complete');
-        wx.showModal({
-          title: '🎉 完成!',
-          content: `${this.data.puzzleName} 用时 ${this.data.timerText}，${info?.moves ?? 0} 步。下一题?`,
-          confirmText: '下一题',
-          cancelText: '关闭',
-          success: (r) => {
-            if (r.confirm) this.onNext();
-          },
-        });
+    /** 每色剩余待涂格数: 目标该色总格数 - 已正确涂成该色格数 (0 号色恒为 0) */
+    _computeNeed(cells: PictureCell[]): number[] {
+      const need = [0, 0, 0, 0, 0, 0];
+      for (const cell of cells) {
+        const t = cell.t as number;
+        if (t >= 1 && t <= 5) need[t] += 1;
+      }
+      for (const cell of cells) {
+        if (cell.v === cell.t && cell.t >= 1 && cell.t <= 5) need[cell.t] -= 1;
+      }
+      return need;
+    },
+
+    /** 当前网格错误格数 (v !== t) */
+    _countWrong(cells: PictureCell[]): number {
+      let wrong = 0;
+      for (const cell of cells) if (cell.v !== cell.t) wrong += 1;
+      return wrong;
+    },
+
+    /** 刷新调色板剩余计数 (涂色/撤销/清空后调用) */
+    _updatePaletteNeed(cells: PictureCell[]) {
+      this.setData({ paletteNeed: this._computeNeed(cells) });
+    },
+
+    /** 自动保存 (防抖): 每次涂色后 400ms 落盘一次 */
+    _scheduleSave() {
+      this._clearSaveTimer();
+      this.data._saveTimer = setTimeout(() => {
+        this._flushSave();
+      }, AUTO_SAVE_MS);
+    },
+
+    _clearSaveTimer() {
+      if (this.data._saveTimer) {
+        clearTimeout(this.data._saveTimer);
+        this.data._saveTimer = 0;
       }
     },
 
-    /** 计时器 */
+    /** 立即落盘当前会话进度; complete 状态 → 清除本题进度 (空网格也会被移除) */
+    _flushSave() {
+      this._clearSaveTimer();
+      const session = service.getSession();
+      if (!session) return;
+      if (this.data.complete) {
+        clearProgress(session.file, session.indexInFile);
+        return;
+      }
+      saveProgress(session.file, session.indexInFile, {
+        grid: session.grid,
+        moves: session.moves,
+        elapsedMs: Date.now() - session.startTime,
+      });
+    },
+
+    _clearCelebrateTimer() {
+      if (this.data._celebrateTimer) {
+        clearTimeout(this.data._celebrateTimer);
+        this.data._celebrateTimer = 0;
+      }
+    },
+
+    /** 完成检测 (通关 → 记录成绩 + 庆祝动画 → 弹窗询问下一题) */
+    _checkComplete() {
+      const info = service.getSessionInfo();
+      const res = service.checkComplete();
+      const session = service.getSession();
+      this.setData({ moves: info?.moves ?? 0, correctCount: TOTAL_CELLS - res.wrong });
+      if (res.complete) {
+        this._stopTimer();
+        this._clearSaveTimer();
+        if (session) {
+          recordCompleted(session.file, session.indexInFile, {
+            name: session.name,
+            durationMs: Math.max(0, Date.now() - session.startTime),
+            moves: session.moves,
+          });
+          clearProgress(session.file, session.indexInFile);
+        }
+        const { puzzleName } = this.data;
+        this.setData({ complete: true, completed: true, celebrate: true });
+        audioService.playSe('complete');
+        this._clearCelebrateTimer();
+        this.data._celebrateTimer = setTimeout(() => {
+          this.setData({ celebrate: false });
+          wx.showModal({
+            title: '🎉 完成!',
+            content: `${puzzleName} 用时 ${this.data.timerText}，${info?.moves ?? 0} 步。下一题?`,
+            confirmText: '下一题',
+            cancelText: '关闭',
+            success: (r) => {
+              if (r.confirm) this.onNext();
+            },
+          });
+        }, CELEBRATE_MS);
+      }
+    },
+
+    /** 计时器 (先立即刷新一次, 再每秒 tick; 恢复进度后计时从上次累计值续走) */
     _startTimer() {
       this._stopTimer();
-      this.data._timer = setInterval(() => {
+      const tick = () => {
         const info = service.getSessionInfo();
         if (!info) return;
         const sec = Math.floor(info.elapsedMs / 1000);
         const mm = String(Math.floor(sec / 60)).padStart(2, '0');
         const ss = String(sec % 60).padStart(2, '0');
         this.setData({ timerText: `${mm}:${ss}` });
-      }, 1000);
+      };
+      tick();
+      this.data._timer = setInterval(tick, 1000);
     },
 
     _stopTimer() {

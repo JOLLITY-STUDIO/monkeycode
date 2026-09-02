@@ -4,6 +4,7 @@
 import { NBM_PAZL_SELECT, NBM_PAZL_YAJIRUSI } from '../../../utils/sudoku/nbmAssets';
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
 import { audioService } from '../../../utils/audio/audioService';
+import { countCompletedInFile } from '../../../utils/sudoku/picture_progress';
 
 const service = new PictureGameService();
 
@@ -30,6 +31,8 @@ interface CategoryItem {
   key: string;
   label: string;
   count: number;
+  /** 本类别已通关题数 (完成标记) */
+  completed: number;
 }
 
 Component({
@@ -39,19 +42,26 @@ Component({
     categories: [] as CategoryItem[],
     selectedKey: '',
     totalPuzzles: 0,
+    totalCompleted: 0,
   },
 
   lifetimes: {
     attached() {
-      const items: CategoryItem[] = CATEGORIES.map((c) => ({
-        key: c.key,
-        label: c.label,
-        count: service.listFilePuzzleIds(c.key).length,
-      }));
+      const items: CategoryItem[] = CATEGORIES.map((c) => {
+        const count = service.listFilePuzzleIds(c.key).length;
+        return {
+          key: c.key,
+          label: c.label,
+          count,
+          completed: countCompletedInFile(c.key),
+        };
+      });
       const total = items.reduce((s, c) => s + c.count, 0);
+      const done = items.reduce((s, c) => s + c.completed, 0);
       this.setData({
         categories: items,
         totalPuzzles: total,
+        totalCompleted: done,
         selectedKey: items[0]?.key || '',
       });
     },

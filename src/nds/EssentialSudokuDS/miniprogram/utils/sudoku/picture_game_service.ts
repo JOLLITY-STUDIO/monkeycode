@@ -109,6 +109,24 @@ export class PictureGameService {
     };
   }
 
+  /** 恢复上次会话进度: 载入已涂网格 + 步数, 并把 startTime 前移以延续计时。 */
+  restoreProgress(grid: CellColor[], moves: number, elapsedMs: number): boolean {
+    if (!this.session) return false;
+    if (!grid || grid.length !== 225) return false;
+    this.session.grid = grid.slice();
+    this.session.moves = moves >= 0 ? moves : 0;
+    this.session.startTime = Date.now() - Math.max(0, elapsedMs);
+    return true;
+  }
+
+  /** 把整个会话清空为未涂状态 (清空画板时同步 service, 不清计时/步数历史) */
+  clearGrid(): boolean {
+    if (!this.session) return false;
+    this.session.grid = new Array(225).fill(0) as CellColor[];
+    this.session.moves = 0;
+    return true;
+  }
+
   /** Paint a cell with the chosen color (0 = erase). */
   paint(row: number, col: number, color: CellColor): boolean {
     if (!this.session) return false;

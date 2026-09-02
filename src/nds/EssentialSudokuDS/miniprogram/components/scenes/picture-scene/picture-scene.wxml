@@ -9,10 +9,11 @@
     <image class="picture-banner-image" src="/assets/nbm/numclo_00.nbm.png" mode="aspectFit" lazy-load></image>
   </view>
 
-  <!-- 顶部: 谜题名 + 序号 + 计时 -->
+  <!-- 顶部: 谜题名 + 通关标记 + 序号 + 计时 -->
   <view class="game-header">
     <view class="header-left">
       <text class="puzzle-name">{{puzzleName}}</text>
+      <text wx:if="{{completed}}" class="done-badge">✓ 已通关</text>
       <text class="stat">#{{puzzleIndex + 1}}/{{puzzleCount}}</text>
     </view>
     <text class="timer">{{timerText}}</text>
@@ -89,16 +90,20 @@
     <text class="progress-text">已正确 {{correctCount}} / {{cells.length}}</text>
   </view>
 
-  <!-- 调色板 (0=擦除 + 5 画笔色) -->
+  <!-- 调色板 (0=擦除 + 5 画笔色; 圆形下方数字 = 该色剩余待涂格数, 0 变绿 ✓) -->
   <view class="palette">
     <view
       wx:for="{{palette}}"
       wx:key="id"
-      class="palette-key {{selectedColor === item.id ? 'palette-key-active' : ''}}"
-      style="background: {{item.color}}; border-color: {{item.border}};"
+      class="palette-item {{selectedColor === item.id ? 'palette-item-active' : ''}}"
       data-id="{{item.id}}"
       bindtap="onTapPalette"
-    ><text wx:if="{{item.id === 0}}" class="erase-mark">✕</text></view>
+    >
+      <view class="palette-key" style="background: {{item.color}}; border-color: {{item.border}};">
+        <text wx:if="{{item.id === 0}}" class="erase-mark">✕</text>
+      </view>
+      <text wx:if="{{item.id > 0}}" class="palette-need {{paletteNeed[item.id] === 0 ? 'palette-need-zero' : ''}}">{{paletteNeed[item.id]}}</text>
+    </view>
   </view>
 
   <!-- 工具: 显示答案 / 撤销 / 清空画板 -->
@@ -110,4 +115,19 @@
 
   <!-- 完成提示条 -->
   <view wx:if="{{complete}}" class="complete-banner">✓ 完成! 点击"下一题"继续</view>
+
+  <!-- 通关庆祝动画 (纯装饰遮罩, 不拦截触摸) -->
+  <view wx:if="{{celebrate}}" class="celebrate-mask">
+    <view class="celebrate-confetti celebrate-confetti-1"></view>
+    <view class="celebrate-confetti celebrate-confetti-2"></view>
+    <view class="celebrate-confetti celebrate-confetti-3"></view>
+    <view class="celebrate-confetti celebrate-confetti-4"></view>
+    <view class="celebrate-confetti celebrate-confetti-5"></view>
+    <view class="celebrate-confetti celebrate-confetti-6"></view>
+    <view class="celebrate-panel">
+      <view class="celebrate-check">✓</view>
+      <view class="celebrate-title">通关成功!</view>
+      <view class="celebrate-sub">{{puzzleName}} · {{timerText}} · {{moves}} 步</view>
+    </view>
+  </view>
 </view>

@@ -57,6 +57,19 @@
   font-weight: 700;
   color: #3a4a5a;
   margin-bottom: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.list-done {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e8e3e;
+  background: #e6f4ea;
+  padding: 2px 8px;
+  border-radius: 9px;
 }
 
 .cat-scroll {
@@ -100,6 +113,22 @@
   font-size: 12px;
   color: #9aa7b4;
   margin-right: 6px;
+}
+
+/* 完成标记: 有通关记录显示绿字 n/m, 全通关加深底色 */
+.cat-done {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e8e3e;
+  background: #e6f4ea;
+  padding: 2px 8px;
+  border-radius: 9px;
+  margin-right: 6px;
+}
+
+.cat-done-full {
+  background: #1e8e3e;
+  color: #ffffff;
 }
 
 .cat-arrow {

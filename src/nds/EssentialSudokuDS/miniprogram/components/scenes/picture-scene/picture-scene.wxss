@@ -244,19 +244,26 @@
   border-color: transparent;
 }
 
-/* 调色板 */
+/* 调色板 (每项 = 圆形色块 + 下方剩余待涂计数) */
 .palette {
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 6px;
+  margin-top: 10px;
   justify-content: center;
 }
 
+.palette-item {
+  width: 46px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .palette-key {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   box-sizing: border-box;
   border: 2px solid #ffffff;
@@ -264,11 +271,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.12s ease;
 }
 
-.palette-key-active {
+.palette-item-active .palette-key {
   transform: scale(1.12);
   box-shadow: 0 0 0 2px #2b3a4a, 0 1px 4px rgba(43, 58, 74, 0.25);
+}
+
+.palette-need {
+  margin-top: 4px;
+  min-width: 20px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #2b3a4a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.palette-need-zero {
+  background: #1e8e3e;
 }
 
 .erase-mark {
@@ -367,4 +393,111 @@
 .picture-banner-image {
   width: 100%;
   height: 100%;
+}
+
+/* 已通关标记 (标题旁) */
+.done-badge {
+  flex-shrink: 0;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 9px;
+  background: #1e8e3e;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+/* 通关庆祝遮罩 (fixed 全屏, pointer-events none 不挡操作) */
+.celebrate-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 27, 42, 0.35);
+  animation: celebrate-fade-in 0.25s ease both;
+  pointer-events: none;
+}
+
+.celebrate-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  animation: celebrate-pop 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.celebrate-check {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #1e8e3e;
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: celebrate-check-spin 0.7s ease both;
+}
+
+.celebrate-title {
+  margin-top: 14px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #2b3a4a;
+}
+
+.celebrate-sub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7a8a;
+}
+
+/* 彩带小条 (颜色对应 5 画笔色 + 金色) */
+.celebrate-confetti {
+  position: absolute;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: celebrate-fall 1.5s ease-out both;
+}
+
+.celebrate-confetti-1 { background: #e53935; left: 12%; animation-delay: 0.05s; }
+.celebrate-confetti-2 { background: #fdd835; left: 26%; animation-delay: 0.15s; }
+.celebrate-confetti-3 { background: #1e88e5; left: 42%; animation-delay: 0.25s; }
+.celebrate-confetti-4 { background: #43a047; left: 58%; animation-delay: 0.1s; }
+.celebrate-confetti-5 { background: #8e24aa; left: 74%; animation-delay: 0.2s; }
+.celebrate-confetti-6 { background: #ff9800; left: 88%; animation-delay: 0.3s; }
+
+@keyframes celebrate-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes celebrate-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes celebrate-check-spin {
+  0% { transform: scale(0) rotate(-30deg); }
+  60% { transform: scale(1.15) rotate(6deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes celebrate-fall {
+  0% { top: -8%; opacity: 0; transform: rotate(0deg); }
+  15% { opacity: 1; }
+  100% { top: 105%; opacity: 0; transform: rotate(560deg); }
 }
