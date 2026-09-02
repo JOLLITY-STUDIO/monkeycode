@@ -84,6 +84,23 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.7 — picture-scene 使用完整 numclo_waku.nbm 作为背景并对齐提示/网格区
+
+### 2026-09-02
+
+#### 调整
+- `picture-scene` 将 `numclo_waku.nbm` 从仅覆盖网格改为覆盖整个 `puzzle-area`:
+  - `puzzle-area` 改为 `aspect-ratio: 1 / 1`, 背景图放大 142.22% 并向左上偏移 -3.33%,
+    使图片实际内容区 (180×180) 填满容器
+  - 顶部/左侧提示区尺寸改为 32.22%, 主网格区改为 67.78%, 与原图红色/黑色区域对齐
+  - 移除 `paint-grid` 内部独立的 `waku-bg` image 节点, 网格背景改为透明
+  - `paint-cell` 细线改为半透明, 让原图网格线主导视觉
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## PICTURE-V0.1 — 图画谜题子模式选择菜单 (pazl_select 原版菜单还原)
 
 ### 2026-09-02

@@ -127,35 +127,40 @@
   border-color: #2b3a4a;
 }
 
-/* 15x15 彩色网格 + ナンクロ 每色计数行列提示 */
+/* 15x15 彩色网格 + ナンクロ 每色计数行列提示
+   背景使用完整 numclo_waku.nbm, 让原图顶部/左侧红色提示区与 DOM 提示区对齐 */
 .puzzle-area {
   width: 100%;
+  aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  position: relative;
+  background-image: url('/assets/nbm/numclo_waku.nbm.png');
+  background-size: 142.22%;
+  background-position: -3.33% -3.33%;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .clue-header {
   width: 100%;
+  height: 32.22%;
   display: flex;
   flex-direction: row;
 }
 
 .clue-corner {
-  width: 60px;
-  height: 60px;
+  width: 32.22%;
+  height: 100%;
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 1px 2px 3px 1px;
-  box-sizing: border-box;
 }
 
 .col-clue {
   flex: 1;
   min-width: 0;
-  height: 60px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -165,12 +170,14 @@
 
 .puzzle-body {
   width: 100%;
+  height: 67.78%;
   display: flex;
   flex-direction: row;
 }
 
 .row-clues {
-  width: 60px;
+  width: 32.22%;
+  height: 100%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -214,14 +221,13 @@
 
 .paint-grid {
   flex: 1;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  background: #ffffff;
-  border: 1.5px solid #2b3a4a;
+  background: transparent;
+  border: none;
   box-sizing: border-box;
-  border-radius: 4px;
   overflow: hidden;
   position: relative;
 }
@@ -230,26 +236,12 @@
   width: calc(100% / 15);
   height: calc(100% / 15);
   box-sizing: border-box;
-  border: 0.5px solid #e6ebf0;
+  border: 0.5px solid rgba(230, 235, 240, 0.35);
 }
 
 /* 显示答案时: 去掉格子线, 纯色块拼图效果 */
 .paint-grid-reveal .paint-cell {
   border-color: transparent;
-}
-
-/* 原 DS numclo_waku.nbm 网格外框背景
-   图片 256x256, 内部 15x15 网格区域为 [64,184) 共 120px。
-   将图片放大 256/120 倍并把网格区域左上角对齐容器左上角,
-   使 waku 黑线与 15x15 单元格重合。 */
-.waku-bg {
-  position: absolute;
-  left: -53.333%;
-  top: -53.333%;
-  width: 213.333%;
-  height: 213.333%;
-  opacity: 0.22;
-  pointer-events: none;
 }
 
 /* 调色板 */
