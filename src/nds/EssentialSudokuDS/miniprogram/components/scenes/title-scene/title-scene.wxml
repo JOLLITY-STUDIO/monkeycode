@@ -2,6 +2,10 @@
   <!-- 全屏标题画面: 原 DS title.nbm -->
   <image class="title-bg" src="/assets/nbm/title.nbm.png" mode="aspectFit" lazy-load></image>
 
+  <!-- 透明点击捕获层: 铺满 title-page 并盖在 image 之上 (Skyline 下 image 原生绘制节点
+       不保证事件冒泡, 由普通 view 承接点击后再冒泡到根 bindtap) -->
+  <view class="tap-catcher"></view>
+
   <!-- 底部开始提示 -->
   <view class="tap-hint-wrap">
     <view class="tap-hint {{pulse ? 'pulse' : ''}}">

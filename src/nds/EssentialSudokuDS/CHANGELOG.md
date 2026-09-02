@@ -4,6 +4,38 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.28 — title-scene 点击热区修复 (V0.27 显示恢复后点击仍无效)
+
+### 2026-09-03
+
+#### 用户报告
+- V0.27 修复后标题页正常显示, 但点击任意位置 (含 TAP TO START) 仍无法进入 menu
+
+#### 根因分析 (3 个叠加隐患, 静态代码无法判定是哪个, 全部消除)
+1. `title-scene.wxss .title-page` 用 `position:relative + height:100%` — 高度依赖组件宿主节点;
+   宿主在非 flex 的 `.scene-stage` (absolute inset:0) 内高度为 auto, `height:100%` 可能解析失败,
+   导致点击热区高度为 0/异常
+2. 全屏 `<image class="title-bg">` 是 Skyline 原生绘制节点, 点击落在 image 上时事件冒泡不可靠,
+   而根 view 的 bindtap 依赖 image 冒泡
+3. `title-scene.ts onTapStart` 中 `audioService.playSe('start')` 若音频 API 抛异常会阻断
+   后面的 `triggerEvent('start')`
+
+#### 修复
+- `title-scene.wxss`: `.title-page` 改 `position:absolute; top:0; left:0; width:100%; height:100%`
+  (直接铺满最近定位祖先 `.scene-stage`, 不再依赖宿主高度); image 加 `pointer-events:none`
+- `title-scene.wxml`: 在 image 之上新增透明普通 view 点击捕获层 `.tap-catcher` (z-index:1,
+  铺满 title-page), 点击由普通 view 承接并冒泡到根 bindtap, 绕开 image 原生节点
+- `title-scene.ts`: `playSe` 包 try/catch; `onTapStart` 与 index `onTitleStart` 各加
+  `[title-scene]/[index]` 前缀日志, 便于定位断点 (若仍无效, 看 console 判断是组件内
+  事件未触发还是 template bind:start 链路断)
+
+#### 验证
+- IDE 语言服务 0 诊断 (title-scene / index)
+- 待开发者工具重新编译: 点标题 → console 应依次出现
+  `[title-scene] onTapStart` → `[index] onTitleStart -> switch menu` → 进入 menu
+
+---
+
 ## PICTURE-V0.27 — 修复 title-scene 首屏不显示 + 点击无响应
 
 ### 2026-09-03

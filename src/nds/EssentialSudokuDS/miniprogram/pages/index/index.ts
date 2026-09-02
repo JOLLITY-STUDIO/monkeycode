@@ -132,6 +132,7 @@ Page({
 
   // ---- title-scene: start → 主菜单 ----
   onTitleStart() {
+    console.log('[index] onTitleStart -> switch menu, cur scene =', this.data.scene);
     this._switchScene('menu');
   },
 
