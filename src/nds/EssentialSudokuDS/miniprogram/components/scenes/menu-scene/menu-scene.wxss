@@ -3,19 +3,21 @@
   flex-direction: column;
   align-items: center;
   height: 100%;
-  padding: 8px 12px 24px;
+  min-height: 100vh;
+  padding: 12px 16px 24px;
   box-sizing: border-box;
   overflow-y: auto;
-  background: #e9eef3;
+  background: #0d1b2a;
 }
 
 .title-banner {
   width: 100%;
   height: 120px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 12px;
-  background: #1a4d2e;
+  margin-bottom: 16px;
+  background: #162a42;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .title-image {
@@ -25,12 +27,14 @@
 
 .mode-select-card {
   width: 100%;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 14px 12px 18px;
+  max-width: 320px;
+  background: rgba(22, 42, 66, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px 18px;
   box-sizing: border-box;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-  margin-bottom: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  margin-bottom: 16px;
 }
 
 .menu-label-wrap {
@@ -39,63 +43,43 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .menu-label {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #3a4a5a;
+  color: #9fb6d3;
   text-align: center;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
-.select-bg-wrap {
-  width: 100%;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 10px 0;
-  box-sizing: border-box;
-}
-
-/* ===== 模式按钮标准: 待机态 / 点击态 =====
-   待机态: 高饱和度渐变底 + 明显投影 (立体浮起感)
-   点击态: 底色压暗 + 阴影收缩到 0 + 轻微下沉 (物理按压感) */
 .mode-btn {
   width: 100%;
-  height: 62px;
-  border-radius: 12px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.08s ease, filter 0.08s ease;
 }
 
-.mode-btn-number {
-  background: linear-gradient(180deg, #4db8ff, #1f8fe8);
-  box-shadow: 0 5px 12px rgba(31, 143, 232, 0.45);
+.mode-btn:last-child {
+  margin-bottom: 0;
 }
 
-.mode-btn-picture {
-  background: linear-gradient(180deg, #3a5bd6, #2339a8);
-  box-shadow: 0 5px 12px rgba(35, 57, 168, 0.45);
+.mode-btn-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
 }
 
-.mode-btn-hover {
-  transform: scale(0.97) translateY(2px);
-  filter: brightness(0.82);
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-}
-
-.mode-btn-text {
-  font-size: 17px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 1.5px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+.mode-btn:active {
+  transform: scale(0.98);
+  filter: brightness(0.92);
 }
 
 .bottom-links {
@@ -104,21 +88,24 @@
   flex-direction: row;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
   margin-top: auto;
+  padding-top: 8px;
 }
 
 .link-btn {
   font-size: 12px;
-  color: #5a6a7a;
-  background: #ffffff;
-  padding: 6px 11px;
-  border-radius: 13px;
-  border: 0.5px solid #d0d8e0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  color: #c8d5e8;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 7px 13px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   white-space: nowrap;
+  transition: background 0.08s ease, transform 0.08s ease;
 }
 
-.link-btn-hover {
-  background: #f2f4f6;
+.link-btn:active {
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(0.97);
 }

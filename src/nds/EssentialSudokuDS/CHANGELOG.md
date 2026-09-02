@@ -4,6 +4,41 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.19 — 主菜单/选项页 DS 化 + picture-scene 深色主题收尾
+
+### 2026-09-02
+
+#### menu-scene DS 化 (主菜单)
+- NUMBER PUZZLE / PICTURE PUZZLE 改 `select4.nbm` 原版双帧按钮图 (`number_a`/`picture_a` 常态, `number_b`/`picture_b` 按下态)
+- touch 按下/松开切换两帧, 复刻 DS 主菜单选中闪光 (两帧底色互补)
+- 深色主题: 背景 `#0d1b2a`, 底部辅助入口改半透明深色胶囊
+- 保留 `title.nbm` 标题横幅
+
+#### options-scene DS 化 (选项页)
+- 移除语义不符的 `setu03.nbm` 无线说明图横幅
+- 背景改深蓝 `#0d1b2a`, 选项卡片半透明深色 + 细边框
+- BGM/SE 音量行标签继续使用 `select3.nbm` 原切片 (BGM Volume / SE Volume)
+- 清除数据 / 评价 / 制作人员 标签继续使用 `select3.nbm` 原切片 (Clear / Rate / Credits)
+- 滑块 active 色改亮蓝 / 橙, 数字值改亮色
+
+#### picture-scene DS 化收尾
+- 页面整体背景改 `#0d1b2a`, 顶部/类别/导航/工具条全部改深色胶囊或半透明卡片
+- `tool-row` 的 “清空画板” 改为纯 `numclo_00.nbm` clear 图标按钮 (去掉文字, 只保留原切片图标)
+- “显示答案”/“撤销” 改深色半透明文字按钮
+- `tutorial-bar` 改深色半透明底, 关闭 X 改深蓝背景圆
+- 调色板选中态外框改 `#4db8ff` 高亮, 计数胶囊改半透明白底
+- `puzzle-area` 继续使用 `numclo_waku.nbm` 原图作为棋盘背景
+
+#### Verification
+- IDE 语言服务 0 诊断 (menu-scene / options-scene / picture-scene)
+
+#### 待真机确认 (记录在案, 不阻塞)
+- menu-scene select4 双帧按钮在按下态是否清晰 (两帧尺寸 128x49 / 128x53)
+- options-scene 滑块在深蓝背景下的可见性
+- picture-scene clear 图标按钮触控区域是否足够 (当前 48x40)
+
+---
+
 ## PICTURE-V0.16 — pict-list 分类页 DS 化 + select/sudoku 场景原版按钮落地 (两条线都做)
 
 ### 2026-09-02

@@ -1,26 +1,21 @@
 <view class="options-page">
-  <!-- 返回条 -->
+  <!-- 顶部返回条 -->
   <view class="scene-bar" bindtap="onBack">
     <text class="scene-bar-text">← 返回主菜单</text>
-  </view>
-
-  <!-- 原 DS setu03.nbm 设置界面背景 -->
-  <view class="setu-banner">
-    <image class="setu-image" src="{{setu03Url}}" mode="aspectFill" lazy-load></image>
   </view>
 
   <view class="options-card">
     <!-- BGM 音量 -->
     <view class="option-row">
       <image class="option-label-icon" src="{{bgmVolumeIconUrl}}" mode="heightFix" lazy-load></image>
-      <slider class="option-slider" min="0" max="100" value="{{bgmVolume}}" bindchanging="onBgmVolumeChange" bindchange="onBgmVolumeChange" activeColor="#1565c0" block-size="20" />
+      <slider class="option-slider" min="0" max="100" value="{{bgmVolume}}" bindchanging="onBgmVolumeChange" bindchange="onBgmVolumeChange" activeColor="#4db8ff" block-color="#ffffff" block-size="20" />
       <text class="option-value">{{bgmVolume}}</text>
     </view>
 
     <!-- SE 音量 -->
     <view class="option-row">
       <image class="option-label-icon" src="{{seVolumeIconUrl}}" mode="heightFix" lazy-load></image>
-      <slider class="option-slider" min="0" max="100" value="{{seVolume}}" bindchanging="onSeVolumeChange" bindchange="onSeVolumeChange" activeColor="#e65100" block-size="20" />
+      <slider class="option-slider" min="0" max="100" value="{{seVolume}}" bindchanging="onSeVolumeChange" bindchange="onSeVolumeChange" activeColor="#ff8a65" block-color="#ffffff" block-size="20" />
       <text class="option-value">{{seVolume}}</text>
     </view>
 

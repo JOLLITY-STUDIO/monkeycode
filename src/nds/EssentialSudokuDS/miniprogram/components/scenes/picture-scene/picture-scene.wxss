@@ -1,28 +1,30 @@
-/* picture-scene.wxss — 图画谜题玩法样式 (迁移自 pages/picture/picture.wxss) */
+/* picture-scene.wxss — 图画谜题玩法样式 (V0.19 DS 深色主题) */
 .picture-page {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100%;
-  padding: 8px 12px 20px;
+  min-height: 100vh;
+  padding: 12px 14px 20px;
   box-sizing: border-box;
   overflow-y: auto;
-  background: #f0f4f8;
+  background: #0d1b2a;
 }
 
 .scene-bar {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   box-sizing: border-box;
-  background: #ffffff;
-  border-radius: 7px;
-  border: 0.5px solid #d8e0e8;
-  margin-bottom: 8px;
+  background: rgba(22, 42, 66, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
 .scene-bar-text {
   font-size: 14px;
-  color: #3a4a5a;
+  color: #c8d5e8;
   font-weight: 600;
 }
 
@@ -47,7 +49,7 @@
 .puzzle-name {
   font-size: 16px;
   font-weight: 700;
-  color: #2b3a4a;
+  color: #e9eef3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -56,7 +58,7 @@
 
 .stat {
   font-size: 12px;
-  color: #6b7a8a;
+  color: #8a9bb0;
   margin-left: 8px;
   white-space: nowrap;
 }
@@ -64,7 +66,7 @@
 .timer {
   font-size: 15px;
   font-weight: 600;
-  color: #2b3a4a;
+  color: #4db8ff;
   margin-left: 6px;
   white-space: nowrap;
 }
@@ -88,15 +90,15 @@
   font-size: 12px;
   padding: 5px 13px;
   border-radius: 12px;
-  background: #ffffff;
-  color: #6b7a8a;
-  border: 0.5px solid #d0d8e0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #c8d5e8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .cat-chip-active {
-  background: #2b3a4a;
+  background: #2e6fc7;
   color: #ffffff;
-  border-color: #2b3a4a;
+  border-color: #4db8ff;
 }
 
 /* 谜题导航 */
@@ -115,16 +117,16 @@
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  color: #2b3a4a;
-  background: #ffffff;
+  color: #c8d5e8;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 6px;
-  border: 0.5px solid #d0d8e0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.nav-key-random {
-  background: #2b3a4a;
+.nav-key-accent {
+  background: #2e6fc7;
   color: #ffffff;
-  border-color: #2b3a4a;
+  border-color: #4db8ff;
 }
 
 /* 15x15 彩色网格 + ナンクロ 每色计数行列提示
@@ -268,13 +270,13 @@
   box-sizing: border-box;
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  box-shadow: 0 1px 4px rgba(43, 58, 74, 0.18);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   transition: transform 0.12s ease;
 }
 
 .palette-item-active .palette-key {
   transform: scale(1.08);
-  box-shadow: 0 0 0 2px #2b3a4a, 0 1px 4px rgba(43, 58, 74, 0.25);
+  box-shadow: 0 0 0 2px #4db8ff, 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .palette-need {
@@ -283,7 +285,7 @@
   height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: #2b3a4a;
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
   font-size: 10px;
   font-weight: 700;
@@ -295,7 +297,7 @@
   background: #1e8e3e;
 }
 
-/* 工具行 (DS 风格: 白底灰边按钮 + 原切片强调按钮) */
+/* 工具行 (V0.19: 文字按钮改深色胶囊 + 清空画板改为纯 DS clear 图标按钮) */
 .tool-row {
   width: 100%;
   display: flex;
@@ -311,32 +313,34 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: #2b3a4a;
-  background: #ffffff;
   border-radius: 7px;
-  border: 0.5px solid #d0d8e0;
-  box-shadow: 0 1.5px 0 #b0b8c0;
+  transition: transform 0.08s ease, filter 0.08s ease;
 }
 
-.tool-key:active {
-  transform: translateY(1.5px);
-  box-shadow: 0 0 0 #b0b8c0;
+/* 文字按钮: 深色半透明底 + 浅色文字 */
+.tool-key-text {
+  color: #c8d5e8;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* 清空画板: 原 DS numclo_00.nbm 灰色 X 按钮切片 + 白色文字 */
+.tool-key-text:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* 清空画板: 纯 DS numclo_00.nbm clear 图标按钮 */
 .tool-key-clear {
-  background-color: #8e949a;
+  flex: 0 0 48px;
+  width: 48px;
+  background-color: transparent;
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  color: #ffffff;
-  font-weight: 700;
-  text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.45);
-  border-color: #6b727a;
-  box-shadow: 0 1.5px 0 #5a6068;
 }
 
 .tool-key-clear:active {
-  box-shadow: 0 0 0 #5a6068;
+  transform: scale(0.92);
+  filter: brightness(0.88);
 }
 
 /* 教程模式提示图 */
@@ -346,9 +350,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
-  border-radius: 7px;
-  border: 0.5px solid #d8e0e8;
+  background: rgba(22, 42, 66, 0.7);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   margin-top: 8px;
   position: relative;
   overflow: hidden;
@@ -368,20 +372,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  color: #6b7a8a;
-  background: rgba(240, 244, 248, 0.9);
+  background: rgba(13, 27, 42, 0.75);
   border-radius: 50%;
+}
+
+.tutorial-close-x {
+  font-size: 16px;
+  color: #c8d5e8;
+  line-height: 1;
 }
 
 /* 完成提示条 */
 .complete-banner {
   margin-top: 8px;
   font-size: 13px;
-  color: #1e8e3e;
-  background: #e6f4ea;
+  color: #a8f0c0;
+  background: rgba(30, 142, 62, 0.18);
   padding: 6px 14px;
   border-radius: 6px;
+  border: 1px solid rgba(30, 142, 62, 0.25);
 }
 
 /* 原 DS numclo_00.nbm banner */
@@ -391,11 +400,11 @@
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 8px;
-  background: #ffffff;
+  background: rgba(22, 42, 66, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 0.5px solid #e0e6ec;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .picture-banner-image {
@@ -427,7 +436,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(13, 27, 42, 0.35);
+  background: rgba(13, 27, 42, 0.55);
   animation: celebrate-fade-in 0.25s ease both;
   pointer-events: none;
 }

@@ -2,7 +2,6 @@
 // BGM/SE 音量持久化 + 清除数据 + 评分/制作/关于 (跳转 triggerEvent)
 
 import {
-  NBM_SETU03,
   NBM_SELECT3_BGM_VOLUME_NORMAL,
   NBM_SELECT3_SE_VOLUME_NORMAL,
   NBM_SELECT3_CLEAR_NORMAL,
@@ -18,7 +17,6 @@ Component({
   data: {
     bgmVolume: 100,
     seVolume: 100,
-    setu03Url: NBM_SETU03,
     bgmVolumeIconUrl: NBM_SELECT3_BGM_VOLUME_NORMAL,
     seVolumeIconUrl: NBM_SELECT3_SE_VOLUME_NORMAL,
     clearIconUrl: NBM_SELECT3_CLEAR_NORMAL,

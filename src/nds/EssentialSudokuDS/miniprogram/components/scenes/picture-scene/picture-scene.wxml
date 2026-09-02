@@ -1,5 +1,5 @@
 <view class="picture-page">
-  <!-- 返回条 -->
+  <!-- 顶部返回条 -->
   <view class="scene-bar" bindtap="onBack">
     <text class="scene-bar-text">← 返回主菜单</text>
   </view>
@@ -32,10 +32,10 @@
     </view>
   </scroll-view>
 
-  <!-- 谜题导航: 上一题 / 随机 / 下一题 / 跳转 -->
+  <!-- 谜题导航: 上一题 / 随机 / 下一题 / 跳转 (DS 深色胶囊) -->
   <view class="nav-row">
     <view class="nav-key" bindtap="onPrev">上一题</view>
-    <view class="nav-key nav-key-random" bindtap="onRandom">随机</view>
+    <view class="nav-key nav-key-accent" bindtap="onRandom">随机</view>
     <view class="nav-key" bindtap="onNext">下一题</view>
     <view class="nav-key" bindtap="onJumpTo">跳转</view>
   </view>
@@ -82,7 +82,9 @@
   <!-- 教程模式提示图 (numclo_tu.data) -->
   <view wx:if="{{currentFile === 'numclo_tu.data' && !tutorialClosed}}" class="tutorial-bar">
     <image class="tutorial-image" src="/assets/nbm/tutorial_00.nbm.png" mode="aspectFit" lazy-load></image>
-    <view class="tutorial-close" bindtap="onCloseTutorial">×</view>
+    <view class="tutorial-close" bindtap="onCloseTutorial">
+      <text class="tutorial-close-x">×</text>
+    </view>
   </view>
 
   <!-- 正确进度 -->
@@ -107,9 +109,9 @@
 
   <!-- 工具: 显示答案 / 撤销 / 清空画板 -->
   <view class="tool-row">
-    <view class="tool-key" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
-    <view class="tool-key" bindtap="onUndo">撤销</view>
-    <view class="tool-key tool-key-clear" style="background-image: url({{toolImages.clear}});" bindtap="onClearAll">清空画板</view>
+    <view class="tool-key tool-key-text" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
+    <view class="tool-key tool-key-text" bindtap="onUndo">撤销</view>
+    <view class="tool-key tool-key-clear" style="background-image: url({{toolImages.clear}});" bindtap="onClearAll"></view>
   </view>
 
   <!-- 完成提示条 -->

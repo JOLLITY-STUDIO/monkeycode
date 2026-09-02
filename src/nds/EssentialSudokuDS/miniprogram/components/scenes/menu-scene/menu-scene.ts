@@ -1,48 +1,69 @@
 // components/scenes/menu-scene/menu-scene.ts — 主菜单场景组件
-// title.nbm 横幅 + Number/Picture Puzzle 模式选择按钮 (纯标签实现)
-// 按钮待机态/点击态 (阴影+颜色差异) 由 wxss 标准定义
-// 跳转动作全部 triggerEvent 交给页面壳处理
+// V0.17: 改用 select4.nbm 原版模式按钮 (Number/Picture Puzzle 双帧按钮)
+//
+// select4.nbm 双帧语义: 第 1 帧为默认态(Number 亮蓝 / Picture 深蓝),
+//                       第 2 帧为按压态(Number 深蓝 / Picture 亮蓝).
+// 这样按压哪个按钮, 哪个按钮就切到对应高亮帧, 复刻 DS 主菜单的选中闪光.
 
 import { audioService } from '../../../utils/audio/audioService';
+import {
+  NBM_SELECT4_NUMBER_A,
+  NBM_SELECT4_NUMBER_B,
+  NBM_SELECT4_PICTURE_A,
+  NBM_SELECT4_PICTURE_B,
+} from '../../../utils/sudoku/nbmAssets';
 
-/** 点击后跳转延迟 — 让按压反馈 (scale/阴影) 被肉眼看到. */
-const NAV_DELAY_MS = 150;
+const PRESS_FEEDBACK_MS = 150;
 
 Component({
-  data: {},
+  data: {
+    numberNormalUrl: NBM_SELECT4_NUMBER_A,
+    numberPressedUrl: NBM_SELECT4_NUMBER_B,
+    pictureNormalUrl: NBM_SELECT4_PICTURE_A,
+    picturePressedUrl: NBM_SELECT4_PICTURE_B,
+    numberPressed: false,
+    picturePressed: false,
+  },
 
   methods: {
-    /** 点击数独玩法按钮 → 按压反馈后跳转 */
     onOpenNumberPuzzle() {
       audioService.playSe('decide');
-      setTimeout(() => this.triggerEvent('open-number'), NAV_DELAY_MS);
+      this.setData({ numberPressed: true });
+      setTimeout(() => {
+        this.setData({ numberPressed: false });
+        this.triggerEvent('open-number');
+      }, PRESS_FEEDBACK_MS);
     },
 
-    /** 点击图画谜题玩法按钮 → 按压反馈后跳转 */
     onOpenPicturePuzzle() {
       audioService.playSe('decide');
-      setTimeout(() => this.triggerEvent('open-picture'), NAV_DELAY_MS);
+      this.setData({ picturePressed: true });
+      setTimeout(() => {
+        this.setData({ picturePressed: false });
+        this.triggerEvent('open-picture');
+      }, PRESS_FEEDBACK_MS);
     },
 
-    /** 玩法说明 */
+    onNumberTouchStart() { this.setData({ numberPressed: true }); },
+    onNumberTouchEnd() { this.setData({ numberPressed: false }); },
+    onPictureTouchStart() { this.setData({ picturePressed: true }); },
+    onPictureTouchEnd() { this.setData({ picturePressed: false }); },
+
     onOpenTutorial() {
       audioService.playSe('tap');
       this.triggerEvent('open-tutorial');
     },
 
-    /** 制作人员 */
     onOpenStaff() {
       audioService.playSe('tap');
       this.triggerEvent('open-staff');
     },
 
-    /** 返回标题 */
     onBackTitle() {
       audioService.playSe('back');
       this.triggerEvent('back-title');
     },
 
-    /** 选项 */
     onOpenOptions() {
       audioService.playSe('tap');
       this.triggerEvent('open-options');

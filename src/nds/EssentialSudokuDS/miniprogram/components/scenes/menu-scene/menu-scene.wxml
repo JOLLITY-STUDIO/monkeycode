@@ -1,5 +1,5 @@
 <view class="menu-page">
-  <!-- 顶部标题横幅 -->
+  <!-- 顶部标题横幅 (DS 原版 title.nbm) -->
   <view class="title-banner">
     <image class="title-image" src="/assets/nbm/title.nbm.png" mode="aspectFill" lazy-load></image>
   </view>
@@ -9,21 +9,33 @@
     <view class="menu-label-wrap">
       <view class="menu-label">SELECT MODE</view>
     </view>
-    <view class="select-bg-wrap">
-      <view class="mode-btn mode-btn-number" hover-class="mode-btn-hover" hover-stay-time="80" bindtap="onOpenNumberPuzzle">
-        <text class="mode-btn-text">NUMBER PUZZLE</text>
-      </view>
-      <view class="mode-btn mode-btn-picture" hover-class="mode-btn-hover" hover-stay-time="80" bindtap="onOpenPicturePuzzle">
-        <text class="mode-btn-text">PICTURE PUZZLE</text>
-      </view>
+
+    <view class="mode-btn"
+          bindtouchstart="onNumberTouchStart"
+          bindtouchend="onNumberTouchEnd"
+          bindtap="onOpenNumberPuzzle">
+      <image class="mode-btn-image"
+             src="{{numberPressed ? numberPressedUrl : numberNormalUrl}}"
+             mode="widthFix"
+             lazy-load></image>
+    </view>
+
+    <view class="mode-btn"
+          bindtouchstart="onPictureTouchStart"
+          bindtouchend="onPictureTouchEnd"
+          bindtap="onOpenPicturePuzzle">
+      <image class="mode-btn-image"
+             src="{{picturePressed ? picturePressedUrl : pictureNormalUrl}}"
+             mode="widthFix"
+             lazy-load></image>
     </view>
   </view>
 
   <!-- 底部辅助入口 -->
   <view class="bottom-links">
-    <view class="link-btn" hover-class="link-btn-hover" hover-stay-time="80" bindtap="onBackTitle">返回标题</view>
-    <view class="link-btn" hover-class="link-btn-hover" hover-stay-time="80" bindtap="onOpenTutorial">玩法说明</view>
-    <view class="link-btn" hover-class="link-btn-hover" hover-stay-time="80" bindtap="onOpenStaff">制作人员</view>
-    <view class="link-btn" hover-class="link-btn-hover" hover-stay-time="80" bindtap="onOpenOptions">选项</view>
+    <view class="link-btn" bindtap="onBackTitle">返回标题</view>
+    <view class="link-btn" bindtap="onOpenTutorial">玩法说明</view>
+    <view class="link-btn" bindtap="onOpenStaff">制作人员</view>
+    <view class="link-btn" bindtap="onOpenOptions">选项</view>
   </view>
 </view>
