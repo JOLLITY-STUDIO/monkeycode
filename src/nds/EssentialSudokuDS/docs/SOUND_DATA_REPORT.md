@@ -1,9 +1,11 @@
-# SDAT Sound Data Format (SOUND-V0.1)
+# SDAT Sound Data Format (SOUND-V0.1 + SOUND-V0.2)
 
 > Essential Sudoku DS MaxMod SDAT 音频容器解码结论.
 > 来源: `rom-data/extracted/sdat/sound_data.sdat` (133.75 KB), FAT 起始 offset `0x40C`.
 > 解码器: `scripts/extract_sdat.py` / `scripts/analyze_sound_data.py` / `scripts/swav_to_wav.py`
+>          + SOUND-V0.2: `scripts/sdat_common.py` / `sseq_playable.py` / `snd_linkage.py` / `parse_sdat_symbols.py`
 > 参考: GBATEK (problemkaputt.de) DSSEQ/SSAR/SBNK/SWAR/DSWAV 章节 (work/gbatek_*.txt)
+> SOUND-V0.2 产物: `rom-data/sound/sseq-playable.json` / `snd-linkage.json` / `sdat-symbols.json`
 
 ## 1. 概要
 
@@ -104,9 +106,63 @@ IMA-ADPCM 数据区: `predictor(s16) + stepIndex(u8) + reserved(u8) + 4-bit nibb
 3. sampleRate 是 u16 不是 u32, 游戏样本多数 11025 Hz (并非 44.1K)
 4. SSAR `nRecords` 在 `+0x1C` 是 u32 (不是 u16)
 
-## 8. 后续 (SOUND-V0.2+)
+## 8. SSEQ 可播放事件流 (SOUND-V0.2)
 
-- SSEQ 完整 disasm 到可播放事件流 (CALL/JUMP 目标展开 + loop)
-- SBNK→SWAR 全链接表导出 (JSON) 供渲染器选音
-- 按 SSEQ 乐器 id + SBNK 映射试听 BGM 还原
-- INFO block 自定义解析 (当前 64 个 block table entries 非标准 MaxMod, 需按 symbol 表重建)
+`scripts/sseq_playable.py` (`TrackRenderer`/`decode_cmd` 线性渲染器) 把 9 首 SSEQ 全部
+按 track 渲染成**线性可播放事件流** (tempo/tick/ms 全程推进), 输出
+`rom-data/sound/sseq-playable.json`:
+
+- 每条 track 从 track pointer (绝对地址 = `nDataOffset + rel24`) 起逐字节解码:
+  - `NOTE(<0x80) key/vel/dur` / `0x80 REST` / `0x81 INSTRUMENT` → 事件, tick 推进
+  - `0xC0 PAN / 0xC1 VOLUME / 0xC5 PITCHBEND / 0xCA MOD_DEPTH / 0xD5 EXPRESSION / 0xE1 TEMPO`
+    等控制码 → 记录当前状态 (每个后续 NOTE 快照完整上下文)
+- **CALL 展开**: `0x95 CALL rel24` 目标 = `nDataOffset + rel24`, subroutine 事件**内联**到
+  当前 track (tempo/tick 继续推进), 渲染结果与原始字节流一致 (抽样逐字节模拟验证)
+- **JUMP 语义**: `0x94 JUMP` 若目标是向后跳 (BGM 主循环段) → 记 `loop: {backTo}` 并结束该
+  track 渲染 (段本身即反复循环); 全部 9 文件所有 track 都收敛到 EOT, 无 stale/unknown
+- 抽样: SEQ_01 t0 起于 offset 0x3d, 首事件 PAN→EXPRESSION→MOD_DEPTH→NOTE key50 dur12…
+  SEQ_12 t9 是 8 事件的 mini track (mono/instrument 120/rest-nothing → 0 tick)
+
+## 9. SBNK→SWAR 全链接表 (SOUND-V0.2)
+
+`scripts/snd_linkage.py` 枚举每首 SSEQ 实际使用的 instrument (从 track 0 起线性扫
+`0x81 INSTRUMENT` VLQ 事件, 收集 program id), 经 INFO 的 BANK entry 链
+(`BANK entry → 4×SWAR index → SWAR file → sample`) 解析每个 program def 的完整 sample 字典
+(`rate/loop/waveType/loopOffset/loopLength/dataSize`), 输出 `rom-data/sound/snd-linkage.json`:
+
+- SSEQ→SBNK 由 INFO SEQ entry 的 `bnk(u16)` 字段给出; SBNK def 内的 `swar` 引用字段
+  实际上**恒为 0**, 真正的 SWAR 选择来自 INFO BANK entry 的 4-SWAR array:
+  - `BANK_BGM (10_sbnk)` → swars `[0, FFFF, FFFF, FFFF]` → SWAR index 0 = `WAVE_BGM (12_swar)`
+  - `BANK_SE (11_sbnk)` → swars `[1, ...]` → SWAR index 1 = `WAVE_SE (13_swar)`
+- SBNK def 3 形态全覆盖: ftype<16 单个 10B def / ftype=16 range / ftype=17 regional
+  (多组 sample, 每组 12B 含区域边界)
+- 抽样验证: SEQ_01 uses prog 1/12/13/14/120/121 → WAVE_BGM samples
+  [5,18,17,26,16,0,1,10,11,12,15,21,22,27], 映射一致
+
+## 10. INFO/SYMB Symbol 表重建 (SOUND-V0.2)
+
+`scripts/parse_sdat_symbols.py` (基于 `scripts/sdat_common.py` 共享模块) 输出
+`rom-data/sound/sdat-symbols.json`:
+
+- **INFO block 真实结构**: 头部 + **8 个 list offsets** (SEQ/SSAR/BANK/SWAR/Player/Group/
+  Player2/STRM), 非旧解析假设的 `magic/size/count + 4 sub-block`. 计数实测:
+  SEQ=9 / SSAR=1 / BANK=2 / SWAR=2 / Player=2 / Group=1 / Player2=0 / STRM=0
+- **INFO entry 尺寸** (GBATEK): SEQ 12B `fatID(u16)+unk(u16)+bnk(u16)+vol(u8)+cpr(u8)+
+  ppr(u8)+ply(u8)+rsv(u16)`; BANK 12B `fatID+unk+4×SWAR u16`; SWAR 2B fatID.
+  SEQ entries fatID 0-8, bnk=0, vol=94/64/…; BANK[0]=fat10 swars[0,FFFF];
+  BANK[1]=fat11 swars[1,…]; SWAR[0]=fat12(WAVE_BGM) / SWAR[1]=fat13(WAVE_SE)
+- **SYMB lists**: file list = `count + N×4 string offset`; SSAR 是 folder list
+  (`(nameOff, seqListOff)` pair → 子 SSEQ 文件列表, 30 个 SE 名: botan…search).
+  重建后: SEQ names `SEQ_01..04, SEQ_10, SEQ_12..15`; BANK `BANK_BGM/BANK_SE`;
+  SWAR `WAVE_BGM/WAVE_SE`; Player `PLAYER_BGM/PLAYER_SE`; SSAR folder `SEQ_SE`
+- 14 个 FAT 文件 (9 SSEQ + SSAR + 2 SBNK + 2 SWAR) 全部在表, symbol name 与 FAT id 完整匹配
+
+## 11. 已知陷阱 (SOUND-V0.2 追加)
+
+5. INFO block 没有 `magic/size/count + 4 sub-block offsets`, 就是 8 个 list offsets
+   (`sdat_common.info_lists()` 为 ground truth, 弃用 `_dump_sdat_info.py` 的旧解析)
+6. SBNK def 里 `swar` 引用字段恒 0, SWAR 选择来自 INFO BANK entry 的 4-SWAR array
+7. `0x93 TRACK` 前可能有 `0xFE mask + 3B`, 且 track pointer 的绝对地址 = `nDataOffset + rel`
+   (不是文件头 + rel)
+8. VLQ 只实现 2-byte 形式 (`b&0x80` → `((b&0x7F)<<8)|next`), 本项目 SSEQ 实测无 3-byte
+   VLQ 事件

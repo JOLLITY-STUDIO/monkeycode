@@ -1,0 +1,655 @@
+{
+ "sdat": {
+  "size": 136960,
+  "symb": {
+   "off": 64,
+   "size": 628
+  },
+  "info": {
+   "off": 692,
+   "size": 344
+  },
+  "fat": {
+   "off": 1036,
+   "size": 236
+  },
+  "file": {
+   "off": 1272,
+   "size": 135688
+  },
+  "nFiles": 14
+ },
+ "files": [
+  {
+   "idx": 0,
+   "offset": 1312,
+   "size": 4032,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 1,
+   "offset": 5344,
+   "size": 3828,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 2,
+   "offset": 9184,
+   "size": 3568,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 3,
+   "offset": 12768,
+   "size": 6432,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 4,
+   "offset": 19200,
+   "size": 636,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 5,
+   "offset": 19840,
+   "size": 532,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 6,
+   "offset": 20384,
+   "size": 456,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 7,
+   "offset": 20864,
+   "size": 404,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 8,
+   "offset": 21280,
+   "size": 660,
+   "magic": "SSEQ"
+  },
+  {
+   "idx": 9,
+   "offset": 21952,
+   "size": 636,
+   "magic": "SSAR"
+  },
+  {
+   "idx": 10,
+   "offset": 22592,
+   "size": 864,
+   "magic": "SBNK"
+  },
+  {
+   "idx": 11,
+   "offset": 23456,
+   "size": 352,
+   "magic": "SBNK"
+  },
+  {
+   "idx": 12,
+   "offset": 23808,
+   "size": 75624,
+   "magic": "SWAR"
+  },
+  {
+   "idx": 13,
+   "offset": 99456,
+   "size": 37500,
+   "magic": "SWAR"
+  }
+ ],
+ "seq": [
+  {
+   "fat": 0,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 94,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_01",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 1,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 64,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_02",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 2,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 64,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_03",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 3,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 104,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_04",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 4,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 100,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_10",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 5,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 100,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_12",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 6,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 100,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_13",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 7,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 100,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_14",
+   "bankName": "BANK_BGM"
+  },
+  {
+   "fat": 8,
+   "unk": 0,
+   "bnk": 0,
+   "vol": 100,
+   "cpr": 64,
+   "ppr": 64,
+   "ply": 0,
+   "rsv": "0000",
+   "name": "SEQ_15",
+   "bankName": "BANK_BGM"
+  }
+ ],
+ "ssar": [
+  {
+   "fat": 9,
+   "folder": "SEQ_SE",
+   "nRecords": 30,
+   "nDataOffset": 392,
+   "records": [
+    {
+     "seqIdx": 0,
+     "name": "botan",
+     "nOffset": 0,
+     "abs": 392,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 1,
+     "name": "slide",
+     "nOffset": 6,
+     "abs": 398,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 2,
+     "name": "windopen",
+     "nOffset": 12,
+     "abs": 404,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 3,
+     "name": "windclose",
+     "nOffset": 18,
+     "abs": 410,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 4,
+     "name": "idou",
+     "nOffset": 24,
+     "abs": 416,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 5,
+     "name": "nuru",
+     "nOffset": 30,
+     "abs": 422,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 6,
+     "name": "kesu",
+     "nOffset": 36,
+     "abs": 428,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 7,
+     "name": "kesu2",
+     "nOffset": 42,
+     "abs": 434,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 8,
+     "name": "batu",
+     "nOffset": 48,
+     "abs": 440,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 9,
+     "name": "mojiok",
+     "nOffset": 54,
+     "abs": 446,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 10,
+     "name": "mojibatu",
+     "nOffset": 60,
+     "abs": 452,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 11,
+     "name": "kettei",
+     "nOffset": 66,
+     "abs": 458,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 12,
+     "name": "enter",
+     "nOffset": 72,
+     "abs": 464,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 13,
+     "name": "kakikaki",
+     "nOffset": 78,
+     "abs": 470,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 14,
+     "name": "windidou",
+     "nOffset": 84,
+     "abs": 476,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 15,
+     "name": "wind2",
+     "nOffset": 90,
+     "abs": 482,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 16,
+     "name": "biyobiyo",
+     "nOffset": 96,
+     "abs": 488,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 17,
+     "name": "teen",
+     "nOffset": 102,
+     "abs": 494,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 18,
+     "name": "paieen",
+     "nOffset": 108,
+     "abs": 500,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 19,
+     "name": "seikou",
+     "nOffset": 114,
+     "abs": 506,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 20,
+     "name": "jump",
+     "nOffset": 120,
+     "abs": 512,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 21,
+     "name": "kinzoku",
+     "nOffset": 126,
+     "abs": 518,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 22,
+     "name": "expl",
+     "nOffset": 132,
+     "abs": 524,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 23,
+     "name": "SE010",
+     "nOffset": 138,
+     "abs": 530,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 24,
+     "name": "SE011",
+     "nOffset": 144,
+     "abs": 536,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 25,
+     "name": "SE012",
+     "nOffset": 150,
+     "abs": 542,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 26,
+     "name": "SE013",
+     "nOffset": 156,
+     "abs": 548,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 27,
+     "name": "se014",
+     "nOffset": 162,
+     "abs": 554,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 28,
+     "name": "nuru2",
+     "nOffset": 168,
+     "abs": 560,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    },
+    {
+     "seqIdx": 29,
+     "name": "start",
+     "nOffset": 174,
+     "abs": 566,
+     "bank": 1,
+     "vol": 127,
+     "cpr": 84,
+     "ppr": 64,
+     "ply": 1
+    }
+   ]
+  }
+ ],
+ "bank": [
+  {
+   "fat": 10,
+   "unk": 0,
+   "swars": [
+    0,
+    65535,
+    65535,
+    65535
+   ],
+   "name": "BANK_BGM",
+   "swarNames": [
+    "WAVE_BGM",
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "fat": 11,
+   "unk": 0,
+   "swars": [
+    1,
+    65535,
+    65535,
+    65535
+   ],
+   "name": "BANK_SE",
+   "swarNames": [
+    "WAVE_SE",
+    null,
+    null,
+    null
+   ]
+  }
+ ],
+ "swar": [
+  {
+   "fat": 12,
+   "unk": 0,
+   "name": "WAVE_BGM"
+  },
+  {
+   "fat": 13,
+   "unk": 0,
+   "name": "WAVE_SE"
+  }
+ ],
+ "player": [
+  {
+   "idx": 0,
+   "name": "PLAYER_BGM",
+   "raw": "01 00 00 00 00 00 00 00 04 00 00 00"
+  },
+  {
+   "idx": 1,
+   "name": "PLAYER_SE",
+   "raw": "04 00 00 00 00 00 00 00 01 00 00 00"
+  }
+ ],
+ "group": [
+  {
+   "idx": 0,
+   "raw": "02 00 00 00 01 06 00 00 01 00 00 00"
+  }
+ ],
+ "symbols": {
+  "seq": [
+   "SEQ_01",
+   "SEQ_02",
+   "SEQ_03",
+   "SEQ_04",
+   "SEQ_10",
+   "SEQ_12",
+   "SEQ_13",
+   "SEQ_14",
+   "SEQ_15"
+  ],
+  "ssarFolders": [
+   "SEQ_SE"
+  ],
+  "bank": [
+   "BANK_BGM",
+   "BANK_SE"
+  ],
+  "swar": [
+   "WAVE_BGM",
+   "WAVE_SE"
+  ],
+  "player": [
+   "PLAYER_BGM",
+   "PLAYER_SE"
+  ],
+  "group": [
+   "GROUP_STATIC"
+  ]
+ }
+}

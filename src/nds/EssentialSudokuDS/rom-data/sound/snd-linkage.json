@@ -1,0 +1,3389 @@
+{
+ "banks": [
+  {
+   "bankIdx": 0,
+   "name": "BANK_BGM",
+   "info": {
+    "fat": 10,
+    "unk": 0,
+    "swars": [
+     0,
+     65535,
+     65535,
+     65535
+    ]
+   },
+   "sbnkFat": 10,
+   "nInstr": 122,
+   "swarLinks": [
+    {
+     "swarListIdx": 0,
+     "name": "WAVE_BGM",
+     "fat": 12
+    },
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "bankIdx": 1,
+   "name": "BANK_SE",
+   "info": {
+    "fat": 11,
+    "unk": 0,
+    "swars": [
+     1,
+     65535,
+     65535,
+     65535
+    ]
+   },
+   "sbnkFat": 11,
+   "nInstr": 30,
+   "swarLinks": [
+    {
+     "swarListIdx": 1,
+     "name": "WAVE_SE",
+     "fat": 13
+    },
+    null,
+    null,
+    null
+   ]
+  }
+ ],
+ "sequences": [
+  {
+   "seqIdx": 0,
+   "name": "SEQ_01",
+   "info": {
+    "fat": 0,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 94,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     0,
+     120
+    ],
+    [
+     0,
+     121
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 13,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 17,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        24,
+        84,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 17,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 16027,
+        "time": 1045,
+        "loopOffset": 269,
+        "loopLength": 291,
+        "dataSize": 2240
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 14,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 26,
+       "swar": 0,
+       "note": 60,
+       "adsr": [
+        127,
+        10,
+        10,
+        115
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 26,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 16015,
+        "time": 1046,
+        "loopOffset": 953,
+        "loopLength": 130,
+        "dataSize": 4332
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 121,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 21,
+       "swar": 0,
+       "note": 44,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 21,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 32000,
+        "time": 523,
+        "loopOffset": 1,
+        "loopLength": 245,
+        "dataSize": 984
+       }
+      },
+      {
+       "swav": 22,
+       "swar": 0,
+       "note": 52,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 22,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 24000,
+        "time": 698,
+        "loopOffset": 1,
+        "loopLength": 1315,
+        "dataSize": 5264
+       }
+      },
+      {
+       "swav": 27,
+       "swar": 0,
+       "note": 71,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 27,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 22000,
+        "time": 761,
+        "loopOffset": 1,
+        "loopLength": 446,
+        "dataSize": 1788
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 1,
+   "name": "SEQ_02",
+   "info": {
+    "fat": 1,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 64,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     0,
+     120
+    ],
+    [
+     0,
+     121
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 4,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 3,
+       "swar": 0,
+       "note": 53,
+       "adsr": [
+        127,
+        2,
+        117,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 3,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11164,
+        "time": 1500,
+        "loopOffset": 210,
+        "loopLength": 40,
+        "dataSize": 1000
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 14,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 26,
+       "swar": 0,
+       "note": 60,
+       "adsr": [
+        127,
+        10,
+        10,
+        115
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 26,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 16015,
+        "time": 1046,
+        "loopOffset": 953,
+        "loopLength": 130,
+        "dataSize": 4332
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 121,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 21,
+       "swar": 0,
+       "note": 44,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 21,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 32000,
+        "time": 523,
+        "loopOffset": 1,
+        "loopLength": 245,
+        "dataSize": 984
+       }
+      },
+      {
+       "swav": 22,
+       "swar": 0,
+       "note": 52,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 22,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 24000,
+        "time": 698,
+        "loopOffset": 1,
+        "loopLength": 1315,
+        "dataSize": 5264
+       }
+      },
+      {
+       "swav": 27,
+       "swar": 0,
+       "note": 71,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 27,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 22000,
+        "time": 761,
+        "loopOffset": 1,
+        "loopLength": 446,
+        "dataSize": 1788
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 2,
+   "name": "SEQ_03",
+   "info": {
+    "fat": 2,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 64,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     120
+    ],
+    [
+     0,
+     121
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 2,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 8,
+       "swar": 0,
+       "note": 60,
+       "adsr": [
+        127,
+        100,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 8,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 187,
+        "loopLength": 21,
+        "dataSize": 832
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 10,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 23,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        52,
+        24,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 23,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11132,
+        "time": 1505,
+        "loopOffset": 497,
+        "loopLength": 78,
+        "dataSize": 2300
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 121,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 21,
+       "swar": 0,
+       "note": 44,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 21,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 32000,
+        "time": 523,
+        "loopOffset": 1,
+        "loopLength": 245,
+        "dataSize": 984
+       }
+      },
+      {
+       "swav": 22,
+       "swar": 0,
+       "note": 52,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 22,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 24000,
+        "time": 698,
+        "loopOffset": 1,
+        "loopLength": 1315,
+        "dataSize": 5264
+       }
+      },
+      {
+       "swav": 27,
+       "swar": 0,
+       "note": 71,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 27,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 22000,
+        "time": 761,
+        "loopOffset": 1,
+        "loopLength": 446,
+        "dataSize": 1788
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 3,
+   "name": "SEQ_04",
+   "info": {
+    "fat": 3,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 104,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     0,
+     9
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     20
+    ],
+    [
+     0,
+     120
+    ],
+    [
+     0,
+     121
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 5,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 2,
+       "swar": 0,
+       "note": 72,
+       "adsr": [
+        127,
+        2,
+        117,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 2,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11047,
+        "time": 1516,
+        "loopOffset": 808,
+        "loopLength": 430,
+        "dataSize": 4952
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 8,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 13,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        100,
+        105,
+        123
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 13,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 584,
+        "loopLength": 346,
+        "dataSize": 3720
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 9,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 14,
+       "swar": 0,
+       "note": 69,
+       "adsr": [
+        127,
+        100,
+        105,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 14,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11038,
+        "time": 1518,
+        "loopOffset": 314,
+        "loopLength": 207,
+        "dataSize": 2084
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 13,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 17,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        24,
+        84,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 17,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 16027,
+        "time": 1045,
+        "loopOffset": 269,
+        "loopLength": 291,
+        "dataSize": 2240
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 20,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 25,
+       "swar": 0,
+       "note": 43,
+       "adsr": [
+        127,
+        127,
+        120,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 25,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 22050,
+        "time": 759,
+        "loopOffset": 1,
+        "loopLength": 698,
+        "dataSize": 2796
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 121,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 21,
+       "swar": 0,
+       "note": 44,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 21,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 32000,
+        "time": 523,
+        "loopOffset": 1,
+        "loopLength": 245,
+        "dataSize": 984
+       }
+      },
+      {
+       "swav": 22,
+       "swar": 0,
+       "note": 52,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 22,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 24000,
+        "time": 698,
+        "loopOffset": 1,
+        "loopLength": 1315,
+        "dataSize": 5264
+       }
+      },
+      {
+       "swav": 27,
+       "swar": 0,
+       "note": 71,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 27,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 22000,
+        "time": 761,
+        "loopOffset": 1,
+        "loopLength": 446,
+        "dataSize": 1788
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 4,
+   "name": "SEQ_10",
+   "info": {
+    "fat": 4,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 100,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     120
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 5,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 2,
+       "swar": 0,
+       "note": 72,
+       "adsr": [
+        127,
+        2,
+        117,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 2,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11047,
+        "time": 1516,
+        "loopOffset": 808,
+        "loopLength": 430,
+        "dataSize": 4952
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 13,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 17,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        24,
+        84,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 17,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 16027,
+        "time": 1045,
+        "loopOffset": 269,
+        "loopLength": 291,
+        "dataSize": 2240
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 5,
+   "name": "SEQ_12",
+   "info": {
+    "fat": 5,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 100,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     120
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 6,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 6,
+       "swar": 0,
+       "note": 48,
+       "adsr": [
+        127,
+        64,
+        46,
+        123
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 6,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 12600,
+        "time": 1329,
+        "loopOffset": 63,
+        "loopLength": 6,
+        "dataSize": 276
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 6,
+   "name": "SEQ_13",
+   "info": {
+    "fat": 6,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 100,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     120
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 5,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 2,
+       "swar": 0,
+       "note": 72,
+       "adsr": [
+        127,
+        2,
+        117,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 2,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11047,
+        "time": 1516,
+        "loopOffset": 808,
+        "loopLength": 430,
+        "dataSize": 4952
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 7,
+   "name": "SEQ_14",
+   "info": {
+    "fat": 7,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 100,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     121
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 7,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 7,
+       "swar": 0,
+       "note": 48,
+       "adsr": [
+        127,
+        44,
+        66,
+        123
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 7,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1059,
+        "loopLength": 221,
+        "dataSize": 5120
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 12,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 18,
+       "swar": 0,
+       "note": 62,
+       "adsr": [
+        127,
+        54,
+        44,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 18,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 331,
+        "loopLength": 414,
+        "dataSize": 2980
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 13,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 17,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        24,
+        84,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 17,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 16027,
+        "time": 1045,
+        "loopOffset": 269,
+        "loopLength": 291,
+        "dataSize": 2240
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 121,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 21,
+       "swar": 0,
+       "note": 44,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 21,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 32000,
+        "time": 523,
+        "loopOffset": 1,
+        "loopLength": 245,
+        "dataSize": 984
+       }
+      },
+      {
+       "swav": 22,
+       "swar": 0,
+       "note": 52,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 22,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 24000,
+        "time": 698,
+        "loopOffset": 1,
+        "loopLength": 1315,
+        "dataSize": 5264
+       }
+      },
+      {
+       "swav": 27,
+       "swar": 0,
+       "note": 71,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 27,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 22000,
+        "time": 761,
+        "loopOffset": 1,
+        "loopLength": 446,
+        "dataSize": 1788
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "seqIdx": 8,
+   "name": "SEQ_15",
+   "info": {
+    "fat": 8,
+    "unk": 0,
+    "bnk": 0,
+    "vol": 100,
+    "cpr": 64,
+    "ppr": 64,
+    "ply": 0
+   },
+   "usedProgs": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     0,
+     15
+    ],
+    [
+     0,
+     120
+    ]
+   ],
+   "instruments": [
+    {
+     "bank": 0,
+     "prog": 1,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 5,
+       "swar": 0,
+       "note": 40,
+       "adsr": [
+        127,
+        115,
+        120,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 5,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11069,
+        "time": 1513,
+        "loopOffset": 812,
+        "loopLength": 151,
+        "dataSize": 3852
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 10,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 23,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        52,
+        24,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 23,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 11132,
+        "time": 1505,
+        "loopOffset": 497,
+        "loopLength": 78,
+        "dataSize": 2300
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 15,
+     "ftype": 1,
+     "defs": [
+      {
+       "swav": 20,
+       "swar": 0,
+       "note": 67,
+       "adsr": [
+        127,
+        48,
+        64,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 20,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 1,
+        "rate": 18106,
+        "time": 925,
+        "loopOffset": 2357,
+        "loopLength": 127,
+        "dataSize": 9936
+       }
+      }
+     ]
+    },
+    {
+     "bank": 0,
+     "prog": 120,
+     "ftype": 17,
+     "defs": [
+      {
+       "swav": 16,
+       "swar": 0,
+       "note": 36,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 16,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 191,
+        "dataSize": 768
+       }
+      },
+      {
+       "swav": 0,
+       "swar": 0,
+       "note": 45,
+       "adsr": [
+        127,
+        127,
+        127,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 0,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 183,
+        "dataSize": 736
+       }
+      },
+      {
+       "swav": 1,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        125
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 1,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11025,
+        "time": 1519,
+        "loopOffset": 1,
+        "loopLength": 256,
+        "dataSize": 1028
+       }
+      },
+      {
+       "swav": 10,
+       "swar": 0,
+       "note": 57,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 10,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 255,
+        "dataSize": 1024
+       }
+      },
+      {
+       "swav": 11,
+       "swar": 0,
+       "note": 65,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 11,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 319,
+        "dataSize": 1280
+       }
+      },
+      {
+       "swav": 12,
+       "swar": 0,
+       "note": 74,
+       "adsr": [
+        127,
+        127,
+        125,
+        122
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 12,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 460,
+        "dataSize": 1844
+       }
+      },
+      {
+       "swav": 15,
+       "swar": 0,
+       "note": 80,
+       "adsr": [
+        127,
+        127,
+        125,
+        120
+       ],
+       "pan": 64,
+       "sample": {
+        "swarName": "WAVE_BGM",
+        "swarFat": 12,
+        "swavIdx": 15,
+        "swarListIdx": 0,
+        "waveType": 2,
+        "loopFlag": 0,
+        "rate": 11024,
+        "time": 1520,
+        "loopOffset": 1,
+        "loopLength": 436,
+        "dataSize": 1748
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

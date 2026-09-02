@@ -4,6 +4,41 @@ All notable changes to this project are documented here.
 
 ---
 
+## SOUND-V0.2 — SSEQ 可播放事件流 + SBNK→SWAR 链接表 + SDAT Symbol 表重建
+
+### 2026-09-02
+
+#### 新增
+- ✅ `scripts/sdat_common.py` 新建共享模块: `Sdat`(FAT/INFO/SYMB 解析 + info_lists + symb_tables) /
+  `Sseq` / `Ssar` / `Sbnk`(defs_of 支持 ftype<16/16/17) / `Swar`(sample(i) → DSWAV dict)
+- ✅ `scripts/sseq_playable.py` 新建: 9 首 SSEQ 全部 track 线性渲染为可播放事件流
+  (tempo/tick/ms 推进, CALL rel24 内联展开, JUMP 向后跳记 `loop:{backTo}` 并结束段渲染,
+  全部收敛 EOT 无 stale) → `rom-data/sound/sseq-playable.json`
+- ✅ `scripts/snd_linkage.py` 新建: 每首 SSEQ 实际 instrument (0x81 事件) → INFO BANK entry
+  4-SWAR array → SWAR file → 完整 sample 字典 (rate/loop/waveType/dataSize)
+  → `rom-data/sound/snd-linkage.json`
+- ✅ `scripts/parse_sdat_symbols.py` 新建: INFO/SYMB 自定义解析重建 symbol 表
+  → `rom-data/sound/sdat-symbols.json`
+- ✅ `docs/SOUND_DATA_REPORT.md` 追加 SOUND-V0.2 章节 8-11 + 陷阱 5-8
+
+#### 关键结论 (ground truth)
+- INFO block 真实结构 = 头部 + 8 个 list offsets (SEQ/SSAR/BANK/SWAR/Player/Group/Player2/STRM),
+  非旧解析假设的 magic/size/count + 4 sub-block; 实测 SEQ=9/SSAR=1/BANK=2/SWAR=2/Player=2/Group=1
+- INFO entry 尺寸: SEQ 12B (fatID+unk+bnk+vol+cpr+ppr+ply+rsv) / BANK 12B (fatID+unk+4×SWAR) /
+  SWAR 2B fatID; SSAR 是 folder list (`(nameOff, seqListOff)` pair, 30 个 SE 名)
+- SBNK def 的 `swar` 引用字段恒 0, 真正的 SWAR 选择来自 INFO BANK entry 4-SWAR array:
+  BANK_BGM(10_sbnk)→swars[0,FFFF]→12_swar(WAVE_BGM); BANK_SE(11_sbnk)→swars[1,…]→13_swar(WAVE_SE)
+- SYMB 重建: SEQ `SEQ_01..04/SEQ_10/SEQ_12..15`, BANK `BANK_BGM/BANK_SE`, SWAR `WAVE_BGM/WAVE_SE`,
+  Player `PLAYER_BGM/PLAYER_SE`, SSAR folder `SEQ_SE`; 14 FAT 文件全部在表且与 symbol 匹配
+
+#### Verification
+- ✅ `python scripts/sseq_playable.py` — 9 SSEQ 全部 track 收敛 (抽样逐字节模拟 CALL/JUMP 一致)
+- ✅ `python scripts/snd_linkage.py` — SEQ_01 prog 1/12/13/14/120/121 → WAVE_BGM samples
+  [5,18,17,26,16,0,1,10,11,12,15,21,22,27] 映射正确
+- ✅ `python scripts/parse_sdat_symbols.py` — INFO/SYMB 全表重建, 14 FAT 文件全在
+
+---
+
 ## SOUND-V0.1 — SDAT 音频数据全链路解码 (SSEQ/SSAR/SBNK/SWAR/ADPCM→WAV)
 
 ### 2026-09-02
