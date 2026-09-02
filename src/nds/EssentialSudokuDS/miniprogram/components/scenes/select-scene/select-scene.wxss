@@ -1,7 +1,8 @@
 /* select-scene.wxss — 数独选题场景样式
- * PICTURE-V0.29: 全部按钮改 select1.nbm 原版图片 (浅蓝 NORMAL + 深蓝 SELECTED 双态)
- *  - Difficulty A/B/C/D: 常驻 active 用 .ds-img-btn-active (CSS 滤镜 + 描边, NBM 只切了 normal)
- *  - 上下箭头 / Start / Return: touchstart 切 selected 图源 (pressed 状态机)
+ * PICTURE-V0.30: 全部按钮改中文文本双态胶囊 (纯中文版 UI)
+ *   - normal   = #28A0F0 亮蓝渐变 + 白字 (select1.nbm NORMAL 帧取色)
+ *   - selected = #2060D0 深蓝渐变 + 白字 (select1.nbm SELECTED 帧取色)
+ *   - 按下瞬态 = .sel-btn-hover (hover-class)
  */
 
 .select-page {
@@ -40,38 +41,43 @@
   color: #9fb6d3;
 }
 
-/* ====== 图片按钮通用 (DS NBM 原版双态) ====== */
-.ds-img-btn {
-  position: relative;
+/* ====== 中文文本双态胶囊按钮 (select1 取色) ====== */
+.sel-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  margin: 0;
-  background: transparent;
+  box-sizing: border-box;
   border: 0;
-  /* 默认让容器自适应图片尺寸 (不写 width/height, 由子类约束) */
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
+  background: linear-gradient(180deg, #45b4f8 0%, #28a0f0 55%, #1e8fe8 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.15),
+    0 3px 8px rgba(0, 0, 0, 0.3);
+  transition: background 0.08s ease, box-shadow 0.08s ease, transform 0.08s ease;
 }
 
-.ds-img-btn-img {
-  display: block;
-  width: 100%;
-  height: 100%;
+/* 按下瞬态 → 深蓝 */
+.sel-btn-hover {
+  background: linear-gradient(180deg, #2870e0 0%, #2060d0 55%, #1853b8 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.35);
+  transform: translateY(1px);
 }
 
-/* 常驻 active 态: 模拟深蓝高亮 (NBM 没切 DIFF selected, 用 CSS 滤镜 + 描边) */
-.ds-img-btn-active .ds-img-btn-img {
-  filter: brightness(1.35) saturate(1.6) drop-shadow(0 0 4px rgba(77, 184, 255, 0.85));
-  transform: scale(1.06);
-  transition: filter 0.08s ease, transform 0.08s ease;
+/* 常驻 selected (难度选中 / 主操作) → 深蓝 */
+.sel-btn-active {
+  background: linear-gradient(180deg, #2870e0 0%, #2060d0 55%, #1853b8 100%);
+  box-shadow: 0 0 0 2px rgba(77, 184, 255, 0.55),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.25),
+    0 3px 10px rgba(0, 0, 0, 0.35);
 }
 
-/* 触摸按下 → 短暂亮度脉冲 (即使 image 已切到 selected 图也再加强反馈) */
-.ds-img-btn:active .ds-img-btn-img {
-  filter: brightness(1.2);
-}
-
-/* ====== 难度 A/B/C/D (30x30 NBM, NORMAL 与 SELECTED 同图源) ====== */
+/* ====== 难度 4 按钮 ====== */
 .difficulty-row {
   display: flex;
   flex-direction: row;
@@ -83,41 +89,35 @@
 }
 
 .diff-btn {
-  width: 56px;
-  height: 56px;
+  width: 76px;
+  height: 44px;
+  font-size: 17px;
+  letter-spacing: 1px;
 }
 
-.diff-btn .ds-img-btn-img {
-  width: 56px;
-  height: 56px;
-}
-
-/* ====== 题号选择: − / 输入框 / + (20x20 NBM 箭头) ====== */
+/* ====== 题号选择: − / 输入框 / ＋ ====== */
 .number-row {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: 14px;
   width: 100%;
   margin-bottom: 14px;
 }
 
-.arrow-btn {
-  width: 40px;
-  height: 40px;
-}
-
-.arrow-btn .ds-img-btn-img {
-  width: 40px;
-  height: 40px;
+.narrow-btn {
+  width: 56px;
+  height: 46px;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .number-display {
-  min-width: 140px;
+  min-width: 150px;
   height: 48px;
   background: rgba(255, 255, 255, 0.92);
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,34 +143,31 @@
   text-align: center;
 }
 
-/* ====== 底部 Return + Start (NBM 56x24 / 88x24 双态长条) ====== */
+/* ====== 底部 返回 + 开始 ====== */
 .action-row {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 18px;
   width: 100%;
-  max-width: 320px;
+  max-width: 340px;
   margin-top: auto;
   padding-top: 16px;
 }
 
-.return-btn {
-  width: 110px;
-  height: 36px;
+.act-btn {
+  height: 48px;
+  padding: 0 34px;
+  font-size: 18px;
+  letter-spacing: 4px;
 }
 
-.return-btn .ds-img-btn-img {
-  width: 110px;
-  height: 36px;
-}
-
-.start-btn {
-  width: 132px;
-  height: 40px;
-}
-
-.start-btn .ds-img-btn-img {
-  width: 132px;
-  height: 40px;
+/* 开始 = 主操作, 常驻深蓝 */
+.sel-btn-primary {
+  background: linear-gradient(180deg, #2870e0 0%, #2060d0 55%, #1853b8 100%);
+  box-shadow: 0 0 0 2px rgba(77, 184, 255, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.25),
+    0 3px 10px rgba(0, 0, 0, 0.35);
 }

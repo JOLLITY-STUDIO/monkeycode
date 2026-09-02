@@ -9,7 +9,7 @@
   <!-- 底部开始提示 -->
   <view class="tap-hint-wrap">
     <view class="tap-hint {{pulse ? 'pulse' : ''}}">
-      <text class="tap-hint-text">TAP TO START</text>
+      <text class="tap-hint-text">点击开始</text>
     </view>
   </view>
 

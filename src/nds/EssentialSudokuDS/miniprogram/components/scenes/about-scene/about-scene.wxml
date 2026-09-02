@@ -34,6 +34,6 @@
   </view>
 
   <view class="about-footer">
-    <text class="about-footer-text">Licensed by Nintendo · © Imagineer</text>
+    <text class="about-footer-text">任天堂授权 · © Imagineer</text>
   </view>
 </view>

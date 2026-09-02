@@ -7,7 +7,7 @@
   <!-- 主菜单模式选择 (双态文本按钮) -->
   <view class="mode-select-card">
     <view class="menu-label-wrap">
-      <view class="menu-label">SELECT MODE</view>
+      <view class="menu-label">选择模式</view>
     </view>
 
     <view

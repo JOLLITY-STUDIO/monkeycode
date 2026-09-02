@@ -5,35 +5,22 @@
     <text class="select-subtitle">全局题库 1-1000</text>
   </view>
 
-  <!-- 难度选择: select1.nbm 原版 A/B/C/D 双态 (常驻 active 用 CSS 滤镜) -->
+  <!-- 难度选择: 中文文本双态胶囊 (normal 亮蓝 / selected 深蓝) -->
   <view class="difficulty-row">
     <view
       wx:for="{{diffButtons}}"
       wx:key="key"
-      class="ds-img-btn diff-btn {{difficulty === item.key ? 'ds-img-btn-active' : ''}}"
+      class="diff-btn sel-btn {{difficulty === item.key ? 'sel-btn-active' : ''}}"
+      hover-class="sel-btn-hover"
+      hover-stay-time="80"
       data-diff="{{item.key}}"
-      data-btnkey="diff-{{item.key}}"
       bindtap="onTapDiff"
-      bindtouchstart="_onTouchStart"
-      bindtouchend="_onTouchEnd"
-      bindtouchcancel="_onTouchEnd"
-    >
-      <image class="ds-img-btn-img" src="{{item.normalUrl}}" mode="aspectFit"></image>
-    </view>
+    >{{item.label}}</view>
   </view>
 
   <!-- 题号选择: − / 输入框 / + -->
   <view class="number-row">
-    <view
-      class="ds-img-btn arrow-btn"
-      data-btnkey="up"
-      bindtap="onPlus"
-      bindtouchstart="_onTouchStart"
-      bindtouchend="_onTouchEnd"
-      bindtouchcancel="_onTouchEnd"
-    >
-      <image class="ds-img-btn-img" src="{{pressed.up ? upButton.selectedUrl : upButton.normalUrl}}" mode="aspectFit"></image>
-    </view>
+    <view class="narrow-btn sel-btn" hover-class="sel-btn-hover" hover-stay-time="80" bindtap="onMinus">−</view>
     <view class="number-display">
       <input
         class="number-input"
@@ -43,42 +30,15 @@
         bindinput="onNoInput"
       />
     </view>
-    <view
-      class="ds-img-btn arrow-btn"
-      data-btnkey="down"
-      bindtap="onMinus"
-      bindtouchstart="_onTouchStart"
-      bindtouchend="_onTouchEnd"
-      bindtouchcancel="_onTouchEnd"
-    >
-      <image class="ds-img-btn-img" src="{{pressed.down ? downButton.selectedUrl : downButton.normalUrl}}" mode="aspectFit"></image>
-    </view>
+    <view class="narrow-btn sel-btn" hover-class="sel-btn-hover" hover-stay-time="80" bindtap="onPlus">＋</view>
   </view>
 
   <!-- 选中题目预览 -->
   <view class="preview-text" wx:if="{{previewText}}">{{previewText}}</view>
 
-  <!-- 底部 Return + Start -->
+  <!-- 底部 返回 + 开始 -->
   <view class="action-row">
-    <view
-      class="ds-img-btn return-btn"
-      data-btnkey="return"
-      bindtap="onBack"
-      bindtouchstart="_onTouchStart"
-      bindtouchend="_onTouchEnd"
-      bindtouchcancel="_onTouchEnd"
-    >
-      <image class="ds-img-btn-img" src="{{pressed.return ? returnButton.selectedUrl : returnButton.normalUrl}}" mode="aspectFit"></image>
-    </view>
-    <view
-      class="ds-img-btn start-btn"
-      data-btnkey="start"
-      bindtap="onStart"
-      bindtouchstart="_onTouchStart"
-      bindtouchend="_onTouchEnd"
-      bindtouchcancel="_onTouchEnd"
-    >
-      <image class="ds-img-btn-img" src="{{pressed.start ? startButton.selectedUrl : startButton.normalUrl}}" mode="aspectFit"></image>
-    </view>
+    <view class="act-btn sel-btn" hover-class="sel-btn-hover" hover-stay-time="80" bindtap="onBack">返回</view>
+    <view class="act-btn sel-btn sel-btn-primary" hover-class="sel-btn-hover" hover-stay-time="80" bindtap="onStart">开始</view>
   </view>
 </view>

@@ -7,14 +7,14 @@
   <view class="options-card">
     <!-- BGM 音量 -->
     <view class="option-row">
-      <text class="option-label-text">BGM 音量</text>
+      <text class="option-label-text">背景音乐音量</text>
       <slider class="option-slider" min="0" max="100" value="{{bgmVolume}}" bindchanging="onBgmVolumeChange" bindchange="onBgmVolumeChange" activeColor="#4db8ff" block-color="#ffffff" block-size="20" />
       <text class="option-value">{{bgmVolume}}</text>
     </view>
 
     <!-- SE 音量 -->
     <view class="option-row">
-      <text class="option-label-text">SE 音量</text>
+      <text class="option-label-text">音效音量</text>
       <slider class="option-slider" min="0" max="100" value="{{seVolume}}" bindchanging="onSeVolumeChange" bindchange="onSeVolumeChange" activeColor="#ff8a65" block-color="#ffffff" block-size="20" />
       <text class="option-value">{{seVolume}}</text>
     </view>

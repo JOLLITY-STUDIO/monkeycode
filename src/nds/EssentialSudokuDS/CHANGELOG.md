@@ -4,6 +4,43 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.30 — 纯中文 UI 规范落地: select-scene 按钮改中文文本双态胶囊 + 全场景英文文案中文化
+
+### 2026-09-03
+
+#### 用户明确
+- "全部改成中文好吗" + "我们是纯中文版本, 没有其他语言"
+- 唯一例外: 图案谜题的答案 (numclo 通关结果图) 保留双语中英文
+
+#### 修复
+- `select-scene.ts/.wxml/.wxss`: PICTURE-V0.29 的 select1.nbm 图片按钮回退 (NBM 原图烧录日文,
+  不符合纯中文) → 全部改中文文本双态胶囊:
+  - normal  = `#28A0F0` 亮蓝渐变 + 白字 (从 select1.nbm NORMAL 帧像素采样: #28A0F0/#A8D8F8 高光)
+  - selected = `#2060D0` 深蓝渐变 + 白字 (从 select1.nbm SELECTED 帧采样: #2060D0/#1050A8)
+  - 难度 4 按钮: 简单/中等/困难/专家 (key 仍 easy/medium/hard/expert, 选中常驻深蓝 .sel-btn-active)
+  - 题号区: − / 输入框 / ＋ (胶囊窄钮, 按下深蓝)
+  - 底部: 返回 (亮蓝) + 开始 (常驻深蓝主操作 .sel-btn-primary)
+  - ts 删除 NBM 图片模型 ImgButton/pressed 状态机/nbmAssets import, 只留中文文本数据
+- 全场景英文文案中文化 (wxml):
+  - menu-scene: `SELECT MODE` → `选择模式`
+  - title-scene: `TAP TO START` → `点击开始`
+  - staff-scene: `— End of Staff —` → `— 完 —`
+  - tutorial-scene: `数独 (Number Puzzle)` → `数独`; `图画谜题 (Picture Puzzle)` → `图画谜题`
+  - options-scene: `BGM 音量` → `背景音乐音量`; `SE 音量` → `音效音量`
+  - about-scene: `Licensed by Nintendo · © Imagineer` → `任天堂授权 · © Imagineer`
+
+#### 保留 (专有名词 / 原版图像素材, 不属于按钮/UI 文案)
+- 游戏名 `Essential Sudoku DS` / 厂商 `DigitalWare / Imagineer` (about/title 版权行)
+- NBM 封面/授权图 (title.nbm / dwlogo.nbm / license.nbm / tutorial_00.nbm 等原版横幅)
+- 图案谜题答案图 (用户明确保留双语)
+
+#### 验证
+- IDE 语言服务 0 诊断 (scenes 目录全量)
+- 待开发者工具重新编译: 选题页 4 中文难度胶囊 (选中深蓝) + −/＋ 窄钮 + 返回/开始中文胶囊
+  全部为纯中文 UI, 配色按 select1 浅蓝/深蓝双态
+
+---
+
 ## PICTURE-V0.29 — select-scene 全部按钮改 select1.nbm 原版双态图片
 
 ### 2026-09-03

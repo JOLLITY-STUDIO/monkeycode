@@ -1,24 +1,11 @@
 // components/scenes/select-scene/select-scene.ts — 数独选题场景组件
-// PICTURE-V0.29: 全部按钮改 select1.nbm 原版双态图片 (浅蓝 NORMAL + 深蓝 SELECTED)
-// Difficulty A/B/C/D 常驻 active 态由 CSS 滤镜 + 描边表达 (NBM 仅切了 normal 帧)
-// 上下箭头 / Start / Return 通过 touchstart/end 切 NORMAL ↔ SELECTED 图源
+// PICTURE-V0.30: 全部按钮改中文文本双态胶囊 (纯中文版 UI)
+//   - normal   = #28A0F0 亮蓝胶囊 + 白字 (select1.nbm NORMAL 帧取色)
+//   - selected = #2060D0 深蓝胶囊 + 白字 (select1.nbm SELECTED 帧取色)
+//   - 不再使用任何 NBM 图片按钮 (原图烧录日文, 不符合纯中文规范)
 
 import { getPuzzleById } from '../../../utils/sudoku/numple_puzzles';
 import { audioService } from '../../../utils/audio/audioService';
-import {
-  NBM_SELECT1_DIFF_A_NORMAL,
-  NBM_SELECT1_DIFF_B_NORMAL,
-  NBM_SELECT1_DIFF_C_NORMAL,
-  NBM_SELECT1_DIFF_D_NORMAL,
-  NBM_SELECT1_UP_NORMAL,
-  NBM_SELECT1_UP_SELECTED,
-  NBM_SELECT1_DOWN_NORMAL,
-  NBM_SELECT1_DOWN_SELECTED,
-  NBM_SELECT1_START_NORMAL,
-  NBM_SELECT1_START_SELECTED,
-  NBM_SELECT1_RETURN_NORMAL,
-  NBM_SELECT1_RETURN_SELECTED,
-} from '../../../utils/sudoku/nbmAssets';
 
 /** 难度 → 全局题号范围 (1-based, 闭区间) */
 const DIFF_RANGE: Record<string, [number, number]> = {
@@ -35,6 +22,14 @@ const DIFF_LABELS: Record<string, string> = {
   expert: '专家',
 };
 
+/** 难度按钮列表 (key 保持英文内部键, label 全中文显示) */
+const DIFF_BUTTONS = [
+  { key: 'easy', label: '简单' },
+  { key: 'medium', label: '中等' },
+  { key: 'hard', label: '困难' },
+  { key: 'expert', label: '专家' },
+];
+
 /** 全局题号 (1-1000) → numple 文件 + 文件内索引 */
 function noToId(no: number): string {
   const clamped = Math.min(1000, Math.max(1, no));
@@ -43,36 +38,6 @@ function noToId(no: number): string {
   return `numple${file}.data_${String(idx).padStart(3, '0')}`;
 }
 
-interface ImgButton {
-  key: string;
-  normalUrl: string;
-  selectedUrl: string;
-  /** selectedUrl === normalUrl 表示不切图 (由 CSS 表达 active) */
-}
-
-const DIFF_BUTTONS: ImgButton[] = [
-  { key: 'easy',   normalUrl: NBM_SELECT1_DIFF_A_NORMAL, selectedUrl: NBM_SELECT1_DIFF_A_NORMAL },
-  { key: 'medium', normalUrl: NBM_SELECT1_DIFF_B_NORMAL, selectedUrl: NBM_SELECT1_DIFF_B_NORMAL },
-  { key: 'hard',   normalUrl: NBM_SELECT1_DIFF_C_NORMAL, selectedUrl: NBM_SELECT1_DIFF_C_NORMAL },
-  { key: 'expert', normalUrl: NBM_SELECT1_DIFF_D_NORMAL, selectedUrl: NBM_SELECT1_DIFF_D_NORMAL },
-];
-
-const UP_BUTTON: ImgButton = {
-  key: 'up', normalUrl: NBM_SELECT1_UP_NORMAL, selectedUrl: NBM_SELECT1_UP_SELECTED,
-};
-
-const DOWN_BUTTON: ImgButton = {
-  key: 'down', normalUrl: NBM_SELECT1_DOWN_NORMAL, selectedUrl: NBM_SELECT1_DOWN_SELECTED,
-};
-
-const START_BUTTON: ImgButton = {
-  key: 'start', normalUrl: NBM_SELECT1_START_NORMAL, selectedUrl: NBM_SELECT1_START_SELECTED,
-};
-
-const RETURN_BUTTON: ImgButton = {
-  key: 'return', normalUrl: NBM_SELECT1_RETURN_NORMAL, selectedUrl: NBM_SELECT1_RETURN_SELECTED,
-};
-
 Component({
   data: {
     difficulty: 'easy' as string,
@@ -80,21 +45,11 @@ Component({
     diffLabels: DIFF_LABELS,
     puzzleNo: 1 as number,
     previewText: '',
-    upButton: UP_BUTTON,
-    downButton: DOWN_BUTTON,
-    startButton: START_BUTTON,
-    returnButton: RETURN_BUTTON,
-    /** 按下中 → 显示 SELECTED 图源 (按 key 索引) */
-    pressed: {} as Record<string, boolean>,
   },
 
   lifetimes: {
     attached() {
       this._refreshPreview();
-    },
-    detached() {
-      // 清掉按下态残留 (防止切场景后 setData 报错)
-      this.data.pressed = {};
     },
   },
 
@@ -163,23 +118,6 @@ Component({
     onBack() {
       audioService.playSe('back');
       this.triggerEvent('back');
-    },
-
-    /** 触摸按下 → 该按钮 selected 图源 */
-    _onTouchStart(e: any) {
-      const key = e.currentTarget.dataset.btnkey as string;
-      if (!key) return;
-      const next = { ...(this.data.pressed || {}), [key]: true };
-      this.setData({ pressed: next });
-    },
-
-    /** 触摸松开/取消 → 还原 NORMAL 图源 */
-    _onTouchEnd(e: any) {
-      const key = e.currentTarget.dataset.btnkey as string;
-      if (!key) return;
-      const next = { ...(this.data.pressed || {}) };
-      delete next[key];
-      this.setData({ pressed: next });
     },
   },
 });
