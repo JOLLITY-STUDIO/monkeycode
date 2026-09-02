@@ -4,6 +4,26 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.27 — 修复 title-scene 首屏不显示 + 点击无响应
+
+### 2026-09-03
+
+#### 修复: title-scene 在 Skyline 渲染器下整页不显示
+- 截图: 顶部 .top-ad 绿黑文字带 (10vh, title.nbm.png 被 aspectFill 压缩) + 下方 90vh 大片纯色 #0d1b2a, 没有任何 title-scene 元素 (TAP TO START / 全屏 title 画面 / 版权文字全部不可见), 点击屏幕无响应无法进入 menu
+- 根因 1: `title-scene.wxss .title-page` 用 `width:100vw; min-height:100vh` 撑满整个 viewport, 在 .scene-stage (position:absolute top:0 left:0 right:0 bottom:0) 内 + .scene-stage overflow:hidden + .scene-area flex:1 高度 ≈90vh, Skyline 渲染器对 100vw/100vh 越界容器处理异常导致整块不显示
+- 根因 2: `index.wxml .top-ad .ad-slot-image` 引用 `/assets/nbm/title.nbm.png` (与 title-scene 同图), aspectFill 压缩 10vh 高度出现顶部"绿黑文字带"干扰视觉, 同时两处同时加载同一图增加 Skyline 渲染异常概率
+- 修复:
+  - `title-scene.wxss .title-page`: `width:100vw; min-height:100vh` → `width:100%; height:100%; min-height:0` (精确填满 .scene-stage, 不再依赖 viewport 单位)
+  - `index.wxml adBanner template`: 移除 `<image src="...title.nbm.png">`, 改 `<text>ESSENTIAL SUDOKU DS</text>` 纯文本标识
+  - `index.wxss .ad-slot`: 删除 .ad-slot-image 样式, 加 flex 居中 + .ad-slot-text (11px 白色 70% 透明度) 替代图片占位
+- 预期恢复: 启动后 title-scene 全屏显示 title.nbm.png, 底部 72px 处 TAP TO START 白色脉冲胶囊可点, 点击触发 onTitleStart 进入 menu
+
+#### 验证
+- IDE 语言服务 0 诊断 (title-scene / index 全通过)
+- 待真机/开发者工具重新编译验证
+
+---
+
 ## PICTURE-V0.26 — 图画谜题答案成品图库 (1401 题可视化)
 
 ### 2026-09-03
