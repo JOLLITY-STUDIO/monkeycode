@@ -6,7 +6,6 @@ export const NBM_DWLOGO = '/assets/nbm/dwlogo.nbm.png';
 export const NBM_LICENSE = '/assets/nbm/license.nbm.png';
 export const NBM_MENU_CSOL = '/assets/nbm/menu_csol.nbm.png';
 export const NBM_NUMCLO_00 = '/assets/nbm/numclo_00.nbm.png';
-export const NBM_NUMCLO_WAKU = '/assets/nbm/numclo_waku.nbm.png';
 export const NBM_PAZL_SELECT = '/assets/nbm/pazl_select.nbm.png';
 export const NBM_PAZL_SELECT2A = '/assets/nbm/pazl_select2a.nbm.png';
 export const NBM_PAZL_SELECT2B = '/assets/nbm/pazl_select2b.nbm.png';
@@ -51,7 +50,6 @@ export const NBM_ALL = [
   NBM_LICENSE,
   NBM_MENU_CSOL,
   NBM_NUMCLO_00,
-  NBM_NUMCLO_WAKU,
   NBM_PAZL_SELECT,
   NBM_PAZL_SELECT2A,
   NBM_PAZL_SELECT2B,
@@ -174,7 +172,6 @@ export const NBM_GROUP_MISC = [
 /** 图画谜题 (picture puzzle) 模式资源 — 数独界面禁用. */
 export const NBM_GROUP_PICTURE_PUZZLE = [
   NBM_NUMCLO_00,
-  NBM_NUMCLO_WAKU,
   NBM_PAZL_SELECT,
   NBM_PAZL_SELECT2A,
   NBM_PAZL_SELECT2B,
@@ -288,7 +285,6 @@ export function nbmUrl(name: string): string | undefined {
     'LICENSE': NBM_LICENSE,
     'MENU_CSOL': NBM_MENU_CSOL,
     'NUMCLO_00': NBM_NUMCLO_00,
-    'NUMCLO_WAKU': NBM_NUMCLO_WAKU,
     'PAZL_SELECT': NBM_PAZL_SELECT,
     'PAZL_SELECT2A': NBM_PAZL_SELECT2A,
     'PAZL_SELECT2B': NBM_PAZL_SELECT2B,

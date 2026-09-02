@@ -27,13 +27,13 @@ const TOTAL_CELLS = GRID * GRID;
  * 6 色调色板: 0=擦除(白底), 1..5=画笔色.
  * V0.15 色值改为 DS 原版 NBM palette 真值 (rom-data 直接读 numclo_00.nbm 16 色 palette):
  *   - 1..4 = numclo_00.nbm 按钮色心 idx1-4: 红 #f80000 / 黄 #f8f800 / 蓝 #4868f8 / 绿 #48b048
- *   - 5     = 黑色 #181818 (numclo_waku.nbm idx12; 单色剪影题 Cat/Raccoon Dog 验证:
+ *   - 5     = 黑色 #181818 (DS 原版色; 单色剪影题 Cat/Raccoon Dog 验证:
  *             全色 5 题渲染为经典黑白剪影, Fox 等题用 5 做黑描边 + 彩色填充)
  *   - 旧值 #e53935/#fdd835/#1e88e5/#43a047/#8e24aa(紫, V0.10 无 ROM 依据的猜测) 废弃
  */
 const PALETTE_HEX = ['#ffffff', '#f80000', '#f8f800', '#4868f8', '#48b048', '#181818'];
 const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
-/** 边框深色 = numclo_00.nbm 按钮暗边 idx7-10 (红黄蓝绿) + waku 灰 #606060 (黑) */
+/** 边框深色 = numclo_00.nbm 按钮暗边 idx7-10 (红黄蓝绿) + 黑 #606060 (V0.25 起 waku 网格改 CSS 自绘) */
 const PALETTE_BORDERS = ['#c8d0d8', '#c00000', '#c8c800', '#000090', '#308830', '#606060'];
 /** 15 个类别 (numclo0-9 主题库 + numclo_00-03 附加 + numclo_tu 教程) */
 const CATEGORIES: Array<{ key: string; label: string }> = [
@@ -83,7 +83,7 @@ function countByColor(seq: number[]): ColorCount[] {
 /**
  * 从目标网格计算 15 行 + 15 列的每色计数。
  * ナンクロ / Number Cross 规则: 提示只告诉每行/列里各颜色共有多少格,
- * 不表示连续段, 与 numclo_waku.nbm 中 5 条色带提示布局对应。
+ * 不表示连续段, 与 DS 原版 5×5 块边界布局对应 (V0.25 起 waku 改 CSS 自绘, 见 picture-scene.wxss).
  */
 function computeClues(target: CellColor[]): { rows: ColorCount[][]; cols: ColorCount[][] } {
   const rows: ColorCount[][] = [];

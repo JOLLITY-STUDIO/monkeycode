@@ -4,6 +4,35 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.25 — 图画谜题网格 CSS 自绘 (移除 numclo_waku.nbm.png 依赖)
+
+### 2026-09-03
+
+#### 网格背景自绘 (1:1 还原 DS numclo_waku.nbm 视觉)
+- `picture-scene.wxss` `.puzzle-area`:
+  - 移除 `background-image: url('...numclo_waku.nbm.png')` 整图背景
+  - 改 `background: #0d1b2a` 深色底 (与 page 一致)
+  - 加 `border: 1.5px solid #d83a3a` 红色外框 + `box-sizing: border-box`
+- `.paint-cell`: 拆分四边 0.5px rgba 灰细格线
+- 5×5 块粗红线 (模拟 DS 块边界视觉):
+  - 列 5/10/15 (1-based) 红右线: `:nth-child(15n+5)` / `:nth-child(15n+10)` / `:nth-child(15n)`
+  - 行 5/10/15 (1-based) 红下线: `:nth-child(n+61):nth-child(-n+75)` 等范围选择器
+- `.paint-grid-reveal` 保持原透明 border (通关显示纯色块)
+
+#### 资源清理
+- `miniprogram/utils/sudoku/nbmAssets.ts`: 移除 `NBM_NUMCLO_WAKU` 导出 + NBM_ALL/PICTURE_PUZZLE/GROUPS lookup 4 处引用
+- 删除 `miniprogram/assets/nbm/numclo_waku.nbm.png` 资源文件 (PICTURE 资源仅保留 numclo_00.nbm 按钮色块切片)
+- `picture-scene.ts` 注释: 3 处 numclo_waku 引用更新为 "V0.25 起 waku 改 CSS 自绘, 见 picture-scene.wxss"
+
+#### 影响
+- picture-scene 0 外部网格资源依赖 (NBM 按钮图全部移除完毕, 仅剩 tutorial_00.nbm 教程图)
+- 视觉一致: 1:1 还原原版红框 + 5×5 块红线 + 灰细格线
+
+#### 验证
+- IDE 语言服务 0 诊断 (picture-scene / nbmAssets)
+
+---
+
 ## UI-DSBTN — 场景按钮全面"文本标签双态"统一 (弃用 NBM 按键图)
 
 ### 2026-09-03

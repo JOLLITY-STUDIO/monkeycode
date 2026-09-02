@@ -132,7 +132,11 @@
 }
 
 /* 15x15 彩色网格 + ナンクロ 每色计数行列提示
-   背景使用完整 numclo_waku.nbm, 让原图顶部/左侧红色提示区与 DOM 提示区对齐 */
+   V0.25 自绘 (原 numclo_waku.nbm.png 整图背景):
+   - 深色底 #0d1b2a
+   - 红色 1.5px 外框 (border)
+   - 5×5 块粗红线 (paint-cell :nth-child 范围选择器)
+   - paint-cell 灰细格线 0.5px */
 .puzzle-area {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -140,12 +144,11 @@
   flex-direction: column;
   align-items: flex-start;
   position: relative;
-  background-image: url('/assets/nbm/numclo_waku.nbm.png');
-  background-size: 142.22%;
-  background-position: -3.33% -3.33%;
-  background-repeat: no-repeat;
+  background: #0d1b2a;
+  border: 1.5px solid #d83a3a;
   border-radius: 4px;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .clue-header {
@@ -240,7 +243,24 @@
   width: calc(100% / 15);
   height: calc(100% / 15);
   box-sizing: border-box;
-  border: 0.5px solid rgba(230, 235, 240, 0.35);
+  border-top: 0.5px solid rgba(230, 235, 240, 0.35);
+  border-left: 0.5px solid rgba(230, 235, 240, 0.35);
+  border-right: 0.5px solid rgba(230, 235, 240, 0.35);
+  border-bottom: 0.5px solid rgba(230, 235, 240, 0.35);
+}
+
+/* V0.25 5×5 块粗红线 (模拟 DS numclo_waku.nbm 视觉, 每 5 格一块边界) */
+/* 第 5/10/15 列 (1-based) 红右线 */
+.paint-cell:nth-child(15n+5),
+.paint-cell:nth-child(15n+10),
+.paint-cell:nth-child(15n) {
+  border-right: 1.5px solid #d83a3a;
+}
+/* 第 5/10/15 行 (1-based) 红下线: 行 5=[61,75], 行 10=[136,150], 行 15=[211,225] */
+.paint-grid > .paint-cell:nth-child(n+61):nth-child(-n+75),
+.paint-grid > .paint-cell:nth-child(n+136):nth-child(-n+150),
+.paint-grid > .paint-cell:nth-child(n+211):nth-child(-n+225) {
+  border-bottom: 1.5px solid #d83a3a;
 }
 
 /* 显示答案时: 去掉格子线, 纯色块拼图效果 */
