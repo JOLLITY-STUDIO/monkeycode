@@ -14,6 +14,14 @@ import {
   clearProgress,
   recordCompleted,
 } from '../../../utils/sudoku/picture_progress';
+import {
+  NBM_NUMCLO00_ERASE,
+  NBM_NUMCLO00_COLOR_1_RED,
+  NBM_NUMCLO00_COLOR_2_YELLOW,
+  NBM_NUMCLO00_COLOR_3_BLUE,
+  NBM_NUMCLO00_COLOR_4_GREEN,
+  NBM_NUMCLO00_COLOR_5_PURPLE,
+} from '../../../utils/sudoku/nbmAssets';
 
 /** 自动保存防抖 (ms): 每次涂色后延迟写入 storage, 避免连点刷盘 */
 const AUTO_SAVE_MS = 400;
@@ -27,6 +35,14 @@ const TOTAL_CELLS = GRID * GRID;
 const PALETTE_HEX = ['#ffffff', '#e53935', '#fdd835', '#1e88e5', '#43a047', '#8e24aa'];
 const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
 const PALETTE_BORDERS = ['#c8d0d8', '#c62828', '#f9a825', '#1565c0', '#2e7d32', '#6a1b9a'];
+const PALETTE_IMAGES = [
+  NBM_NUMCLO00_ERASE,
+  NBM_NUMCLO00_COLOR_1_RED,
+  NBM_NUMCLO00_COLOR_2_YELLOW,
+  NBM_NUMCLO00_COLOR_3_BLUE,
+  NBM_NUMCLO00_COLOR_4_GREEN,
+  NBM_NUMCLO00_COLOR_5_PURPLE,
+];
 
 /** 15 个类别 (numclo0-9 主题库 + numclo_00-03 附加 + numclo_tu 教程) */
 const CATEGORIES: Array<{ key: string; label: string }> = [
@@ -114,6 +130,7 @@ Component({
       color,
       label: PALETTE_LABELS[id],
       border: PALETTE_BORDERS[id],
+      imageUrl: PALETTE_IMAGES[id],
     })),
     selectedColor: 1 as number,
     timerText: '00:00',

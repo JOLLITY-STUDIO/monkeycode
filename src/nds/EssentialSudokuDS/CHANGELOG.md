@@ -4,6 +4,33 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.11 — picture-scene 调色板改用原 DS numclo_00.nbm 按钮切片
+
+### 2026-09-02
+
+#### 新增
+- ✅ 调色板按钮从 CSS 假色圆 → 原 DS `numclo_00.nbm` 真按钮切片:
+  - `scripts/gen_nbm_assets_ts.py` 新增 `NUMCLO_00_SLICES` 6 组裁剪坐标
+    (左列 x=8..48, y=1..86 按 ~14px 等分 6 钮, 去掉左侧蓝色选中条) +
+    `generate_numclo00_slices()` crop `numclo_00.nbm.png` → 5 画笔色 + 擦除按钮 PNG
+  - 生成常量自动注册: `NBM_NUMCLO00_COLOR_1_RED` … `_5_PURPLE` + `NBM_NUMCLO00_ERASE`
+    (nbmAssets.ts +14 行, 追加进 `NBM_GROUP_PICTURE_PUZZLE`)
+- ✅ picture-scene 调色板 wxml/ts 接入: `PALETTE_IMAGES[6]` + palette 每项 `imageUrl`,
+  `.palette-key` 改 `background-image: url({{item.imageUrl}})`
+- ✅ 与对局页同源资产闭环: 网格背景 `numclo_waku.nbm` + banner `numclo_00.nbm` +
+  调色板按钮 `numclo_00.nbm` 切片, 全部 1:1 还原 DS 原 UI
+
+#### Verification
+- ✅ IDE 语言服务 0 诊断 (picture-scene / nbmAssets)
+- ✅ 生成脚本实际产出 6 个 PNG (miniprogram/assets/nbm/numclo00_*.png)
+
+#### 已知改进空间 (不阻断)
+- `.palette-key` wxss 仍为圆形 border-radius + 无 background-size,
+  40×13 长方形切片圆内显示效果待真机确认 (可能需要 background-size: cover/contain)
+- `.erase-mark` 样式已死 (wxml 不再引用)
+
+---
+
 ## PICTURE-V0.10 — 进度自动保存/恢复 + 通关标记 + 调色板剩余计数 + 完成动画
 
 ### 2026-09-02

@@ -131,6 +131,14 @@ export const NBM_SELECT4_PICTURE_A = '/assets/nbm/select4_picture_a.png';
 export const NBM_SELECT4_NUMBER_B = '/assets/nbm/select4_number_b.png';
 export const NBM_SELECT4_PICTURE_B = '/assets/nbm/select4_picture_b.png';
 
+/** numclo_00.nbm 切片: 图画谜题调色板按钮 (5 色 + 擦除). */
+export const NBM_NUMCLO00_COLOR_1_RED = '/assets/nbm/numclo00_color_1_red.png';
+export const NBM_NUMCLO00_COLOR_2_YELLOW = '/assets/nbm/numclo00_color_2_yellow.png';
+export const NBM_NUMCLO00_COLOR_3_BLUE = '/assets/nbm/numclo00_color_3_blue.png';
+export const NBM_NUMCLO00_COLOR_4_GREEN = '/assets/nbm/numclo00_color_4_green.png';
+export const NBM_NUMCLO00_COLOR_5_PURPLE = '/assets/nbm/numclo00_color_5_purple.png';
+export const NBM_NUMCLO00_ERASE = '/assets/nbm/numclo00_erase.png';
+
 /**
  * 模式资源归属（重要）:
  *  - Essential Sudoku DS = 数独 number puzzle, 题目数据来自 numple0-9.data.
@@ -159,6 +167,12 @@ export const NBM_GROUP_PICTURE_PUZZLE = [
   NBM_PAZL_SELECT2B,
   NBM_PAZL_SELECT2C,
   NBM_PAZL_YAJIRUSI,
+  NBM_NUMCLO00_COLOR_1_RED,
+  NBM_NUMCLO00_COLOR_2_YELLOW,
+  NBM_NUMCLO00_COLOR_3_BLUE,
+  NBM_NUMCLO00_COLOR_4_GREEN,
+  NBM_NUMCLO00_COLOR_5_PURPLE,
+  NBM_NUMCLO00_ERASE,
 ];
 
 /** 数独模式选择界面按钮 (select1/3/4/6). */

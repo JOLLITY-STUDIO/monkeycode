@@ -73,6 +73,19 @@ SELECT4_SLICES = {
     'select4_picture_b': (0, 200, 128, 253),
 }
 
+# numclo_00.nbm 是 picture puzzle 下屏调色板 UI (256x128).
+# 左右两列对称; 每列从上到下: 红/黄/蓝/绿/紫 5 色按钮 + 擦除按钮, 底部是蓝色选中条/铅笔.
+# 这里取左列主体, 裁剪为单个按钮切片, 供 picture-scene 调色板使用.
+NUMCLO_00_SLICES = {
+    # 左列按钮区 y=1..86 共 6 个等分按钮 (每个约 14px), 去掉了左侧蓝色选中条.
+    'numclo00_color_1_red': (8, 1, 48, 14),
+    'numclo00_color_2_yellow': (8, 15, 48, 28),
+    'numclo00_color_3_blue': (8, 29, 48, 42),
+    'numclo00_color_4_green': (8, 43, 48, 56),
+    'numclo00_color_5_purple': (8, 57, 48, 70),
+    'numclo00_erase': (8, 71, 48, 86),
+}
+
 
 def generate_select3_slices() -> list[tuple[str, str]]:
     """Crop select3.nbm into per-button-label PNGs. Returns [(name, relative_path), ...]."""
@@ -114,6 +127,22 @@ def generate_select4_slices() -> list[tuple[str, str]]:
     im = Image.open(src).convert('RGBA')
     generated: list[tuple[str, str]] = []
     for name, (l, t, r, b) in SELECT4_SLICES.items():
+        out_name = f'{name}.png'
+        out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
+        crop = im.crop((l, t, r, b))
+        crop.save(out_path)
+        generated.append((name, out_name))
+    return generated
+
+
+def generate_numclo00_slices() -> list[tuple[str, str]]:
+    """Crop numclo_00.nbm into picture puzzle palette button PNGs."""
+    src = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', 'numclo_00.nbm.png')
+    if not os.path.exists(src):
+        return []
+    im = Image.open(src).convert('RGBA')
+    generated: list[tuple[str, str]] = []
+    for name, (l, t, r, b) in NUMCLO_00_SLICES.items():
         out_name = f'{name}.png'
         out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
         crop = im.crop((l, t, r, b))
@@ -176,6 +205,15 @@ def main():
             select4_const_by_name[name] = const
             const_by_name[name] = const
 
+    # derived sprites from numclo_00.nbm (picture puzzle palette buttons)
+    numclo00_slices = generate_numclo00_slices()
+    numclo00_const_by_name: dict[str, str] = {}
+    if numclo00_slices:
+        for name, png in numclo00_slices:
+            const = sanitize(name).upper()
+            numclo00_const_by_name[name] = const
+            const_by_name[name] = const
+
     lines.append('')
     lines.append('/** Full flat list of all 42 NBM assets. */')
     lines.append('export const NBM_ALL = [')
@@ -205,6 +243,14 @@ def main():
         lines.append('/** select4.nbm 切片: 主菜单模式按钮 (Number/Picture × 2 帧动画). */')
         for name, _png in select4_slices:
             const = select4_const_by_name[name]
+            url = ROOT_PREFIX + name + '.png'
+            lines.append(f"export const NBM_{const} = '{url}';")
+
+    if numclo00_slices:
+        lines.append('')
+        lines.append('/** numclo_00.nbm 切片: 图画谜题调色板按钮 (5 色 + 擦除). */')
+        for name, _png in numclo00_slices:
+            const = numclo00_const_by_name[name]
             url = ROOT_PREFIX + name + '.png'
             lines.append(f"export const NBM_{const} = '{url}';")
 
@@ -242,6 +288,11 @@ def main():
     for name in select4_const_by_name:
         const = select4_const_by_name[name]
         groups.setdefault('MENU_SELECT', []).append(f'NBM_{const}')
+
+    # add derived numclo_00 slices to picture puzzle group
+    for name in numclo00_const_by_name:
+        const = numclo00_const_by_name[name]
+        groups.setdefault('PICTURE_PUZZLE', []).append(f'NBM_{const}')
 
     lines.append('')
     lines.append('/**')

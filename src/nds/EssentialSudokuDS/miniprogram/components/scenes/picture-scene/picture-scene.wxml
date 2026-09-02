@@ -90,7 +90,7 @@
     <text class="progress-text">已正确 {{correctCount}} / {{cells.length}}</text>
   </view>
 
-  <!-- 调色板 (0=擦除 + 5 画笔色; 圆形下方数字 = 该色剩余待涂格数, 0 变绿 ✓) -->
+  <!-- 调色板 (0=擦除 + 5 画笔色; 使用原 DS numclo_00.nbm 按钮切片) -->
   <view class="palette">
     <view
       wx:for="{{palette}}"
@@ -99,9 +99,7 @@
       data-id="{{item.id}}"
       bindtap="onTapPalette"
     >
-      <view class="palette-key" style="background: {{item.color}}; border-color: {{item.border}};">
-        <text wx:if="{{item.id === 0}}" class="erase-mark">✕</text>
-      </view>
+      <view class="palette-key" style="background-image: url({{item.imageUrl}});"></view>
       <text wx:if="{{item.id > 0}}" class="palette-need {{paletteNeed[item.id] === 0 ? 'palette-need-zero' : ''}}">{{paletteNeed[item.id]}}</text>
     </view>
   </view>
