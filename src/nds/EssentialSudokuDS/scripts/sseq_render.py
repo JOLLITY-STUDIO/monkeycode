@@ -28,6 +28,8 @@ import sys
 import time
 import wave
 
+import numpy as np
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sdat_common import Sdat, Swar  # noqa: E402
 from swav_to_wav import decode_block  # noqa: E402
@@ -94,7 +96,7 @@ def load_pcm_cache():
             per[i] = {'rate': meta['rate'] or 32768, 'loopFlag': meta['loopFlag'],
                       'loopStart': loff if loop else n,
                       'loopEnd': lend if loop else n,
-                      'pcm': pcm, 'total': n}
+                      'pcm': np.asarray(pcm, dtype=np.float64), 'total': n}
         cache[fat] = per
         print(f'[render] decoded {fat}_swar: {len(per)} samples')
     return cache
@@ -130,6 +132,8 @@ def collect_voices(play, dm):
         pan = 64
         instr = None
         bend = 0.0          # signed, in semitones (0xC4 raw is signed, 1/64 semitone each)
+        last_note_voice = None  # for legato dur fix (NDS SPU ties close notes)
+        last_note_ms = 0.0
         for e in tk['events']:
             op = e['op']
             args = e.get('args')
@@ -155,8 +159,18 @@ def collect_voices(play, dm):
                 k_eff = key + bend
                 dur_ms = dur * 60000.0 / (tempo * 48)
                 gain = (vel / 127.0) * (vol / 127.0) * (expr / 127.0) * MASTER_GAIN
-                voices.append({'ms': e['ms'], 'dur_ms': dur_ms, 'key': k_eff,
-                               'gain': gain, 'prog': instr, 'pan': pan})
+                v = {'ms': e['ms'], 'dur_ms': dur_ms, 'key': k_eff,
+                     'gain': gain, 'prog': instr, 'pan': pan}
+                voices.append(v)
+                # NDS SPU legato: each note's audible tail extends to the next
+                # note (sample loop sustains; REST gaps are filled by sample release).
+                # Override prev dur to (next_ms - prev_ms) so there's no hard cut.
+                if last_note_voice is not None:
+                    gap = e['ms'] - last_note_ms
+                    if gap > 0:
+                        last_note_voice['dur_ms'] = gap
+                last_note_voice = v
+                last_note_ms = e['ms']
             body_ms = max(body_ms, e.get('ms', 0.0))
     return voices, body_ms
 
@@ -172,8 +186,16 @@ def pick_def(defs, key):
 
 
 def _mix_voice(buf, meta, root, key, t0_ms, dur_ms, gain):
-    """Add one voice into one float channel buffer (OUT_RATE)."""
-    total = len(buf)
+    """Add one voice into one float channel buffer (OUT_RATE) — numpy vectorized.
+
+    Semantics preserved from the pure-python version:
+      - resample step = srcRate/OUT_RATE * 2^((key-root)/12), linear-interp NOT used
+        (point-sampled, matching the original per-sample read)
+      - loop covers the one-shot head then folds any pos >= loopEnd back into
+        [loopStart, loopEnd) (hardware-style sustained loop)
+      - attack A (4ms linear 0->1) / sustain 1 / release R (30ms linear ->~0)
+    """
+    total = buf.shape[0]
     n0 = int(t0_ms * OUT_RATE / 1000.0)
     if n0 >= total:
         return 0
@@ -188,57 +210,45 @@ def _mix_voice(buf, meta, root, key, t0_ms, dur_ms, gain):
         return 0
     src = meta['pcm']
     src_len = meta['total']
-    # GBATEK dswav loop: loopOffset/length were 4-byte units -> samples done in
-    # load_pcm_cache. Loop covers the one-shot head then sustains [start, end).
     lstart = meta['loopStart']
     lend = meta['loopEnd']
     loop = lstart < src_len and lend > lstart
-    # gate split
+
+    # sample positions along the note gate
+    pos = np.arange(n, dtype=np.float64) * step
+    if loop:
+        span = lend - lstart
+        if span <= 0:
+            return 0
+        ov = pos >= lend
+        if ov.any():
+            pos[ov] = lstart + (pos[ov] - lstart) % span
+        i0 = np.floor(pos).astype(np.int64)
+        frac = pos - i0
+        np.clip(i0, 0, src_len - 1, out=i0)
+        i1 = i0 + 1
+        i1[i0 >= lend - 1] = lstart          # wrap last loop sample -> loopStart
+        np.clip(i1, 0, src_len - 1, out=i1)
+        vals = src[i0] * (1.0 - frac) + src[i1] * frac
+    else:
+        i0 = np.floor(pos).astype(np.int64)
+        frac = pos - i0
+        valid = (i0 >= 0) & (i0 < src_len - 1)
+        i0c = np.clip(i0, 0, src_len - 1)
+        i1 = np.clip(i0c + 1, 0, src_len - 1)
+        vals = np.where(valid, src[i0c] * (1.0 - frac) + src[i1] * frac, 0.0)
+
+    # gate envelope: attack A only, no release (NDS SPU legato behavior)
+    # legato-fix in collect_voices caps each note's dur to next-note gap,
+    # so consecutive notes are sample-continuous; the 30ms release was creating
+    # dark vertical gaps in the spectrogram.
     A = min(int(0.004 * OUT_RATE), max(1, n // 8))
-    R = min(int(0.030 * OUT_RATE), max(0, n // 2))
-    if A + R > n:
-        A = n // 2
-        R = n - A
-    S = n - A - R
-    pos = 0.0
-    i = 0
-    j = n0
-    bufj = buf
-    # attack (one-shot head, no loop yet)
-    end = min(A, n)
-    while i < end and j < total:
-        pi = int(pos)
-        if pi >= src_len:
-            break
-        bufj[j] += src[pi] * gain * (i / float(A))
-        pos += step
-        i += 1
-        j += 1
-    # sustain (looping aware)
-    end = min(A + S, n)
-    while i < end and j < total:
-        pi = int(pos)
-        if loop:
-            if pos >= lend:
-                pos = lstart + (pos - lstart) % (lend - lstart)
-                pi = int(pos)
-        elif pi >= src_len:
-            break
-        bufj[j] += src[pi] * gain
-        pos += step
-        i += 1
-        j += 1
-    # release
-    end = n
-    while i < end and j < total:
-        pi = int(pos)
-        if pi >= src_len:
-            break
-        bufj[j] += src[pi] * gain * ((n - i) / float(R)) if R else 0.0
-        pos += step
-        i += 1
-        j += 1
-    return i
+    env = np.ones(n)
+    if A > 0:
+        env[:A] = (np.arange(A) + 1.0) / float(A)
+
+    buf[n0:n0 + n] += vals * env * gain
+    return n
 
 
 def _pan_gains(pan):
@@ -257,32 +267,31 @@ def add_voice(buf_l, buf_r, meta, root, key, t0_ms, dur_ms, gain, pan=64):
 
 
 def normalize_trim(buf_l, buf_r, tail_ms=200):
-    """Peak-normalize to 0.9 and trim leading/trailing silence (stereo)."""
-    nz = [i for i, v in enumerate(buf_l) if abs(v) > 0.002]
-    nz += [i for i, v in enumerate(buf_r) if abs(v) > 0.002]
-    if not nz:
+    """Peak-normalize to 0.9 and trim leading/trailing silence (stereo, numpy)."""
+    nz = np.nonzero((np.abs(buf_l) > 0.002) | (np.abs(buf_r) > 0.002))[0]
+    if nz.size == 0:
         return buf_l, buf_r, 0
-    a0, b0 = min(nz), max(nz)
-    peak = max(max(abs(v) for v in buf_l), max(abs(v) for v in buf_r))
+    a0, b0 = int(nz[0]), int(nz[-1])
+    peak = max(float(np.abs(buf_l).max()), float(np.abs(buf_r).max()))
     if peak > 0:
         sc = 0.9 / peak
-        buf_l = [v * sc for v in buf_l]
-        buf_r = [v * sc for v in buf_r]
+        buf_l = buf_l * sc
+        buf_r = buf_r * sc
     a = max(0, a0 - int(0.05 * OUT_RATE))
-    b = min(len(buf_l), b0 + int(tail_ms / 1000.0 * OUT_RATE))
+    b = min(buf_l.shape[0], b0 + int(tail_ms / 1000.0 * OUT_RATE))
     return buf_l[a:b], buf_r[a:b], a
 
 
 def write_wav(path, buf_l, buf_r, sample_rate):
-    n = len(buf_l)
-    data = struct.pack('<%dh' % (n * 2), *sum(
-        ([max(-32767, min(32767, int(buf_l[i] * 32767))),
-          max(-32767, min(32767, int(buf_r[i] * 32767)))] for i in range(n)), []))
+    n = buf_l.shape[0]
+    inter = np.empty(n * 2, dtype=np.int16)
+    inter[0::2] = np.clip(np.rint(buf_l * 32767.0), -32768, 32767)
+    inter[1::2] = np.clip(np.rint(buf_r * 32767.0), -32768, 32767)
     with wave.open(path, 'wb') as w:
         w.setnchannels(2)
         w.setsampwidth(2)
         w.setframerate(sample_rate)
-        w.writeframes(data)
+        w.writeframes(inter.tobytes())
 
 
 def main():
@@ -305,8 +314,8 @@ def main():
         voices, body_ms = collect_voices(play, dm)
         total_ms = min(body_ms, cap_ms)
         nbuf = int((total_ms + 600) * OUT_RATE / 1000.0)
-        buf_l = [0.0] * nbuf
-        buf_r = [0.0] * nbuf
+        buf_l = np.zeros(nbuf, dtype=np.float64)
+        buf_r = np.zeros(nbuf, dtype=np.float64)
         rendered = 0
         skipped = 0
         for v in voices:

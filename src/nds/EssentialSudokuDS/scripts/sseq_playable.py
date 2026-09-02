@@ -140,21 +140,31 @@ class TrackRenderer:
         return True
 
     def render(self, entry):
-        """Walk main track. CALL subroutines are inlined; JUMP stops the pass."""
+        """Walk main track. CALL subroutines are inlined; JUMP loops until
+        target_tick (default 14000 = ~200s @ 92qpm) to mirror NDS SPU's
+        infinite-BGM-loop behavior — without this, short-loop tracks
+        (e.g. SEQ_01 track 5/6) end at 85s and the mix fades prematurely."""
         seen = set()
         off = entry
         steps = 0
+        target_tick = 14000
         while off < len(self.d) and steps < MAX_STEPS:
             steps += 1
+            if self.tick >= target_tick:
+                break
             if off in seen:
-                self.loop = {'backTo': off, 'from': None}
+                self.loop = self.loop or {'backTo': off, 'from': None}
                 break
             seen.add(off)
             name, args, nxt, ctl = decode_cmd(self.d, self.base, off)
             if ctl == 'jump':
                 self._emit('JUMP', off, args=args)
                 self.loop = {'backTo': args[0], 'from': off}
-                break
+                # NDS SPU infinite BGM loop — reset seen so we re-walk
+                # args[0]; only MAX_STEPS + self.tick>=target break it
+                seen = set()
+                off = args[0]
+                continue
             if ctl == 'call':
                 self._emit('CALL', off, args=args)
                 self._render_sub(args[0], seen)
