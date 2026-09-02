@@ -4,6 +4,34 @@ All notable changes to this project are documented here.
 
 ---
 
+## SOUND-V0.5.1 — BGM 渲染音色修复: SWAR loop 单位换算 + 立体声 pan
+
+### 2026-09-02
+
+#### 根因 1: DSWAV loop 字段单位错 (音色怪主因)
+- GBATEK dswav sample block: `loopOffset` / `soundLength` 是 **4-byte units**,
+  IMA-ADPCM 下 1 unit = 4 bytes = **8 samples**
+- 旧渲染器把 `loopOffset`/`loopLength` 直接当 sample 数用 → 循环区缩小 8 倍且起点错位
+  (如旋律采样 b26 本应循环 [7624, 8664) samples, 旧版循环 [953, 1083) = 8ms 微循环
+  → 长音发出蜂鸣/颤音怪声)
+- 修复: `load_pcm_cache` 按 waveType 换算 units→samples (ADPCM 8 / PCM16 2 / PCM8 4),
+  循环区 = `[loopOffset*unit, min((loopOffset+loopLength)*unit, n))`
+- 验证: `time(0x04)` = `ARM7_CLOCK/sampleRate` (16756991/11025=1520 ✓ /16015=1046 ✓),
+  与 loop 无关, 已排除
+
+#### 根因 2: pan 未建模 + mono 输出 (声场丢失)
+- SSEQ 每轨开头 PAN 事件 (SEQ_01: track0=84 右 / track1=54 / track3=34 左),
+  NDS 硬件是立体声; 旧渲染 mono 混合把乐器全挤中间, 听感"糊/怪"
+- 修复: 渲染器输出 stereo, `_pan_gains` equal-power 拆分 (pan 0..127, 64=中),
+  `add_voice` 双声道写入, `write_wav` 立体声 interleave
+
+#### 其他
+- `rate` fallback 11025 → 32768 (与 swav_to_wav 一致, 本次数据无 rate=0 未触发)
+- 顺带核实: SBNK 10B def note 偏移正确 / MODDEPTH 全 0 (无 vibrato) / PITCHBEND=0
+- 纯 Python 渲染 ~1.6s mix / 0.6s 音频 (44100 stereo), 40s 完整渲染约 2 分钟
+
+---
+
 ## PICTURE-V0.21-V0.24 — 标题页 DS 化 + 信息页深色风格统一
 
 ### 2026-09-02

@@ -83,12 +83,13 @@ def decode_cmd(d, base, off):
 class TrackRenderer:
     """Render one track into a playable linear event flow (one loop pass)."""
 
-    def __init__(self, d, base):
+    def __init__(self, d, base, init_tempo=DEFAULT_TEMPO):
         self.d = d
         self.base = base
         self.events = []
         self.tick = 0
-        self.tempo = DEFAULT_TEMPO
+        self.tempo = init_tempo
+        self.first_tempo = None   # 首个 TEMPO 值 (track0 开头即全曲全局 tempo)
         self.loop = None
         self.end_off = None
 
@@ -121,7 +122,10 @@ class TrackRenderer:
         if name == 'TEMPO':
             e = self._emit('TEMPO', off, args=args)
             v = args[0] if args else DEFAULT_TEMPO
-            self.tempo = max(1, min(240, v))
+            v = max(1, min(240, v))
+            if self.first_tempo is None:
+                self.first_tempo = v
+            self.tempo = v
             return True
         if ctl == 'eot':
             self._emit('EOT', off)
@@ -191,10 +195,20 @@ def parse_one(d, file_idx, name):
                (0xFE, 'TRACKMASK'), (0xFC, 'LOOPEND'), (0xFF, 'EOT'))}
     out = {'index': file_idx, 'name': name, 'size': len(d),
            'dataOffset': base, 'mask': s.mask, 'opcodeCounts': counts,
-           'tracks': {}}
-    for t in sorted(s.tracks):
+           'tempo': DEFAULT_TEMPO, 'tracks': {}}
+    # NDS SSEQ: tempo 由导演轨(track0)开头设一次, 全曲全局生效.
+    # 先扫 track0 首个 TEMPO 作为所有轨的初始 tempo (多轨才能同步).
+    keys = sorted(s.tracks, key=lambda k: int(k))
+    global_tempo = DEFAULT_TEMPO
+    if keys:
+        r0 = TrackRenderer(d, base)
+        r0.render(s.tracks[keys[0]])
+        if r0.first_tempo:
+            global_tempo = r0.first_tempo
+        out['tempo'] = global_tempo
+    for t in keys:
         entry = s.tracks[t]
-        r = TrackRenderer(d, base)
+        r = TrackRenderer(d, base, init_tempo=global_tempo)
         total = r.render(entry)
         out['tracks'][str(t)] = {
             'start': entry,
