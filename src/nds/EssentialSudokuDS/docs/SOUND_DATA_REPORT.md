@@ -166,3 +166,48 @@ IMA-ADPCM 数据区: `predictor(s16) + stepIndex(u8) + reserved(u8) + 4-bit nibb
    (不是文件头 + rel)
 8. VLQ 只实现 2-byte 形式 (`b&0x80` → `((b&0x7F)<<8)|next`), 本项目 SSEQ 实测无 3-byte
    VLQ 事件
+
+## 12. 软件渲染闭环 → 可听 BGM WAV (SOUND-V0.3)
+
+`scripts/sseq_render.py` 纯 Python 软件合成器, 把 SOUND-V0.2 两条产物真正播出来:
+
+- 输入: `sseq-playable.json` (事件流) + `snd-linkage.json` (instrument/sample 链) +
+  `12_swar`/`13_swar` 原始 ADPCM (解码复用 `swav_to_wav.decode_block`)
+- 渲染模型 (verification-grade):
+  - 每条 track 维护 tempo/volume/expression/instrument 状态, NOTE 事件落到绝对 ms
+    时间线 (event.ms 已含 per-track tempo 换算); CALL 内联/JUMP 语义由 playable 流保证
+  - 每个 NOTE = 一个 voice: 取该 program 的 def 中 root note 最近的 def,
+    `step = sampleRate/OUT_RATE * 2^((key-root)/12)` 重采样, loopFlag 时在
+    `[loopOffset, loopOffset+loopLength)` 内循环 (attack 段只播一次), 简单
+    attack/sustain/release 门控, pan 未建模
+  - mono 16-bit @ 22050 Hz, peak normalize 0.9 + 首尾静音裁剪, 单遍 body 上限 60s
+- 产物: `work/wav/bgm/*.wav` (gitignore, 可再生成) — 9 首全部成功:
+  SEQ_01 60.4s / SEQ_02 60.2s / SEQ_03 60.4s / SEQ_04 60.1s / SEQ_10 18.5s /
+  SEQ_12 6.0s / SEQ_13 7.7s / SEQ_14 12.7s / SEQ_15 31.9s
+- 验证: 5763 NOTE 全渲染, RMS 0.12-0.20 / nonzero 75-98% (无静音/无削顶)
+
+## 13. SSAR SE 渲染 + 空槽发现 (SOUND-V0.3)
+
+`scripts/ssar_render.py`: 30 条 SSAR 记录每条 = 6 字节 mini-SEQ
+`81 <prog> 3c 7f 00 ff` (INSTRUMENT prog + NOTE key60 vel127 dur0 + EOT),
+bank 取记录头 bnk=1 → 11_sbnk, resolve def → WAVE_SE(13_swar) sample → WAV。
+
+**关键发现 — 11_sbnk 实际只有 17 个有效 instrument** (swav 恰好 1:1 覆盖
+13_swar 全部 17 samples, 无复用):
+`prog→swav`: 0→1, 1→11, 2→16, 3→14, 4→3, 5→9, 6→5, 7→6, 8→0, 9→8,
+11→7, 12→2, 13→4, 14→15, 15→13, 28→10, 29→12 (覆盖 swav 0..16 全集合)
+
+prog 10 与 16-27 (13 个槽位) = ftype=0 空 instrument → 对应 SSAR 记录
+(mojibatu/biyobiyo/teen/paieen/seikou/jump/kinzoku/expl/SE010-014 等) 无 def,
+渲染 skip — 疑似 SE 预留槽位或未启用目录项, 真机行为需模拟器确认 (不猜)。
+
+产物: `work/wav/se/00_botan.wav … 29_start.wav` (17 个有效 SE, 174-1087ms)。
+
+## 14. 已知陷阱 (SOUND-V0.3 追加)
+
+9. SSEQ NOTE dur 可为 0 (`7f 00` = vel 127, dur 0 tick): SSAR 全部记录如此.
+   渲染按"播放 sample 一次到自然结束再 release"处理, 不能按 0 tick 静音处理
+10. SBNK `ninstr` 槽位数 ≠ 有效 instrument 数: 11_sbnk 30 槽只有 17 个 ftype=1
+    defs; 渲染器必须 defs 为空时 skip, 不可硬凑
+11. 渲染输出 mono (未建模 pan), 采样率 22050 非 sample 原生 rate; 大 ratio 采样
+    会降混叠, 属验证级品质, 不是 1:1 还原 (后续可加 pan/loop 段校准)

@@ -4,6 +4,36 @@ All notable changes to this project are documented here.
 
 ---
 
+## SOUND-V0.3 — 软件渲染闭环: SSEQ 事件流 + ADPCM sample → 可听 BGM/SE WAV
+
+### 2026-09-02
+
+#### 新增
+- ✅ `scripts/sseq_render.py` 新建: 纯 Python 软件合成器, 事件流 + SWAR sample → BGM WAV
+  - 输入 sseq-playable.json + snd-linkage.json + 12/13_swar ADPCM (复用 decode_block)
+  - per-track tempo/vol/expr/instrument 状态, NOTE voice 绝对 ms 时间线
+  - def root note 最近匹配 + `step = rate/OUT_RATE*2^((key-root)/12)` 重采样
+  - loopFlag 在 [loopOffset, loopOffset+loopLength) 循环, attack/sustain/release 门控
+  - mono 16-bit @ 22050, peak normalize, 首尾静音裁剪, body 上限 60s
+  - 产物 `work/wav/bgm/SEQ_*.wav` (gitignore): 9 首全部成功 (6.0-60.4s)
+- ✅ `scripts/ssar_render.py` 新建: 30 条 SSAR SE 记录 → WAV
+  - 每条 = 6B mini-SEQ `81 <prog> 3c 7f 00 ff`, bank=1 → 11_sbnk → WAVE_SE 13_swar
+  - 产物 `work/wav/se/NN_<name>.wav`: 17 个有效 SE (174-1087ms)
+- ✅ `docs/SOUND_DATA_REPORT.md` 追加 §12-14 (渲染闭环 + SE 空槽发现 + 陷阱 9-11)
+
+#### 关键发现 (ground truth)
+- **11_sbnk 只有 17 个有效 instrument**, swav 1:1 覆盖 13_swar 全部 17 samples;
+  prog 10/16-27 (13 槽) = ftype=0 空 instrument → SSAR 死槽 (疑似预留/未启用)
+- SSEQ NOTE dur 可为 0 tick (`7f 00`): 渲染按 sample 自然播完 + release, 非静音
+- 全部渲染无静音无削顶 (RMS 0.12-0.20, nonzero 75-98%), 闭环成立
+
+#### Verification
+- ✅ `python scripts/sseq_render.py` — 9 BGM WAV 生成, mix 0.1-1.5s/首
+- ✅ `python scripts/ssar_render.py` — 17 有效 SE WAV 生成, 13 空槽 skip 有日志
+- ✅ 抽查 `work/_chk_wav2.py` — 全部 WAV 时长/peak/RMS/nonzero 正常
+
+---
+
 ## SOUND-V0.2 — SSEQ 可播放事件流 + SBNK→SWAR 链接表 + SDAT Symbol 表重建
 
 ### 2026-09-02
