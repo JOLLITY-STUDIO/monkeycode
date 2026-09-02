@@ -4,6 +4,25 @@ All notable changes to this project are documented here.
 
 ---
 
+## SOUND-V0.1 — SDAT 音频数据全链路解码 (SSEQ/SSAR/SBNK/SWAR/ADPCM→WAV)
+
+### 2026-09-02
+
+#### 新增
+- ✅ `scripts/analyze_sound_data.py` SSAR/SWAR 解析按 GBATEK 修正:
+  - SSAR 记录 16B `<III` → 12B `<IHBBBBH`: nOffset(u32)+bnk(u16)+vol(u8)+cpr(u8)+ppr(u8)+ply(u8)+rsv(u16)
+  - SWAR/DSWAV block header 16B `<IIII` → 12B `<BBHHHI`: waveType(u8)+loopFlag(u8)+sampleRate(u16)+time(u16)+loopOffset(u16)+loopLength(u32)
+  - 修 struct 格式串 `<BBIHHI`(14B, sampleRate 被并成 ~99.5M 垃圾值) → `<BBHHHI`(12B, 采样率恢复正常 11025/22050/32000)
+- ✅ `scripts/swav_to_wav.py` 新建: 45 个 DSWAV block (12_swar 28 + 13_swar 17, 全 IMA-ADPCM)
+  解码为 mono 16-bit WAV → `work/wav/*.wav` (时长 0.04-1.10s)
+- ✅ `docs/SOUND_DATA_REPORT.md` 新建: SDAT 容器/SSEQ/SSAR/SBNK/SWAR 全格式结论 + 链接表 + 陷阱记录
+
+#### Verification
+- ✅ `python scripts/analyze_sound_data.py` — 9 SSEQ 音轨表/事件直方图, 30 条 SSAR 12B 记录, 45 block 全 ADPCM
+- ✅ `python scripts/swav_to_wav.py` — 45 WAV 生成, 采样率合法
+
+---
+
 ## V0.19 — remaining detector 扩展 (12→52 命名, 短复杂函数模式消化)
 
 ### 2026-09-01

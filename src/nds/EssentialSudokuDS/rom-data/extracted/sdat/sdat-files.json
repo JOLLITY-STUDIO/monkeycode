@@ -1,0 +1,100 @@
+[
+  {
+    "index": 0,
+    "offset": 1312,
+    "size": 4032,
+    "magic": "SSEQ",
+    "file": "00_sseq.sseq"
+  },
+  {
+    "index": 1,
+    "offset": 5344,
+    "size": 3828,
+    "magic": "SSEQ",
+    "file": "01_sseq.sseq"
+  },
+  {
+    "index": 2,
+    "offset": 9184,
+    "size": 3568,
+    "magic": "SSEQ",
+    "file": "02_sseq.sseq"
+  },
+  {
+    "index": 3,
+    "offset": 12768,
+    "size": 6432,
+    "magic": "SSEQ",
+    "file": "03_sseq.sseq"
+  },
+  {
+    "index": 4,
+    "offset": 19200,
+    "size": 636,
+    "magic": "SSEQ",
+    "file": "04_sseq.sseq"
+  },
+  {
+    "index": 5,
+    "offset": 19840,
+    "size": 532,
+    "magic": "SSEQ",
+    "file": "05_sseq.sseq"
+  },
+  {
+    "index": 6,
+    "offset": 20384,
+    "size": 456,
+    "magic": "SSEQ",
+    "file": "06_sseq.sseq"
+  },
+  {
+    "index": 7,
+    "offset": 20864,
+    "size": 404,
+    "magic": "SSEQ",
+    "file": "07_sseq.sseq"
+  },
+  {
+    "index": 8,
+    "offset": 21280,
+    "size": 660,
+    "magic": "SSEQ",
+    "file": "08_sseq.sseq"
+  },
+  {
+    "index": 9,
+    "offset": 21952,
+    "size": 636,
+    "magic": "SSAR",
+    "file": "09_ssar.bin"
+  },
+  {
+    "index": 10,
+    "offset": 22592,
+    "size": 864,
+    "magic": "SBNK",
+    "file": "10_sbnk.sbnk"
+  },
+  {
+    "index": 11,
+    "offset": 23456,
+    "size": 352,
+    "magic": "SBNK",
+    "file": "11_sbnk.sbnk"
+  },
+  {
+    "index": 12,
+    "offset": 23808,
+    "size": 75624,
+    "magic": "SWAR",
+    "file": "12_swar.swar"
+  },
+  {
+    "index": 13,
+    "offset": 99456,
+    "size": 37500,
+    "magic": "SWAR",
+    "file": "13_swar.swar"
+  }
+]
