@@ -1,10 +1,13 @@
-/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.49.2)
-  欢快糖果风 + 景深 (V0.49.2 改造):
+/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.49.3)
+  欢快糖果风 + 景深 + 数独格纸真实 view 阵列:
   - 糖果渐变底 + 彩色柔光团 (明亮欢快)
-  - V0.49.2 整屏平铺数独格纸 (深紫 24px 细线 + 深粉 72px 宫粗线, 浅底肉眼可见)
-  - 远景: 满屏大数字 1-9 (V0.49.2 深紫色调 + alpha 0.40-0.55, 远而虚, 4 方向深紫描边)
+  - V0.49.3 整屏平铺数独格纸: 真实 view 横竖线阵列 (深紫 24px 细线 1px
+    + 深粉 72px 宫粗线 2px, 位置由 ts 计算, Skyline 兼容)
+  - 远景: 满屏大数字 1-9 (深紫色调 + alpha 0.40-0.55, 远而虚, 4 方向深紫描边)
   - 中景: 3×3/4×4/5×5/6×6 小网格方块 (糖果色 + alpha 0.55-0.76, 深色 box-shadow 浮起)
   - 近景: 高亮柔光点 (alpha 0.80-1.00 + 双层光晕, 最近最亮)
+  动画层 (.band/.bob/.roll/@keyframes) 必须保持完整 — V0.49.3 曾因孤儿 CSS
+  (旧 .fx-grid-fine-v 残留块 + 悬空 }) 把第 3-7 节解析压死, 动画全部消失, 已删。
   skyline 渲染器支持 transform + opacity + animation + box-shadow。
   全项目禁用 rpx, 一律 px。
   层级: 本组件绝对定位填满 .scene-area, z-index 0;
@@ -63,14 +66,12 @@
 }
 
 /* ===========================================================
- * 2. 整屏平铺网格线 (V0.49.2 数独格纸感, 强可见)
- *    Skyline 不解析 background-size 多值列表, 故拆 4 个 view 各画一方向。
- *    4 子 view 用单 background-image + repeating-linear-gradient 直接表达周期。
- *    V0.49.2: alpha 大幅提升 + 颜色加深, 浅渐变底上肉眼清晰可见:
- *      .fx-grid-bold-h  宫粗线横线 (72px 周期 × 2px 深粉 alpha 0.55)
- *      .fx-grid-bold-v  宫粗线竖线
- *      .fx-grid-fine-h  细格横线 (24px 周期 × 1px 深紫 alpha 0.42, 至少 1px 实线)
- *      .fx-grid-fine-v  细格竖线
+ * 2. 整屏平铺网格线 (V0.49.3 数独格纸感, 真实 view 阵列)
+ *    V0.49.2 用 repeating-linear-gradient 在 Skyline 1.4.21 完全静默不渲染,
+ *    故 V0.49.3 改成 ts 动态计算每条线 px 位置, wxml 用 wx:for 渲染真实 view。
+ *    alpha 高 + 颜色深, 浅渐变底上肉眼清晰可见:
+ *      .fx-grid-line-h  1px/2px 横线 (绝对定位, left:0, width:100%)
+ *      .fx-grid-line-v  1px/2px 竖线 (绝对定位, top:0, height:100%)
  *    72 = 3 × 24 → 宫线与细线在 (0,0) 天然对齐, 整屏像一张数独格纸。
  * =========================================================== */
 .fx-grid {
@@ -80,61 +81,21 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+  overflow: hidden;
 }
 
-/* 宫粗线: 72px 一条 2px 深粉 (3×3 宫边界) */
-.fx-grid-bold-h {
+/* 横线: top 由 ts 计算 (0..height), 占满宽 100%, 1px 或 2px 高 */
+.fx-grid-line-h {
   position: absolute;
   left: 0;
-  top: 0;
   width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(to bottom,
-    rgba(190, 70, 130, 0.55) 0,
-    rgba(190, 70, 130, 0.55) 2px,
-    transparent 2px,
-    transparent 72px);
   pointer-events: none;
 }
-.fx-grid-bold-v {
+/* 竖线: left 由 ts 计算 (0..width), 占满高 100%, 1px 或 2px 宽 */
+.fx-grid-line-v {
   position: absolute;
-  left: 0;
   top: 0;
-  width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(to right,
-    rgba(190, 70, 130, 0.55) 0,
-    rgba(190, 70, 130, 0.55) 2px,
-    transparent 2px,
-    transparent 72px);
-  pointer-events: none;
-}
-
-/* 细格线: 24px 一条 1px 深紫 (数独单元格边线, 肉眼清晰可见) */
-.fx-grid-fine-h {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(to bottom,
-    rgba(86, 46, 135, 0.42) 0,
-    rgba(86, 46, 135, 0.42) 1px,
-    transparent 1px,
-    transparent 24px);
-  pointer-events: none;
-}
-.fx-grid-fine-v {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(to right,
-    rgba(86, 46, 135, 0.42) 0,
-    rgba(86, 46, 135, 0.42) 1px,
-    transparent 1px,
-    transparent 24px);
   pointer-events: none;
 }
 

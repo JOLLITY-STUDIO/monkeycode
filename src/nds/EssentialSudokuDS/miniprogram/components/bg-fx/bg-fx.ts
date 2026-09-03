@@ -1,12 +1,16 @@
 /* components/bg-fx/bg-fx.ts
- * 全局动态背景层 (Playful Sudoku, V0.49.2): 欢快糖果风 + 景深
+ * 全局动态背景层 (Playful Sudoku, V0.49.3): 欢快糖果风 + 景深 + 数独格纸真实 view
  * 由 pages/index/index 放置在 .scene-area 第一层 (z-index 0),
  * 场景 (z-index 1/2) 浮在其上, 场景根背景已设为 transparent。
  *
- * 结构 (从后到前 6 层) + V0.49.2 景深方案:
+ * 结构 (从后到前 6 层) + V0.49.3 景深 + 数独格纸:
  *   1. .fx-base       糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 4 团彩色柔光
- *   2. .fx-grid       V0.49.2 整屏平铺网格线层 (数独格纸: 24px 深紫细线 + 72px 深粉宫粗线,
- *                       alpha 0.42/0.55 浅底肉眼清晰, 拆 4 子 view 兼容 Skyline)
+ *   2. .fx-grid       V0.49.3 整屏平铺数独格纸, 真实 view 阵列
+ *                       (V0.49.2 的 repeating-linear-gradient 在 Skyline 1.4.21
+ *                        完全静默不渲染, V0.49.3 改用 ts 算每条线 px 位置,
+ *                        wxml wx:for 渲染 N 条 1px/2px 实线 view, 兼容 Skyline)
+ *                       细格: 24px 周期, 1px 深紫 #562e87 alpha 0.55
+ *                       宫粗: 72px 周期 (3 × 24), 2px 深粉 #be4682 alpha 0.78
  *   3. 远景 band-distal : V0.49.2 深紫/深蓝调色板大数字 (alpha 0.40-0.55, 远而虚),
  *                        4 方向深紫描边 + 浅色顶部高光, size 32-88 (远处更大)
  *   4. 中景 band-grids  : 糖果色小网格方块 (alpha 0.55-0.76, 近而实),
@@ -17,7 +21,7 @@
  * 无缝循环实现: 每个横滚层 = .roll (width:200%) 内两个相同 .seg,
  *   roll 动画 translateX 0 → -50% (= 恰好一个 seg 宽度), 循环无缝。
  *   层上再包一层 .bob 做缓慢上下浮动 → 斜向走动感。
- * 全部纯 CSS 绘制 (数字 + 网格线 + 光晕), skyline 兼容良好, 不依赖任何图片。
+ * 全部纯 CSS + 真实 view (数字 + 网格线 + 光晕), skyline 兼容性最好。
  * 全项目禁用 rpx, 一律 px。
  */
 
@@ -41,6 +45,41 @@ const DARK_CANDY = [
   '#a86a3d', // 深橙棕
   '#5a3d8a', // 深靛
 ];
+
+/* ---------------- 网格线 (V0.49.3 真实 view 阵列) ----------------
+ * V0.49.2 用的 repeating-linear-gradient 在 Skyline 1.4.21 完全静默不渲染。
+ * 改方案: ts 在 attached 读 wx.getWindowInfo() 拿屏幕宽高 (rpx → px 计算条数),
+ *          每 24px / 72px 生成一条 { i, px } 真实 view 节点。
+ * 兼容: 用 128px 兜底余量, 保证任何屏 (含 pad 横屏 1024+) 都铺满。
+ */
+interface GridLine {
+  i: number;
+  px: number;
+}
+function buildGridLines(wWidth: number, wHeight: number): {
+  fineH: GridLine[];
+  fineV: GridLine[];
+  boldH: GridLine[];
+  boldV: GridLine[];
+} {
+  // +64 padding 让边缘也有一条线, 避免旋转/缩放下空洞
+  const W = Math.max(wWidth, 320) + 64;
+  const H = Math.max(wHeight, 568) + 64;
+  const arr = (max: number, step: number): GridLine[] => {
+    const r: GridLine[] = [];
+    let i = 0;
+    for (let p = 0; p <= max; p += step, i++) {
+      r.push({ i, px: p });
+    }
+    return r;
+  };
+  return {
+    fineH: arr(H, 24),     // 细横线: 24px 周期
+    fineV: arr(W, 24),     // 细竖线
+    boldH: arr(H, 72),     // 宫粗横线: 72px 周期 (3 × 24)
+    boldV: arr(W, 72),
+  };
+}
 
 interface FloatNum {
   i: number;
@@ -196,15 +235,45 @@ Component({
 
     /* 近景: 彩色柔光点 */
     thoughts: [] as Thought[],
+
+    /* V0.49.3: 网格线 4 个数组 (横/竖 × 细/粗), 由 wx:for 渲染真实 view */
+    gridLinesFineH: [] as GridLine[],
+    gridLinesFineV: [] as GridLine[],
+    gridLinesBoldH: [] as GridLine[],
+    gridLinesBoldV: [] as GridLine[],
   },
 
   lifetimes: {
     attached() {
+      // 读屏幕大小 (rpx 系: wx.getWindowInfo().windowWidth 返回 px, 不需 *dpr)
+      let wWidth = 375;
+      let wHeight = 812;
+      try {
+        const wxAny: any = (typeof wx !== 'undefined') ? wx : null;
+        if (wxAny && typeof wxAny.getWindowInfo === 'function') {
+          const info = wxAny.getWindowInfo();
+          if (info && info.windowWidth && info.windowHeight) {
+            wWidth = info.windowWidth;
+            wHeight = info.windowHeight;
+          }
+        }
+      } catch (_) { /* 兜底用兜底值 */ }
+
       // 确定性生成 (多次进入保持一致视觉)
       const bigNums = buildBigNums();
       const miniGrids = buildMiniGrids();
       const thoughts = buildThoughts();
-      this.setData({ bigNums, miniGrids, thoughts });
+      const grid = buildGridLines(wWidth, wHeight);
+
+      this.setData({
+        bigNums,
+        miniGrids,
+        thoughts,
+        gridLinesFineH: grid.fineH,
+        gridLinesFineV: grid.fineV,
+        gridLinesBoldH: grid.boldH,
+        gridLinesBoldV: grid.boldV,
+      });
     },
   },
 });

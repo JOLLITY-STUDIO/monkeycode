@@ -1,11 +1,13 @@
-<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.49.2)
-  欢快糖果风 + 景深 (V0.49.2):
+<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.49.3)
+  欢快糖果风 + 景深 + 数独格纸真实 view 阵列:
   - .fx-base         糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 彩色柔光团
-  - .fx-grid         V0.49.2 整屏平铺数独格纸 (深紫 24px 细线 + 深粉 72px 宫粗线, 浅底肉眼清晰)
-  - band-distal      远景: 满屏漂浮大数字 1-9 (V0.49.2 深紫/深蓝调色板 + alpha 0.40-0.55, 远处感)
+  - .fx-grid         V0.49.3 整屏平铺数独格纸 (真实 view 横竖线: 深紫 24px 1px 细线
+                    + 深粉 72px 2px 宫粗线, 位置 ts 计算, Skyline 不渲染渐变所以用 view)
+  - band-distal      远景: 满屏漂浮大数字 1-9 (深紫/深蓝调色板 + alpha 0.40-0.55, 远处感)
   - band-grids       中景: 3×3/4×4/5×5/6×6 小网格方块 (糖果色 + alpha 0.55-0.76, 中近而实)
   - band-thought     近景: 高亮柔光点 (alpha 0.80-1.00 + 双层光晕, 最近最亮)
   - .fx-beat         顶部暖白柔光呼吸 (周期 = pulseMs)
+  网格线垫在动画层下方 (DOM 顺序: grid 先于 band), 动画照常漂浮, 格纸始终可见。
   每层 = .bob (上下缓浮) > .roll (width:200%, translateX 0→-50% 无缝循环)
        > 两个相同 .seg (各 50% 视口宽), seg 内放置装饰物
   整个 view z-index 0, pointer-events none。全项目禁用 rpx, 一律 px。
@@ -14,17 +16,41 @@
   <!-- 1. 糖果渐变底 -->
   <view class="fx-base"></view>
 
-  <!-- 2. 整屏平铺网格线 (V0.49.2 数独格纸: 24px 细格 + 72px 宫粗线)
-       alpha 0.42/0.55 + 深紫/深粉色, 浅渐变底上肉眼清晰可见
-       Skyline 不解析 background-size 多值列表, 故拆成 4 个单 view 单 background -->
+  <!-- 2. 整屏平铺网格线 (V0.49.3 数独格纸: 真实 view 阵列)
+       Skyline 不渲染 repeating-linear-gradient, 改用 wx:for 画 1px/2px 实线 view
+       ts.attached 时读 windowWidth/Height 算每条线 px 位置 -->
   <view class="fx-grid">
-    <view class="fx-grid-bold-h"></view>
-    <view class="fx-grid-bold-v"></view>
-    <view class="fx-grid-fine-h"></view>
-    <view class="fx-grid-fine-v"></view>
+    <!-- 细格横线 (24px 周期, 1px 深紫) -->
+    <view
+      wx:for="{{gridLinesFineH}}"
+      wx:key="i"
+      class="fx-grid-line-h"
+      style="top: {{item.px}}px; height: 1px; background: rgba(86, 46, 135, 0.55);"
+    ></view>
+    <!-- 细格竖线 (24px 周期, 1px 深紫) -->
+    <view
+      wx:for="{{gridLinesFineV}}"
+      wx:key="i"
+      class="fx-grid-line-v"
+      style="left: {{item.px}}px; width: 1px; background: rgba(86, 46, 135, 0.55);"
+    ></view>
+    <!-- 宫粗横线 (72px 周期, 2px 深粉) -->
+    <view
+      wx:for="{{gridLinesBoldH}}"
+      wx:key="i"
+      class="fx-grid-line-h"
+      style="top: {{item.px}}px; height: 2px; background: rgba(190, 70, 130, 0.78);"
+    ></view>
+    <!-- 宫粗竖线 (72px 周期, 2px 深粉) -->
+    <view
+      wx:for="{{gridLinesBoldV}}"
+      wx:key="i"
+      class="fx-grid-line-v"
+      style="left: {{item.px}}px; width: 2px; background: rgba(190, 70, 130, 0.78);"
+    ></view>
   </view>
 
-  <!-- 3. 远景: 满屏漂浮大数字 (数独/数字玩法, V0.49.2 深紫色 远而虚) -->
+  <!-- 3. 远景: 满屏漂浮大数字 (数独/数字玩法, 深紫色 远而虚) -->
   <view class="band band-distal">
     <view class="bob bob-1">
       <view class="roll roll-1">
@@ -40,7 +66,7 @@
     </view>
   </view>
 
-  <!-- 3. 中景: 小网格方块 (图画谜题玩法, V0.49.2 糖果色 + alpha 0.55-0.76 中近而实) -->
+  <!-- 4. 中景: 小网格方块 (图画谜题玩法, 糖果色 + alpha 0.55-0.76 中近而实) -->
   <view class="band band-grids">
     <view class="bob bob-2">
       <view class="roll roll-2">
@@ -71,7 +97,7 @@
     </view>
   </view>
 
-  <!-- 4. 近景: 高亮柔光点 (V0.49.2 alpha 0.80-1.00 + 双层光晕) -->
+  <!-- 5. 近景: 高亮柔光点 (alpha 0.80-1.00 + 双层光晕) -->
   <view class="band band-thought">
     <view class="bob bob-3">
       <view class="roll roll-3">
@@ -87,6 +113,6 @@
     </view>
   </view>
 
-  <!-- 5. 顶部暖白柔光呼吸 (周期 = pulseMs = 场景 BGM 一小节, 平缓不闪) -->
+  <!-- 6. 顶部暖白柔光呼吸 (周期 = pulseMs = 场景 BGM 一小节, 平缓不闪) -->
   <view class="fx-beat" style="animation-duration: {{pulseMs}}ms;"></view>
 </view>

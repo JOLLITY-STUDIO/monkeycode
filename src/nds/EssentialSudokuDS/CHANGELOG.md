@@ -4,6 +4,56 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.49.3 — bg-fx 网格线真实 view 阵列 + 修复动画层被孤儿 CSS 压死
+
+### 2026-09-03
+
+#### 用户反馈
+- 第 1 轮: "拜托, 背景能固定渲染出平铺的网格线吗, 还是看不到啊" (网格线看不到)
+- 第 2 轮: "不对啊, 原来的背景动画还是需要的啊只不过加上了平铺网格线"
+  (修复网格后, 漂浮数字/小方块/柔光点等背景动画全部消失)
+
+#### 根因 1: 网格线 (repeating-linear-gradient 不渲染)
+- V0.49.2 用 4 个 view 的 `repeating-linear-gradient` 画网格, Skyline 1.4.21 完全静默不渲染
+
+#### 根因 2: 背景动画消失 (孤儿 CSS 压死第 3-7 节)
+- V0.49.2 → V0.49.3 用 replace_in_file 替换 .fx-grid 规则时, old_str 只覆盖到
+  `.fx-grid-fine-v { ... height: 100%;` 就结束, **没覆盖到该规则后面的
+  background/pointer-events/} 剩余行**
+- 结果: wxss 第 98-105 行残留一段"无选择器的孤儿声明 + 悬空 }"
+- WXSS 解析器在此报错 → 其后所有规则 (.band/.bob/.roll/@keyframes/
+  .big-num/.mini-grid/.thought/.fx-beat) 全部失效 → 动画层整体消失,
+  只剩渐变底 + (修复后的) 网格线
+
+#### V0.49.3 修复
+1. 网格线改用真实 view 阵列 (Skyline 最稳):
+   - wxss: `.fx-grid-line-h` / `.fx-grid-line-v` 两个 class, 颜色粗细 inline 注入
+   - ts: `buildGridLines()` attached 读 wx.getWindowInfo(), 24px/72px 周期生成
+     {i, px} 数组 (fineH/fineV/boldH/boldV)
+   - wxml: 4 段 wx:for 渲染 1px 深紫细线 + 2px 深粉宫粗线真实 view
+2. 删除孤儿 CSS 块 (wxss 第 98-105 行残留) → 第 3-7 节动画层恢复解析:
+   - band-distal 大数字横滚 + bob 上下浮
+   - band-grids 小网格方块
+   - band-thought 柔光点
+   - .fx-beat 呼吸光
+
+#### 层级顺序 (最终视觉)
+fx-base 渐变底 < fx-grid 网格线 < band-distal/bg-grids/thought 动画漂浮层 < fx-beat
+→ 网格线垫底恒定可见, 动画层半透明在上面继续漂浮 = "动画 + 平铺网格线" 并存
+
+#### 改动清单 (3 文件, components/bg-fx/)
+1. bg-fx.wxml: 头注释/编号修正 (3/3/4 → 3/4/5) + 网格线 4 段 wx:for
+2. bg-fx.wxss: 删孤儿 CSS 块 + 头注释 V0.49.3 (注明动画层必须保留的教训)
+3. bg-fx.ts: buildGridLines() + data 4 数组 + attached 计算
+
+#### 教训 (写进注释, 防止复发)
+- replace_in_file 替换大段规则时 old_str 必须带**完整结尾** (到该规则 `}` 为止),
+  否则残留"孤儿声明块 + 悬空 }"会压死其后整个 wxss 的解析
+- 本次即该 bug 的实例: 只覆盖了 .fx-grid-fine-v 开头没覆盖结尾,
+  残留 height/background/pointer-events/} 四行
+
+---
+
 ## V0.49.2 — bg-fx 全局背景景深感重做 (大深小浅 + 网格线强可见)
 
 ### 2026-09-03
