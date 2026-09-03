@@ -166,15 +166,18 @@
   flex-shrink: 0;
 }
 
+/* V0.49.9: 原版 DS clue 区预留固定 6 位 (numclo_waku 红框内 6x15 grid),
+   band 紧密排入顶部 N 位 (N <= 6), 剩余留空; 不用 flex:1 平均撑开造成间隔 */
 .col-clue {
   flex: 1;
   min-width: 0;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
   align-items: stretch;
+  justify-items: stretch;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .puzzle-body {
@@ -192,14 +195,16 @@
   flex-direction: column;
 }
 
+/* V0.49.9: 行 hint 同列, grid 6 列预留, band < 6 时右侧留空 (按数组顺序从左填) */
 .row-clue {
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   align-items: stretch;
+  justify-items: start;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .clue-band {
@@ -219,6 +224,9 @@
     0 0 2px rgba(0, 0, 0, 0.8);
   box-sizing: border-box;
   letter-spacing: -0.5px;
+  /* V0.49.9: grid item 不再 flex:1, 父级 grid 6 等分给位 */
+  min-height: 0;
+  min-width: 0;
 }
 
 /* V0.49.8: 黄色块用黑字避免糊; 黑/红/蓝/绿用白字 (默认) */
@@ -232,18 +240,16 @@
     0 0 2px rgba(255, 255, 255, 0.6);
 }
 
+/* V0.49.9: grid item, 不要 flex:1 让父级 grid 分配 1/6 等分 */
 .clue-band-col {
-  flex: 1;
   width: 100%;
-  min-height: 0;
   border-top: 0.5px solid rgba(255, 255, 255, 0.45);
 }
 
 .clue-band-row {
-  flex: 1;
   height: 100%;
-  min-width: 0;
   border-left: 0.5px solid rgba(255, 255, 255, 0.45);
+  /* 行 hint 数字居中在 cell 内, 默认 text-align 已居中 (display:flex + justify-content:center) */
 }
 
 .paint-grid {

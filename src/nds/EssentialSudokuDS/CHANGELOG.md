@@ -40,6 +40,28 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.49.9 — 图画谜题行列 hint 改 grid 6 等分预留 (还原原版 numclo_waku 紧密排版)
+
+### 2026-09-04
+
+#### 用户反馈
+- 截图显示行列 hint band 之间有「间隔」(色块被分散撑开)
+- 实际原版 DS numclo_waku 设计: 列/行 hint 区**预留固定 6 位** (红框内 6×15 grid), 数字按 run 顺序**紧密填入顶部 N 位**, 剩余位置留空
+- 之前用 flex:1 把 N 个 band 平均撑开 → 不符合原版 1:1 对齐 paint cell 的视觉
+
+#### 修复
+- `.col-clue` 改 `display: grid; grid-template-rows: repeat(6, 1fr)` — 列方向 6 等分固定位
+- `.row-clue` 改 `display: grid; grid-template-columns: repeat(6, 1fr)` — 行方向 6 等分固定位 (从左填)
+- `.clue-band-col` / `.clue-band-row` 删除 `flex: 1` (grid item 不再需要), 加 `min-width/min-height: 0`
+- 列/行父级加 `overflow: hidden` — band 数 > 6 时截断, 防止溢出 paint 区域
+- `.clue-band` 仍 15px/900 weight/text-shadow 黑描边 (V0.49.8 不变)
+
+#### 文件
+- `picture-scene.wxss` `.col-clue` + `.row-clue` + `.clue-band-col` + `.clue-band-row`
+- lint 0 诊断
+
+---
+
 ## V0.49.8 — 图画谜题行列提示数字字号加大 + 颜色适配
 
 ### 2026-09-04
@@ -1131,8 +1153,8 @@ fx-base 渐变底 < fx-grid 网格线 < band-distal/bg-grids/thought 动画漂�
 
 #### picture-scene DS 化收尾
 - 页面整体背景改 `#0d1b2a`, 顶部/类别/导航/工具条全部改深色胶囊或半透明卡片
-- `tool-row` 的 “清空画板” 改为纯 `numclo_00.nbm` clear 图标按钮 (去掉文字, 只保留原切片图标)
-- “显示答案”/“撤销” 改深色半透明文字按钮
+- `tool-row` 的 "清空画板" 改为纯 `numclo_00.nbm` clear 图标按钮 (去掉文字, 只保留原切片图标)
+- "显示答案"/"撤销" 改深色半透明文字按钮
 - `tutorial-bar` 改深色半透明底, 关闭 X 改深蓝背景圆
 - 调色板选中态外框改 `#4db8ff` 高亮, 计数胶囊改半透明白底
 - `puzzle-area` 继续使用 `numclo_waku.nbm` 原图作为棋盘背景
