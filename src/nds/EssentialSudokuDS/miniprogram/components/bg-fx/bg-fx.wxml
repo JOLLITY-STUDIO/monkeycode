@@ -1,6 +1,7 @@
-<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.47)
+<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.49)
   欢快糖果风, 背景由画面元素铺满:
   - .fx-base         糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 彩色柔光团
+  - .fx-grid         V0.49 整屏平铺网格线层 (数独格纸感: 24px 细线 + 3×3=72px 宫粗线)
   - band-distal      远景: 满屏漂浮大数字 1-9 (糖果 6 色), 最慢横滚 ~90s → 数独/数字玩法
   - band-grids       中景: 3×3/4×4/5×5/6×6 小网格方块 (若干小格已填色) → 图画谜题玩法,
                      V0.47 加密到 20 件铺满
@@ -14,7 +15,10 @@
   <!-- 1. 糖果渐变底 -->
   <view class="fx-base"></view>
 
-  <!-- 2. 远景: 满屏漂浮大数字 (数独/数字玩法) -->
+  <!-- 2. 整屏平铺网格线 (V0.49 数独格纸: 细格 24px + 宫粗线 72px) -->
+  <view class="fx-grid"></view>
+
+  <!-- 3. 远景: 满屏漂浮大数字 (数独/数字玩法) -->
   <view class="band band-distal">
     <view class="bob bob-1">
       <view class="roll roll-1">
