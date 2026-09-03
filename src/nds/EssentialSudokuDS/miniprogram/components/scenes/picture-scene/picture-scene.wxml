@@ -44,7 +44,7 @@
           wx:for="{{item}}"
           wx:key="key"
           wx:for-item="band"
-          class="clue-band clue-band-col"
+          class="clue-band clue-band-col{{clueTextClass(band.color)}}"
           style="background: {{clueColor(band.color)}};"
         >{{band.count || ''}}</view>
       </view>
@@ -56,7 +56,7 @@
             wx:for="{{item}}"
             wx:key="key"
             wx:for-item="band"
-            class="clue-band clue-band-row"
+            class="clue-band clue-band-row{{clueTextClass(band.color)}}"
             style="background: {{clueColor(band.color)}};"
           >{{band.count || ''}}</view>
         </view>

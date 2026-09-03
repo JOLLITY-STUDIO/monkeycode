@@ -658,6 +658,11 @@ Component({
       return PALETTE_HEX[color] || '#9aa7b4';
     },
 
+    /** 提示 band 文字色 class — 黄色块用黑字 (cb-yellow) 避免糊, 其余沿用 .clue-band 默认白字 */
+    clueTextClass(color: number): string {
+      return color === 2 ? ' cb-yellow' : '';
+    },
+
     /** 每色剩余待涂格数: 目标该色总格数 - 已正确涂成该色格数 (0 号色恒为 0) */
     _computeNeed(cells: PictureCell[]): number[] {
       const need = [0, 0, 0, 0, 0, 0];

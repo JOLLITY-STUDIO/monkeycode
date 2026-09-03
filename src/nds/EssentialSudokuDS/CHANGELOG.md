@@ -40,7 +40,30 @@ All notable changes to this project are documented here.
 
 ---
 
-## V0.49.6 — 产品重新命名「点豆成画」+ 界面 title 全面替换
+## V0.49.8 — 图画谜题行列提示数字字号加大 + 颜色适配
+
+### 2026-09-04
+
+#### 用户反馈
+- 截图显示顶列/左行色块上的提示数字 (5 553 4...) 太密太小, 看不清
+- 实际: `.clue-band` font-size 9px + 普通权重 + 仅 0.5px 白边
+
+#### 修复
+- `.clue-band` `font-size: 9px → 15px`, `font-weight: 700 → 900`, `letter-spacing: -0.5px`
+- `text-shadow` 1px 黑阴影 → 4 方向黑描边 + 中心黑光晕, 即使最浅的黄色块数字也清晰
+- 黄色块 (`#f8f800`) 加 `.cb-yellow` class 切黑字 + 白描边, 避免白字糊
+- `.clue-band` 边框 0.5px 白 → 0.5px → 透明度 0.35 → 0.45, 让分隔更明显
+- TS 加 `clueTextClass(color)` helper 给 wxml 调用, 黄色 band 自动加 `cb-yellow` class
+
+#### 文件
+- `picture-scene.wxss` `.clue-band` + 新增 `.cb-yellow`
+- `picture-scene.wxml` 顶列/左行各加 `{{clueTextClass(band.color)}}` 内嵌 class
+- `picture-scene.ts` 新增 `clueTextClass(color)` helper
+- lint 0 诊断
+
+---
+
+## V0.49.7 — 图画谜题新手引导: 图文教程弹层 + 首次进入高亮引导
 
 ### 2026-09-03
 
