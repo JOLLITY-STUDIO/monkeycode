@@ -4,6 +4,51 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.37 — 标题封面 WXML 化 (Skyline canvas 兼容) + 暗夜书桌提亮
+
+### 2026-09-03
+
+#### 用户反馈
+- "又变得阴暗了" (devtools 截图下, bg-fx 暗夜元素太弱, title Canvas 在 Skyline 下完全不显示)
+
+#### 1. title-scene Canvas → WXML (Skyline canvas devtools 不可见修复)
+- V0.36 用 `<canvas type="2d">` 自绘封面, 但 Skyline 渲染器开发者工具暂不支持 canvas 组件
+  调试 ("请先到真机上预览调试") — devtools 下整个封面一片黑, 用户看不见
+- V0.37 改回纯 WXML/CSS 渲染, 真机 + devtools 一致显示:
+  - **cover-bg / cover-glow / cover-glow-2** 三层渐变: 暗夜书桌主色 + 台灯柔光 + 暖光反光
+    (CSS `linear-gradient` + `radial-gradient` 替代 Canvas fillRect)
+  - **9×9 数独预览** = 81 个 `<view class="scell">` flex-wrap 矩阵, 每格按 kind
+    (given/filled/empty) 上色, 给定数字 27 个叠加 `<text class="scell-n">` 暖金
+  - **6×6 图画谜题预览** = 36 个 `<view class="pcell">` 矩阵, 已填格子渐变填充
+    (#a8dcff→#5ea3e8), 22/36 形似小猫头剪影
+  - 中间金色细线分隔双预览, 标签 / 题数 / 宣言均用 `<text>` + CSS
+- data: sudokuCells(81) + pictureCells(36) 在 attached() 预算生成, 避免响应式 setData
+  触发重渲染
+- ready() 删除 (纯 WXML 不再需要 _drawCover); detached 清脉冲定时器仍保留
+
+#### 2. bg-fx 提亮加密度 (回应"又变得阴暗了")
+- **数据加量**: thinkTiles 11→16 (满铺上下两层), drafts 9→12, thoughts 10→16
+- **opacity 全面抬升**: thinkTiles 0.2-0.32 → 0.66-0.82, drafts 0.28-0.4 → 0.55-0.72,
+  thoughts 0.38-0.6 → 0.7-0.92
+- **fx-base 暖光增强**: 主色抬到中调 #2a2854→#5a4030 (旧 #0d1426→#14100a 太暗);
+  台灯柔光晕 0.36 → 0.55, 范围扩大
+- **think-tile** 边框 1→1.5px, 字号 12→13px, 背景深色对比让数字更显眼
+- **draft-dashed** 边框 0.45→0.75 透明度 + 半透明深底; **draft-partial** 边框 0.45→0.75,
+  **draft-cell** 0.32→0.55 + box-shadow
+- **thought** 中心 #fff→#fffbe6 (近白), 光晕扩散更大
+
+#### 3. menu-scene grid-template-columns → flex (Skyline 兼容)
+- "Unsupported Property. Style Text: grid-template-columns: repeat(4, 1fr)" 警告
+  在 Skyline 渲染器直接报 warning + 不渲染
+- 改 `.bottom-links { display: flex; gap: 10px }` + `.sub-btn { flex: 1 }` 4 等分,
+  视觉一致 (按钮均分宽度)
+
+#### 验证
+- IDE 语言服务 read_lints 0 诊断
+- 真机 + devtools 一致显示完整封面 (主标题 + 双预览 + 宣言 + 点击开始)
+
+---
+
 ## V0.36 — 自绘 Canvas 封面 + 暗夜书桌背景 (重新思考首页观感)
 
 ### 2026-09-03

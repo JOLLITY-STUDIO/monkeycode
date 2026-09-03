@@ -175,12 +175,13 @@
   box-shadow: 0 0 6px rgba(245, 210, 122, 0.45);
 }
 
-/* ---------- 底部 4 个辅助小按钮 (深色玻璃胶囊, 暗底上保持可读) ---------- */
+/* ---------- 底部 4 个辅助小按钮 (深色玻璃胶囊, 暗底上保持可读) ----------
+   V0.37: 改 display:grid; grid-template-columns:repeat(4,1fr) 为 flex 4 等分,
+   因 Skyline 渲染器不支持 grid-template-columns (报 warning 还不渲染) */
 .bottom-links {
   width: 100%;
   max-width: 420px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 10px;
   margin-bottom: 28px;
 }
@@ -189,6 +190,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
   height: 38px;
   padding: 0 8px;
   border-radius: 18px;

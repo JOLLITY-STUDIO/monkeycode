@@ -2,6 +2,8 @@
 // V0.30: 重写为两行大蓝胶囊主入口 (数独 / 图画谜题) + 底部 4 列辅助入口
 // V0.35: 明亮天空 bg-fx 之上深色玻璃按钮可读性优化
 // V0.36: 暗夜书桌 bg-fx + 顶部 LOGO 改纯文字 (替代已损坏的 title.nbm.png)
+// V0.37: 修复 bottom-links grid-template-columns → flex (Skyline 兼容);
+//        title-scene 自绘 Canvas → 纯 WXML 封面 (devtools 可见)
 // 移除"SELECT MODE"小卡片标题 + 模式 (Number Puzzle) 副标题括号
 // 不再使用任何 NBM 按键图片素材.
 
@@ -9,7 +11,7 @@ import { audioService } from '../../../utils/audio/audioService';
 
 Component({
   data: {
-    buildVersion: 'v0.36',
+    buildVersion: 'v0.37',
   },
 
   methods: {

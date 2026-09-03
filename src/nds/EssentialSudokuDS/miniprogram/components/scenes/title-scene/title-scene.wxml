@@ -1,22 +1,74 @@
 <!--components/scenes/title-scene/title-scene.wxml — 启动标题场景
-  V0.36 自绘 Canvas 封面 (替代已损坏的 title.nbm 提取图):
-  - #title-cover-canvas 自绘暗夜书桌 + 双谜题预览
-  - 全屏点击 → onTapStart → triggerEvent('start')
-  - Skyline 下 image 原生事件冒泡不可靠, 这里 canvas 同理; 由普通透明
-    view .tap-catcher 承接点击后冒泡到根 bindtap
-  - TAP HINT 底部"点击开始"脉冲提示, copyright 角标版权
+  V0.37 纯 WXML/CSS 封面 (替代 V0.36 Canvas 自绘, 因 Skyline 开发者工具不支持
+  canvas type="2d" 调试, devtools 下整张封面不可见 → 改纯 view + CSS 渐变,
+  真机/devtools 一致显示):
+  - .cover-bg / .cover-glow / .cover-glow-2 三层渐变 + 暖光晕
+  - .cover-header 标题 ESSENTIAL PUZZLE DS + 装饰线 + 副标题 + 英文
+  - .cover-previews 双预览: 数独 9×9 (.sudoku-grid 81 cells) + 图画谜题 6×6
+    (.picture-grid 36 cells), 中间金色细线分隔
+  - .cover-motto 一格一思
+  - .tap-hint-wrap 底部"点击开始" 脉冲
+  - .copyright 版权角标
+  全屏点击 → onTapStart → triggerEvent('start')
 -->
 <view class="title-page" bindtap="onTapStart">
-  <!-- Canvas 自绘封面: 绝对定位铺满 → ready 时 _drawCover -->
-  <canvas
-    type="2d"
-    id="title-cover-canvas"
-    class="title-cover-canvas"
-    disable-scroll="true"
-  ></canvas>
 
-  <!-- 透明点击捕获层: canvas 之上, 承接点击 (skyline 下 canvas 事件不可靠) -->
-  <view class="tap-catcher"></view>
+  <!-- 背景: 渐变 + 双柔光晕 (替代 Canvas 绘底) -->
+  <view class="cover-bg"></view>
+  <view class="cover-glow"></view>
+  <view class="cover-glow-2"></view>
+
+  <!-- 顶部主标题 + 装饰线 + 副标题 + 英文小字 -->
+  <view class="cover-header">
+    <view class="cover-title">ESSENTIAL PUZZLE DS</view>
+    <view class="cover-divider">
+      <view class="cover-divider-line"></view>
+      <view class="cover-divider-dot"></view>
+      <view class="cover-divider-line"></view>
+    </view>
+    <view class="cover-subtitle">每日拼图</view>
+    <view class="cover-en">NUMBER  ×  PICTURE</view>
+  </view>
+
+  <!-- 中央双谜题预览 -->
+  <view class="cover-previews">
+
+    <!-- 数字谜题预览 9×9 -->
+    <view class="preview-card preview-sudoku">
+      <view class="preview-grid sudoku-grid">
+        <view
+          wx:for="{{sudokuCells}}"
+          wx:key="i"
+          class="scell scell-{{item.kind}}"
+          style="{{item.c ? '--cc: ' + item.c + ';' : ''}}"
+        >
+          <text wx:if="{{item.n}}" class="scell-n">{{item.n}}</text>
+        </view>
+      </view>
+      <view class="preview-label">数字谜题</view>
+      <view class="preview-meta">1000 题</view>
+    </view>
+
+    <!-- 中间金色细线 -->
+    <view class="preview-divider"></view>
+
+    <!-- 图画谜题预览 6×6 -->
+    <view class="preview-card preview-picture">
+      <view class="preview-grid picture-grid">
+        <view
+          wx:for="{{pictureCells}}"
+          wx:key="i"
+          class="pcell {{item.filled ? 'pcell-on' : 'pcell-off'}}"
+        ></view>
+      </view>
+      <view class="preview-label">图画谜题</view>
+      <view class="preview-meta">1525 题</view>
+    </view>
+
+  </view>
+
+  <!-- 宣言 -->
+  <view class="cover-motto">一  格  一  思</view>
 
   <!-- 底部"点击开始"脉冲提示 -->
   <view class="tap-hint-wrap">

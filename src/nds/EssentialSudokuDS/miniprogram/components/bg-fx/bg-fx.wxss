@@ -24,6 +24,7 @@
 
 /* ===========================================================
  * 1. 暗夜书桌底 (蓝紫 → 暖琥珀 → 暗木 + 台灯柔光晕)
+ * V0.37 提亮: 主色抬到中调, 暖光增强, 整体不再压抑
  * =========================================================== */
 .fx-base {
   position: absolute;
@@ -32,23 +33,23 @@
   width: 100%;
   height: 100%;
   background:
-    /* 台灯柔光晕 (左上偏中, 像一盏灯照在书桌) */
-    radial-gradient(ellipse 60% 50% at 22% 18%,
-      rgba(255, 213, 138, 0.36) 0%,
-      rgba(255, 200, 120, 0.18) 35%,
-      rgba(255, 180, 100, 0.04) 65%,
+    /* 台灯柔光晕 (中央偏上, 像一盏灯照在书桌) — 加强 */
+    radial-gradient(ellipse 75% 60% at 50% 25%,
+      rgba(255, 213, 138, 0.55) 0%,
+      rgba(255, 200, 120, 0.32) 35%,
+      rgba(255, 180, 100, 0.12) 65%,
       transparent 80%),
-    /* 暖光底部反光 */
-    radial-gradient(ellipse 70% 38% at 30% 95%,
-      rgba(255, 180, 120, 0.18) 0%,
+    /* 暖光底部反光 — 加强 */
+    radial-gradient(ellipse 80% 45% at 30% 95%,
+      rgba(255, 180, 120, 0.32) 0%,
       rgba(255, 180, 120, 0) 65%),
-    /* 主渐变: 深夜蓝紫 → 暖琥珀 → 暗木 */
+    /* 主渐变: 深夜蓝紫 → 暖琥珀 → 暗木 (整体调暖提亮) */
     linear-gradient(180deg,
-      #0d1426 0%,
-      #1d1a2e 30%,
-      #2a2118 60%,
-      #1f140d 85%,
-      #14100a 100%);
+      #2a2854 0%,
+      #3a3060 28%,
+      #4a3850 50%,
+      #5a4030 72%,
+      #2c1d14 100%);
 }
 
 /* ===========================================================
@@ -111,28 +112,31 @@
 
 /* ===========================================================
  * 3. 远景装饰: 漂浮数字小方块 (think tiles)
- *    数字 1-9, 金/蓝双色, 半透明, 慢速横滚
+ *    数字 1-9, 金/蓝双色, 慢速横滚
+ * V0.37 提亮: 背景更深一点让数字更显眼, 边框/字色更亮
  * =========================================================== */
 .think-tile {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid;
+  border: 1.5px solid;
   border-radius: 4px;
-  background: rgba(20, 24, 44, 0.35);
-  font-size: 12px;
-  font-weight: 700;
+  background: rgba(20, 24, 44, 0.7);
+  font-size: 13px;
+  font-weight: 800;
   font-family: monospace;
   letter-spacing: 0;
-  box-shadow: 0 0 8px rgba(245, 210, 122, 0.12);
+  box-shadow: 0 0 10px rgba(245, 210, 122, 0.32),
+    inset 0 0 4px rgba(255, 220, 160, 0.15);
 }
 
 /* ===========================================================
  * 4. 中景装饰: 草稿方块 (虚线格 / 已填一部分)
  *    像练习册的一行/一页, 已填的格子体现"做了一部分"状态
+ * V0.37 提亮: 边框/填充色更饱和, 整体可读性更高
  * =========================================================== */
 .draft {
   position: absolute;
@@ -140,13 +144,13 @@
 }
 
 .draft-dashed {
-  border: 1px dashed rgba(245, 210, 122, 0.45);
-  background: transparent;
+  border: 1.5px dashed rgba(245, 210, 122, 0.75);
+  background: rgba(20, 24, 44, 0.35);
 }
 
 .draft-partial {
-  border: 1px solid rgba(127, 200, 255, 0.45);
-  background: rgba(127, 200, 255, 0.04);
+  border: 1.5px solid rgba(127, 200, 255, 0.75);
+  background: rgba(127, 200, 255, 0.08);
   padding: 4px;
   box-sizing: border-box;
 }
@@ -155,21 +159,23 @@
   position: absolute;
   width: 22%;
   height: 22%;
-  background: rgba(127, 200, 255, 0.32);
+  background: rgba(127, 200, 255, 0.55);
   border-radius: 2px;
+  box-shadow: 0 0 4px rgba(127, 200, 255, 0.4);
 }
 
 /* ===========================================================
  * 5. 近景装饰: 思考光点 (柔光圆 + 高光)
+ * V0.37 提亮: 中心更白, 整体光晕更大更亮
  * =========================================================== */
 .thought {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle at 36% 32%,
-    rgba(255, 240, 200, 0.85) 0%,
-    rgba(255, 220, 160, 0.45) 50%,
-    rgba(255, 200, 120, 0) 100%);
-  box-shadow: 0 0 6px rgba(255, 220, 160, 0.35);
+    rgba(255, 250, 230, 1) 0%,
+    rgba(255, 235, 180, 0.7) 45%,
+    rgba(255, 210, 140, 0.15) 100%);
+  box-shadow: 0 0 10px rgba(255, 220, 160, 0.6);
   animation: thought-twinkle 4s ease-in-out infinite alternate;
   will-change: opacity, transform;
 }
