@@ -182,7 +182,7 @@ Component({
   },
 
   methods: {
-    /** 返回主菜单 */
+    /** 返回 (按 pictureOrigin 路由: 类别列表 pictList / 子模式页 pictureMode, 由 index 决定) */
     onBack() {
       audioService.playSe('back');
       this.triggerEvent('back');

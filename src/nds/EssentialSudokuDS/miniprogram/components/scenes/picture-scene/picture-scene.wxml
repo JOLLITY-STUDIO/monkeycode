@@ -1,7 +1,7 @@
 <view class="picture-page">
   <!-- 顶部返回条 -->
   <view class="scene-bar" bindtap="onBack">
-    <text class="scene-bar-text">← 返回主菜单</text>
+    <text class="scene-bar-text">← 返回</text>
   </view>
 
   <!-- 顶部: 谜题名 + 通关标记 + 序号 + 计时 -->

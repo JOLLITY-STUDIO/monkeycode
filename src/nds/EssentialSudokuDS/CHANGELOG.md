@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.35.1 — picture-mode 按钮中文化 + picture 返回条文案修正
+
+### 2026-09-03
+
+#### 修复 (纯中文 UI 规范 V0.30 残留)
+- `picture-mode-scene.ts`: 子模式按钮 label 从日文「ナンクロ/チュートリアル」改为中文
+  「图案填字 / 入门教程」(desc 同步: "1400 道彩色填字题 · 选择类别开始" / "1 道教学题 · 直接开涂")
+- `picture-scene.wxml`: 顶部返回条 "← 返回主菜单" → "← 返回"
+  (实际路由按 pictureOrigin 回 pictList/pictureMode, 不是主菜单, 文案与行为对齐)
+- `picture-scene.ts`: onBack 注释同步更新 (说明路由由 index 按 pictureOrigin 决定)
+
+#### 验证
+- IDE 语言服务 0 诊断 (picture-mode-scene / picture-scene)
+- 版本号 v0.35 → v0.35.1
+
+---
+
 ## V0.35 — 明亮天空横滚背景 (Bright Sky Loop) + 两玩法逻辑闭环
 
 ### 2026-09-03

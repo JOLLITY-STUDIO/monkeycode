@@ -8,7 +8,7 @@ import { audioService } from '../../../utils/audio/audioService';
 
 Component({
   data: {
-    buildVersion: 'v0.35',
+    buildVersion: 'v0.35.1',
   },
 
   methods: {

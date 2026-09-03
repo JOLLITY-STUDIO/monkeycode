@@ -1,9 +1,10 @@
 // components/scenes/picture-mode-scene/picture-mode-scene.ts — 图画谜题子模式选择菜单
 // 只保留真实可玩的模式 (逻辑链路闭环, 无死按钮):
-//   ナンクロ → 进入类别列表 (numclo0-9 + numclo_00-03, 全部 15x15 彩色计数填字题)
-//   チュートリアル → 直接开始教程题 (numclo_tu.data)
+//   图案填字 → 进入类别列表 (numclo0-9 + numclo_00-03, 全部 15x15 彩色计数填字题)
+//   入门教程 → 直接开始教程题 (numclo_tu.data)
 // 原 DS pazl_select 上的 ヌクロ/カード/ポピュレーション 没有独立数据文件,
 // 不再占位 (避免"模式数据尚未解析"这种断头路)。
+// 纯中文 UI (V0.30 规范): 按钮一律文本标签, 不用 NBM 图.
 
 import { audioService } from '../../../utils/audio/audioService';
 import { NUMCLO_CATALOG } from '../../../utils/sudoku/numclo_puzzles';
@@ -20,8 +21,8 @@ const NANKURO_COUNT = NUMCLO_CATALOG.filter((p) => p.file !== 'numclo_tu.data').
 const TUTORIAL_COUNT = NUMCLO_CATALOG.filter((p) => p.file === 'numclo_tu.data').length;
 
 const MODES: ModeItem[] = [
-  { id: 'nankuro', label: 'ナンクロ', desc: `${NANKURO_COUNT} 道彩色填字 · 15 个类别` },
-  { id: 'tutorial', label: 'チュートリアル', desc: `${TUTORIAL_COUNT} 道入门教学` },
+  { id: 'nankuro', label: '图案填字', desc: `${NANKURO_COUNT} 道彩色填字题 · 选择类别开始` },
+  { id: 'tutorial', label: '入门教程', desc: `${TUTORIAL_COUNT} 道教学题 · 直接开涂` },
 ];
 
 Component({
