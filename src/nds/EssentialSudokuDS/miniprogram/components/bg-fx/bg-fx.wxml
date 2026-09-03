@@ -1,81 +1,75 @@
-<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Bright Sky Loop, V0.35)
-  明亮多彩 + 横版射击游戏式视差横滚背景:
-  - .fx-base       明亮天空渐变 (青→薄荷→暖黄→蜜桃) + 太阳柔光
-  - band-cloud     远景白色云朵, 最慢横滚 (~58s)
-  - band-mid       中景彩色玻璃条 + 泡泡, 中速 (~34s)
-  - band-near      近景倾斜流光 + 亮星, 最快 (~16s)
+<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Night Study Desk, V0.36)
+  暗夜书桌 + 思考主题:
+  - .fx-base         深夜书桌渐变 (蓝紫 → 暖琥珀 → 暗木) + 顶部台灯柔光晕
+  - band-distal      远景漂浮数字小方块 1-9 (think tiles), 最慢横滚 ~75s
+  - band-drafts      中景草稿方块 (虚线格/已填一部分), 中速 ~45s
+  - band-thought     近景思考光点 (柔光圆), 最快 ~22s
   每层 = .bob (上下缓浮) > .roll (width:200%, translateX 0→-50% 无缝循环)
         > 两个相同 .seg (各 50% 视口宽), seg 内放置装饰物
-  - .fx-beat       顶侧柔和光呼吸, 周期 = pulseMs (场景 BGM 一小节)
+  - .fx-beat         台灯柔光呼吸 (周期 = pulseMs, 平缓不闪)
   整个 view z-index 0, pointer-events none。全项目禁用 rpx, 一律 px。
 -->
 <view class="bg-fx">
-  <!-- 1. 明亮天空底 -->
+  <!-- 1. 暗夜书桌底色 + 台灯柔光晕 -->
   <view class="fx-base"></view>
 
-  <!-- 2. 远景: 云朵 -->
-  <view class="band band-cloud">
+  <!-- 2. 远景: 漂浮数字小方块 (think tiles) -->
+  <view class="band band-distal">
     <view class="bob bob-1">
       <view class="roll roll-1">
         <view wx:for="{{segs}}" wx:key="*this" class="seg">
           <view
-            wx:for="{{clouds}}"
+            wx:for="{{thinkTiles}}"
             wx:key="i"
-            class="cloud"
-            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.w}}px; height: {{item.h}}px; opacity: {{item.o}};"
-          ></view>
+            class="think-tile"
+            style="left: {{item.x}}%; top: {{item.y}}%; opacity: {{item.o}}; border-color: {{item.c}}; color: {{item.c}};"
+          >{{item.n}}</view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 3. 中景: 彩色玻璃条 + 泡泡 -->
-  <view class="band band-mid">
+  <!-- 3. 中景: 草稿方块 (虚线/已填一部分) -->
+  <view class="band band-drafts">
     <view class="bob bob-2">
       <view class="roll roll-2">
         <view wx:for="{{segs}}" wx:key="*this" class="seg">
           <view
-            wx:for="{{bars}}"
+            wx:for="{{drafts}}"
             wx:key="i"
-            class="bar"
-            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.w}}px; height: {{item.h}}px; opacity: {{item.o}}; background: {{item.c}};"
-          ></view>
-          <view
-            wx:for="{{bubbles}}"
-            wx:for-item="bb"
-            wx:key="i"
-            class="bubble"
-            style="left: {{bb.x}}%; top: {{bb.y}}%; width: {{bb.s}}px; height: {{bb.s}}px; border-color: {{bb.c}};"
-          ></view>
+            class="draft {{item.kind === 'dashed' ? 'draft-dashed' : 'draft-partial'}}"
+            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.w}}px; height: {{item.h}}px; opacity: {{item.o}};"
+          >
+            <block wx:if="{{item.kind === 'partial'}}">
+              <view class="draft-cell" style="left: 0%; top: 0%;"></view>
+              <view class="draft-cell" style="left: 25%; top: 0%;"></view>
+              <view class="draft-cell" style="left: 50%; top: 0%;"></view>
+              <view class="draft-cell" style="left: 0%; top: 25%;"></view>
+              <view class="draft-cell" style="left: 25%; top: 50%;"></view>
+              <view class="draft-cell" style="left: 50%; top: 50%;"></view>
+            </block>
+          </view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 4. 近景: 倾斜流光 + 亮星 -->
-  <view class="band band-near">
+  <!-- 4. 近景: 思考光点 -->
+  <view class="band band-thought">
     <view class="bob bob-3">
       <view class="roll roll-3">
         <view wx:for="{{segs}}" wx:key="*this" class="seg">
           <view
-            wx:for="{{streaks}}"
-            wx:for-item="sk"
+            wx:for="{{thoughts}}"
             wx:key="i"
-            class="streak"
-            style="left: {{sk.x}}%; top: {{sk.y}}%; width: {{sk.w}}px; opacity: {{sk.o}};"
-          ></view>
-          <view
-            wx:for="{{stars}}"
-            wx:for-item="st"
-            wx:key="i"
-            class="star"
-            style="left: {{st.x}}%; top: {{st.y}}%; width: {{st.s}}px; height: {{st.s}}px; background: {{st.c}};"
+            class="thought"
+            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.s}}px; height: {{item.s}}px; opacity: {{item.o}};"
           ></view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 5. 节拍柔和光呼吸 (周期 = pulseMs = 场景 BGM 一小节, 平缓不闪) -->
+  <!-- 5. 节拍柔光呼吸 (周期 = pulseMs = 场景 BGM 一小节, 平缓不闪) -->
   <view class="fx-beat" style="animation-duration: {{pulseMs}}ms;"></view>
 </view>

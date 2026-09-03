@@ -1,8 +1,9 @@
-/* menu-scene.wxss — V0.35 真游戏风: 大蓝胶囊艺术字 (仿 DS Present/VS 风格) + 亮色天空滚动背景
-   抛弃 V0.30 的"4 层信息卡堆叠"软件风
-   抛弃 V0.31 的"双宫格配色蓝橙对比"过度装饰
-   根背景 transparent, 透出 index 层 bg-fx 明亮天空循环背景;
-   底部辅助钮改深色玻璃 (亮底上保持可读)
+/* menu-scene.wxss — V0.36: 暗夜书桌 bg-fx 之上重做菜单
+   抛弃 V0.35 明亮天空 + 白色 LOGO 风格, 改为:
+   - 顶部 LOGO 区: 纯文字 ESSENTIAL PUZZLE DS + 每日拼图 (替代已损坏的 title.nbm.png)
+   - 主按钮 2 个大蓝胶囊 + 描边字 保持原 V0.34 视觉 (蓝色按钮在暗底上仍然清晰)
+   - 底部辅助钮改深色玻璃 (深底上可读性更强)
+   根背景 transparent, 透出 index 层 bg-fx 暗夜书桌循环背景;
 */
 
 /* ---------- 页面骨架 ---------- */
@@ -19,14 +20,14 @@
   overflow: hidden;
 }
 
-/* ---------- 背景装饰 (柔和光晕) ---------- */
+/* ---------- 背景装饰 (柔和光晕, V0.36 暗色版) ---------- */
 .bg-glow-top {
   position: absolute;
   top: -120px;
   left: -80px;
   width: 480px;
   height: 360px;
-  background: radial-gradient(ellipse at center, rgba(77, 184, 255, 0.18) 0%, rgba(77, 184, 255, 0) 70%);
+  background: radial-gradient(ellipse at center, rgba(245, 210, 122, 0.14) 0%, rgba(245, 210, 122, 0) 70%);
   pointer-events: none;
 }
 
@@ -36,26 +37,39 @@
   right: -80px;
   width: 400px;
   height: 320px;
-  background: radial-gradient(ellipse at center, rgba(0, 200, 180, 0.12) 0%, rgba(0, 200, 180, 0) 70%);
+  background: radial-gradient(ellipse at center, rgba(127, 200, 255, 0.1) 0%, rgba(127, 200, 255, 0) 70%);
   pointer-events: none;
 }
 
-/* ---------- 顶部 LOGO 横幅 ---------- */
+/* ---------- 顶部 LOGO 横幅 (V0.36 纯文字, 替代 title.nbm.png) ---------- */
 .title-banner {
   width: 100%;
   max-width: 420px;
-  height: 168px;
+  min-height: 120px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 36px;
+  gap: 8px;
+  margin-bottom: 32px;
   margin-top: 8px;
+  padding: 16px 0;
 }
 
-.title-image {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+.title-text {
+  font-size: 22px;
+  font-weight: 800;
+  color: #f5d27a;
+  letter-spacing: 4px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.title-sub {
+  font-size: 14px;
+  font-weight: 600;
+  color: #dfe6f4;
+  letter-spacing: 6px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 /* ---------- 主按钮区 (2 个大蓝胶囊) ---------- */
@@ -69,7 +83,6 @@
 }
 
 /* 通用大蓝胶囊按钮 — 仿 DS Present/VS/Options 风格
-   设计:
    - 顶部高光 (白色光斑)
    - 中部蓝渐变
    - 底部深蓝边 1px
@@ -105,7 +118,7 @@
 }
 
 .game-btn-numple {
-  /* 数独: 蓝青渐变 */
+  /* 数字谜题 (旧称数独): 蓝青渐变 */
   background: linear-gradient(180deg, #5cb6f8 0%, #28a0f0 45%, #1a8ad8 100%);
 }
 
@@ -151,18 +164,18 @@
 .divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(90deg, rgba(245, 210, 122, 0) 0%, rgba(245, 210, 122, 0.35) 50%, rgba(245, 210, 122, 0) 100%);
 }
 
 .divider-dot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(77, 184, 255, 0.6);
-  box-shadow: 0 0 6px rgba(77, 184, 255, 0.4);
+  background: rgba(245, 210, 122, 0.7);
+  box-shadow: 0 0 6px rgba(245, 210, 122, 0.45);
 }
 
-/* ---------- 底部 4 个辅助小按钮 (深色玻璃胶囊, 亮底上保持可读) ---------- */
+/* ---------- 底部 4 个辅助小按钮 (深色玻璃胶囊, 暗底上保持可读) ---------- */
 .bottom-links {
   width: 100%;
   max-width: 420px;
@@ -180,46 +193,46 @@
   padding: 0 8px;
   border-radius: 18px;
   background: rgba(22, 42, 66, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(245, 210, 122, 0.28);
   color: #e9eef3;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 2px;
-  box-shadow: 0 2px 6px rgba(13, 27, 42, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   transition: background 0.08s ease, border-color 0.08s ease, color 0.08s ease, transform 0.08s ease;
 }
 
 .sub-btn-press {
-  background: rgba(77, 184, 255, 0.65);
+  background: rgba(245, 210, 122, 0.65);
   border-color: rgba(255, 255, 255, 0.85);
-  color: #ffffff;
+  color: #1a1206;
   transform: scale(0.96);
 }
 
 .sub-btn-back {
   background: rgba(13, 27, 42, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(245, 210, 122, 0.18);
   color: #d7e3f0;
 }
 
 .sub-btn-back.sub-btn-press {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.18);
   border-color: rgba(255, 255, 255, 0.6);
   color: #ffffff;
 }
 
-/* ---------- 页脚版权 (深色字压在亮底上, 加半透明白字影增加可读) ---------- */
+/* ---------- 页脚版权 (V0.36 暗底, 暖灰字) ---------- */
 .menu-copyright {
   margin-top: auto;
   font-size: 11px;
-  color: #0d4477;
+  color: rgba(200, 213, 232, 0.45);
   letter-spacing: 0.5px;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* ===========================================================
- * V0.34 入场 + 常流动效 (每帧挂载只播一次入场; 之后光晕/LOGO 持续浮动)
+ * V0.34 入场 + 常流动效
  * 全用 backwards 填充, 动画结束后回落到类样式, 不影响 hover 按压缩放
  * =========================================================== */
 
@@ -235,11 +248,11 @@
   to   { transform: translate3d(14px, 16px, 0) scale(1.18); opacity: 1; }
 }
 
-/* --- LOGO 入场下坠 + 常驻轻浮动 --- */
+/* --- 顶部标题入场下坠 + 常驻轻浮动 --- */
 .title-banner {
   animation: menu-drop 0.5s cubic-bezier(0.22, 1.3, 0.36, 1) backwards;
 }
-.title-image {
+.title-text {
   animation: logo-bob 4.6s ease-in-out infinite;
 }
 @keyframes menu-drop {
@@ -248,7 +261,7 @@
 }
 @keyframes logo-bob {
   0%, 100% { transform: translate3d(0, 0, 0); }
-  50%      { transform: translate3d(0, -6px, 0); }
+  50%      { transform: translate3d(0, -3px, 0); }
 }
 
 /* --- 主按钮逐个弹出 (微弹簧) --- */

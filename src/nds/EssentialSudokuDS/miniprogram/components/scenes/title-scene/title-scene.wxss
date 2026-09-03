@@ -1,6 +1,14 @@
+/* components/scenes/title-scene/title-scene.wxss
+   V0.36 自绘 Canvas 封面样式 (替代原 title.nbm.png):
+   - .title-cover-canvas 铺满父容器 (与 .title-bg 同位置)
+   - .tap-catcher 透明承接点击 → 冒泡到根 bindtap
+   - .tap-hint 底部"点击开始"深色玻璃胶囊 + pulse 动画
+   全项目禁用 rpx, 一律 px。
+*/
+
 .title-page {
   /* absolute 铺满最近定位祖先 (.scene-stage, absolute inset:0),
-     不依赖组件宿主节点高度 (宿主在非 flex 容器内高度 auto, height:100% 会失效) */
+     不依赖组件宿主节点高度 */
   position: absolute;
   top: 0;
   left: 0;
@@ -16,7 +24,7 @@
   box-sizing: border-box;
 }
 
-.title-bg {
+.title-cover-canvas {
   position: absolute;
   top: 0;
   left: 0;
@@ -25,7 +33,7 @@
   pointer-events: none;
 }
 
-/* 透明点击捕获层: 位于 image 之上 (普通 view 事件冒泡可靠) */
+/* 透明点击捕获层: 位于 canvas 之上 (普通 view 事件冒泡可靠) */
 .tap-catcher {
   position: absolute;
   top: 0;
@@ -51,7 +59,6 @@
   background: rgba(13, 27, 42, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(2px);
 }
 
 .tap-hint-text {

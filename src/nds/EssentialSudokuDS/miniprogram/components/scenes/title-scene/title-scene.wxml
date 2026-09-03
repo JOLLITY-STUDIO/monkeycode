@@ -1,12 +1,24 @@
+<!--components/scenes/title-scene/title-scene.wxml — 启动标题场景
+  V0.36 自绘 Canvas 封面 (替代已损坏的 title.nbm 提取图):
+  - #title-cover-canvas 自绘暗夜书桌 + 双谜题预览
+  - 全屏点击 → onTapStart → triggerEvent('start')
+  - Skyline 下 image 原生事件冒泡不可靠, 这里 canvas 同理; 由普通透明
+    view .tap-catcher 承接点击后冒泡到根 bindtap
+  - TAP HINT 底部"点击开始"脉冲提示, copyright 角标版权
+-->
 <view class="title-page" bindtap="onTapStart">
-  <!-- 全屏标题画面: 原 DS title.nbm -->
-  <image class="title-bg" src="/assets/nbm/title.nbm.png" mode="aspectFit" lazy-load></image>
+  <!-- Canvas 自绘封面: 绝对定位铺满 → ready 时 _drawCover -->
+  <canvas
+    type="2d"
+    id="title-cover-canvas"
+    class="title-cover-canvas"
+    disable-scroll="true"
+  ></canvas>
 
-  <!-- 透明点击捕获层: 铺满 title-page 并盖在 image 之上 (Skyline 下 image 原生绘制节点
-       不保证事件冒泡, 由普通 view 承接点击后再冒泡到根 bindtap) -->
+  <!-- 透明点击捕获层: canvas 之上, 承接点击 (skyline 下 canvas 事件不可靠) -->
   <view class="tap-catcher"></view>
 
-  <!-- 底部开始提示 -->
+  <!-- 底部"点击开始"脉冲提示 -->
   <view class="tap-hint-wrap">
     <view class="tap-hint {{pulse ? 'pulse' : ''}}">
       <text class="tap-hint-text">点击开始</text>

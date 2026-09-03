@@ -28,7 +28,7 @@
   </view>
 </view>
 
-<!-- 顶部广告位 template: 纯色 banner 占位 (不引用 title.nbm.png, 避免和 title-scene 同图重复加载导致 Skyline 渲染异常) -->
+<!-- 顶部广告位 template: 深色玻璃 banner 占位 (V0.36 暗夜书桌主题, 不引用任何 NBM 图) -->
 <template name="adBanner">
   <view class="top-ad">
     <view class="ad-slot">
@@ -57,7 +57,7 @@
     bind:open-tutorial="onPictureModeOpenTutorial"
     bind:back="onPictureModeBack" />
 
-  <!-- 数独选题 -->
+  <!-- 数字谜题选题 (旧称数独) -->
   <select-scene wx:elif="{{s === 'select'}}"
     bind:start="onSelectStart"
     bind:back="onSelectBack" />
@@ -82,7 +82,7 @@
     bind:open="onPictListOpen"
     bind:back="onPictListBack" />
 
-  <!-- 数独对局 (puzzleId 由选题页传入) -->
+  <!-- 数字谜题对局 (puzzleId 由选题页传入) (旧称数独) -->
   <sudoku-scene wx:elif="{{s === 'sudoku'}}"
     puzzle-id="{{puzzleId}}"
     bind:back="onSudokuBack" />

@@ -1,11 +1,12 @@
 <view class="menu-page">
-  <!-- 背景装饰: 顶部光晕 (模拟 DS 主题天空) -->
+  <!-- 背景装饰: 顶部/底部光晕 (配合暗夜书桌 bg-fx) -->
   <view class="bg-glow-top"></view>
   <view class="bg-glow-bottom"></view>
 
-  <!-- 顶部标题 LOGO (DS 原版 title.nbm 整大图) -->
+  <!-- 顶部纯文字标题 (V0.36 替代已损坏的 title.nbm.png) -->
   <view class="title-banner">
-    <image class="title-image" src="/assets/nbm/title.nbm.png" mode="aspectFit" lazy-load></image>
+    <text class="title-text">ESSENTIAL PUZZLE DS</text>
+    <text class="title-sub">每日拼图</text>
   </view>
 
   <!-- 主视觉: 两行大蓝胶囊按钮 (像 DS Present / VS) -->
@@ -16,7 +17,7 @@
       hover-stay-time="100"
       bindtap="onOpenNumberPuzzle"
     >
-      <text class="game-btn-text">数  独</text>
+      <text class="game-btn-text">数字谜题</text>
     </view>
 
     <view
