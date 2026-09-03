@@ -1,13 +1,15 @@
-/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.49.3)
+/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.49.4)
   欢快糖果风 + 景深 + 数独格纸真实 view 阵列:
   - 糖果渐变底 + 彩色柔光团 (明亮欢快)
-  - V0.49.3 整屏平铺数独格纸: 真实 view 横竖线阵列 (深紫 24px 细线 1px
-    + 深粉 72px 宫粗线 2px, 位置由 ts 计算, Skyline 兼容)
+  - V0.49.4 整屏平铺数独格纸: 真实 view 横竖线阵列 (深紫 32px 1px 细线
+    + 深粉 96px 2px 宫粗线, 位置由 ts 计算, 边界严格整除, Skyline 兼容)
   - 远景: 满屏大数字 1-9 (深紫色调 + alpha 0.40-0.55, 远而虚, 4 方向深紫描边)
   - 中景: 3×3/4×4/5×5/6×6 小网格方块 (糖果色 + alpha 0.55-0.76, 深色 box-shadow 浮起)
   - 近景: 高亮柔光点 (alpha 0.80-1.00 + 双层光晕, 最近最亮)
   动画层 (.band/.bob/.roll/@keyframes) 必须保持完整 — V0.49.3 曾因孤儿 CSS
   (旧 .fx-grid-fine-v 残留块 + 悬空 }) 把第 3-7 节解析压死, 动画全部消失, 已删。
+  V0.49.4: 网格 24/72 → 32/96 (稀疏一倍 → "一堆清晰的正方形"可见感)
+           边界 Math.floor 严格整除 → 最后一条线落 viewport 内, 整屏满铺
   skyline 渲染器支持 transform + opacity + animation + box-shadow。
   全项目禁用 rpx, 一律 px。
   层级: 本组件绝对定位填满 .scene-area, z-index 0;

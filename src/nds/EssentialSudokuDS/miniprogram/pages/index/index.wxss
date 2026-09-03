@@ -67,6 +67,30 @@ page {
   overflow: hidden;
 }
 
+/* V0.49.4 兜底: 让所有 scene Component host 强制 absolute fill .scene-stage
+   Skyline 下 Component 默认 inline-block / position:static,
+   内部 height:100% 失效导致 flex:1/absolute 定位无法撑满 → 按钮/内容看不见 */
+.scene-stage > title-scene,
+.scene-stage > menu-scene,
+.scene-stage > picture-mode-scene,
+.scene-stage > select-scene,
+.scene-stage > options-scene,
+.scene-stage > tutorial-scene,
+.scene-stage > staff-scene,
+.scene-stage > about-scene,
+.scene-stage > pict-list-scene,
+.scene-stage > sudoku-scene,
+.scene-stage > picture-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 /* 离场场景浮在上层 */
 .stage-leave-fade,
 .stage-leave-forward,

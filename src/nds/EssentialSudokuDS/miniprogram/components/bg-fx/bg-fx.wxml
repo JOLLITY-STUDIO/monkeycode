@@ -16,32 +16,33 @@
   <!-- 1. 糖果渐变底 -->
   <view class="fx-base"></view>
 
-  <!-- 2. 整屏平铺网格线 (V0.49.3 数独格纸: 真实 view 阵列)
+  <!-- 2. 整屏平铺网格线 (V0.49.4 数独格纸: 真实 view 阵列)
        Skyline 不渲染 repeating-linear-gradient, 改用 wx:for 画 1px/2px 实线 view
-       ts.attached 时读 windowWidth/Height 算每条线 px 位置 -->
+       ts.attached 时读 windowWidth/Height, 32px 周期生成细线 + 96px 周期 (3×32) 宫粗线
+       边界严格整除 (i*step ≤ viewport), 整屏满铺"格纸"视觉, 不留尾巴 -->
   <view class="fx-grid">
-    <!-- 细格横线 (24px 周期, 1px 深紫) -->
+    <!-- 细格横线 (32px 周期, 1px 深紫) -->
     <view
       wx:for="{{gridLinesFineH}}"
       wx:key="i"
       class="fx-grid-line-h"
       style="top: {{item.px}}px; height: 1px; background: rgba(86, 46, 135, 0.55);"
     ></view>
-    <!-- 细格竖线 (24px 周期, 1px 深紫) -->
+    <!-- 细格竖线 (32px 周期, 1px 深紫) -->
     <view
       wx:for="{{gridLinesFineV}}"
       wx:key="i"
       class="fx-grid-line-v"
       style="left: {{item.px}}px; width: 1px; background: rgba(86, 46, 135, 0.55);"
     ></view>
-    <!-- 宫粗横线 (72px 周期, 2px 深粉) -->
+    <!-- 宫粗横线 (96px 周期, 2px 深粉) -->
     <view
       wx:for="{{gridLinesBoldH}}"
       wx:key="i"
       class="fx-grid-line-h"
       style="top: {{item.px}}px; height: 2px; background: rgba(190, 70, 130, 0.78);"
     ></view>
-    <!-- 宫粗竖线 (72px 周期, 2px 深粉) -->
+    <!-- 宫粗竖线 (96px 周期, 2px 深粉) -->
     <view
       wx:for="{{gridLinesBoldV}}"
       wx:key="i"

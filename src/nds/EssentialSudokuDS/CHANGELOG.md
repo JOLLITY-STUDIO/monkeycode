@@ -4,6 +4,69 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.49.4 — 网格加大 + 整数边界 + Press START 按钮 Skyline host 修复
+
+### 2026-09-03
+
+#### 用户反馈 (第 3 轮)
+- "网格线嗯么看起来不是一堆正方形, 网格线必须是整数单位"
+- "那个点击开始的按钮呢" (截图中看到品牌标题 + 满屏背景, 但中部 Press START 按钮不见)
+
+#### 根因 1: 网格线 24/72 偏小, 像"密集小纸"而非"一堆正方形"
+- iPad Pro 12.9 landscape 1366×1024 屏幕:
+  - 24px 周期 → 横向 56.9 格, 纵向 42.7 格, 每格 ≈ 24px CSS px
+  - 在视网膜屏太小, 视觉上像"小密集颗粒", 不是"清晰的格子"
+- 加 64 padding 让边界整数倍落在 viewport 外, 但 +64 在视野外 → 视觉右/下边界不齐
+- "整数单位"指: 周期间隔是整数像素 (32 是 ✓), 边线位置应是整数 (i*step ✓)
+
+#### 根因 2: Press START 按钮不见 (Skyline Component host height:100% 不传递)
+- `.title-page` 设 `height: 100%`, 但 Skyline 下 Component 默认 inline-block / position:static
+- 内部 flex column 依赖 parent height, parent height 实际是 content-size
+- `.press-area flex:1` 在 parent height = auto 时不工作 → press-area 高度坍缩
+- 结果: Press START 按钮连同 .hint-line + 版权一起看不见
+
+#### V0.49.4 修复
+1. **网格线加大 (24/72 → 32/96) + 严格整除边界**:
+   - `bg-fx.ts` buildGridLines: 周期 24/72 → 32/96 (稀疏一倍 → "一堆清晰正方形")
+   - 边界算法: `Math.floor(max/step)*step`, 不 +64 padding
+     → 最后一条线落在 viewport 内最接近的整数倍位置, 整屏满铺"格纸" 视觉
+2. **Press START 按钮绝对定位修复**:
+   - `title-scene.wxss`:
+     - `.brand-wrap` / `.copyright` 从 flex column item 改 absolute (top:28px / bottom:18px)
+       → 不依赖 parent height, 永远落在固定位置
+     - `.press-area` 改 `top:50% left:50% transform:translate(-50%,-50%)` 屏幕居中
+       → 不依赖 flex:1, 即使 parent height 不确定也居中显示
+     - `.press-start` 胶囊 padding 11→13, font 15→16, button 更显眼
+     - `.pulse` 加 transform-origin center, 跟外层 translate 互不干扰
+3. **全局兜底: scene Component host 强制 fill**:
+   - `index.wxss` 新加 selector:
+     ```css
+     .scene-stage > title-scene, .scene-stage > menu-scene, ... {
+       position: absolute; top:0; left:0; right:0; bottom:0;
+       width:100%; height:100%; display:block;
+     }
+     ```
+   - 强制每个 Scene Component host 绝对 fill .scene-stage → 内部 height:100% 现在有可靠父高
+
+#### 改动清单 (4 文件)
+1. `miniprogram/components/bg-fx/bg-fx.ts`: 24/72 → 32/96 + Math.floor 严格整除
+2. `miniprogram/components/bg-fx/bg-fx.wxml`: 注释 V0.49.3 → V0.49.4 (24/72 → 32/96)
+3. `miniprogram/components/bg-fx/bg-fx.wxss`: 注释 V0.49.3 → V0.49.4 + 设计原则说明
+4. `miniprogram/components/scenes/title-scene/title-scene.wxss`: 改 absolute 布局, 不依赖 parent height
+5. `miniprogram/pages/index/index.wxss`: scene Component host 强制 absolute fill
+
+#### 教训 (写进注释, 防止复发)
+- **Skyline Component host 默认 inline-block/position:static**,
+  内部 `height:100%` 在 Component host 这一层不会自动撑满 → 必须:
+  1) 父容器用 absolute 把 scene 节点绝对 fill, **或**
+  2) 自己 Component root 用 `position:absolute; top:0; bottom:0; right:0; left:0`
+- **flex:1 依赖父容器有确定高度**, 不确定时不会撑开 → 改 absolute + translate 居中更可靠
+- **replace_in_file 边界** (V0.49.3 已记录): 同
+- **CSS transform 居中**: 外层 translate + 内层 scale 互不覆盖 (各自独立 transform)
+- **网格线稀疏**: 24px 在 retina 屏太小看不出格子感 → 32px 是更合适的"明显方格"密度
+
+---
+
 ## V0.49.3 — bg-fx 网格线真实 view 阵列 + 修复动画层被孤儿 CSS 压死
 
 ### 2026-09-03

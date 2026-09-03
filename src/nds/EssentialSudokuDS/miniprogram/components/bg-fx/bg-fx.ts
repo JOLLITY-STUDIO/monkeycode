@@ -1,16 +1,18 @@
 /* components/bg-fx/bg-fx.ts
- * 全局动态背景层 (Playful Sudoku, V0.49.3): 欢快糖果风 + 景深 + 数独格纸真实 view
+ * 全局动态背景层 (Playful Sudoku, V0.49.4): 欢快糖果风 + 景深 + 数独格纸真实 view
  * 由 pages/index/index 放置在 .scene-area 第一层 (z-index 0),
  * 场景 (z-index 1/2) 浮在其上, 场景根背景已设为 transparent。
  *
- * 结构 (从后到前 6 层) + V0.49.3 景深 + 数独格纸:
+ * 结构 (从后到前 6 层) + V0.49.4 景深 + 数独格纸:
  *   1. .fx-base       糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 4 团彩色柔光
- *   2. .fx-grid       V0.49.3 整屏平铺数独格纸, 真实 view 阵列
+ *   2. .fx-grid       V0.49.4 整屏平铺数独格纸, 真实 view 阵列
  *                       (V0.49.2 的 repeating-linear-gradient 在 Skyline 1.4.21
  *                        完全静默不渲染, V0.49.3 改用 ts 算每条线 px 位置,
  *                        wxml wx:for 渲染 N 条 1px/2px 实线 view, 兼容 Skyline)
- *                       细格: 24px 周期, 1px 深紫 #562e87 alpha 0.55
- *                       宫粗: 72px 周期 (3 × 24), 2px 深粉 #be4682 alpha 0.78
+ *                       细格: 32px 周期, 1px 深紫 #562e87 alpha 0.55 (V0.49.4 加宽: 24→32)
+ *                       宫粗: 96px 周期 (3 × 32), 2px 深粉 #be4682 alpha 0.78
+ *                       边界严格整除 (i*step, 不 +64): 最后一条线落在 viewport 内,
+ *                       整屏满铺"格纸"视觉, 不留尾巴
  *   3. 远景 band-distal : V0.49.2 深紫/深蓝调色板大数字 (alpha 0.40-0.55, 远而虚),
  *                        4 方向深紫描边 + 浅色顶部高光, size 32-88 (远处更大)
  *   4. 中景 band-grids  : 糖果色小网格方块 (alpha 0.55-0.76, 近而实),
@@ -48,9 +50,12 @@ const DARK_CANDY = [
 
 /* ---------------- 网格线 (V0.49.3 真实 view 阵列) ----------------
  * V0.49.2 用的 repeating-linear-gradient 在 Skyline 1.4.21 完全静默不渲染。
- * 改方案: ts 在 attached 读 wx.getWindowInfo() 拿屏幕宽高 (rpx → px 计算条数),
- *          每 24px / 72px 生成一条 { i, px } 真实 view 节点。
+ * 改方案: ts 在 attached 读 wx.getWindowInfo() 拿屏幕宽高,
+ *          每 32px / 96px 生成一条 { i, px } 真实 view 节点。
  * 兼容: 用 128px 兜底余量, 保证任何屏 (含 pad 横屏 1024+) 都铺满。
+ * V0.49.4: 24/72 → 32/96 (稀疏一倍 → "一堆清晰的正方形"可见感),
+ *          边界改严格整除 (Math.floor 不 +64 padding, 让最后一条线落 viewport 内,
+ *          整屏满铺"格纸"视觉, 不留尾巴)。
  */
 interface GridLine {
   i: number;
@@ -62,22 +67,23 @@ function buildGridLines(wWidth: number, wHeight: number): {
   boldH: GridLine[];
   boldV: GridLine[];
 } {
-  // +64 padding 让边缘也有一条线, 避免旋转/缩放下空洞
-  const W = Math.max(wWidth, 320) + 64;
-  const H = Math.max(wHeight, 568) + 64;
+  const W = Math.max(wWidth, 320);
+  const H = Math.max(wHeight, 568);
+  // 边界严格落在 step 整数倍: 0, step, 2*step, ..., step*floor(max/step)
+  // (不 +64 padding; max 自身就是 .scene-area viewport 边界)
   const arr = (max: number, step: number): GridLine[] => {
+    const count = Math.floor(max / step); // 整数倍不大于 max
     const r: GridLine[] = [];
-    let i = 0;
-    for (let p = 0; p <= max; p += step, i++) {
-      r.push({ i, px: p });
+    for (let i = 0; i <= count; i++) {
+      r.push({ i, px: i * step });
     }
     return r;
   };
   return {
-    fineH: arr(H, 24),     // 细横线: 24px 周期
-    fineV: arr(W, 24),     // 细竖线
-    boldH: arr(H, 72),     // 宫粗横线: 72px 周期 (3 × 24)
-    boldV: arr(W, 72),
+    fineH: arr(H, 32), // 细横线: 32px 周期 (V0.49.4 加宽, "一堆正方形"可见)
+    fineV: arr(W, 32), // 细竖线
+    boldH: arr(H, 96), // 宫粗横线: 96px 周期 (3 × 32)
+    boldV: arr(W, 96),
   };
 }
 
