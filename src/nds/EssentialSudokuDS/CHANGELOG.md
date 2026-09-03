@@ -4,6 +4,44 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.46 — 封面装饰下沉到 bg-fx 背景层 (封面元素作为氛围背景平铺)
+
+### 2026-09-03
+
+#### 用户反馈
+- "不是说了封面添加到作为背景全局平铺吗"
+
+#### 设计目的
+- 之前 bg-fx 只放抽象的"散落数字 + 小网格方块 + 柔光点", 没有把 title-scene 封面的核心识别元素作为背景
+- 现在把封面的 3 类核心元素作为静态氛围背景固定在屏幕 4 角:
+  - 9×9 数独网格 (白玻璃 + 糖果紫边 + 9 宫粗线 + 9 格糖果填色 + 数字)
+  - 品牌标题 "ESSENTIAL SUDOKU DS" (粉橙黄渐变文字)
+  - Press START 胶囊 (糖果粉橙渐变 + 脉冲呼吸)
+- 所有场景 (title/menu/select/options/pict-list/picture-mode/picture/sudoku/tutorial/about/staff) 都能看到这些封面元素, 强化"封面即背景"的视觉延续性
+
+#### 布局策略
+- 坐标避开中央 50% 区域 (40-60% 横, 38-62% 纵), 不遮挡前景 UI
+- 元素透明度 0.32-0.55, 微旋转 (-6° ~ +8°), 营造"漂浮氛围"
+- 左上: 9×9 数独 (x=-3%, y=4%, r=-6°, o=0.32)
+- 中上: 品牌字 (x=10%, y=-1.5%, r=-3°, o=0.4)
+- 左下: Press START (x=6%, y=78%, r=4°, o=0.55, 脉冲)
+- 右下: 9×9 数独 (x=78%, y=60%, r=8°, o=0.32)
+- 右下角: Press START (x=64%, y=84%, r=-5°, o=0.45, 脉冲)
+
+#### 改动清单 (3 文件)
+1. components/bg-fx/bg-fx.wxml: 新增 band-cover 静态层 (含 .cover-piece/.cover-grid/.cover-brand-text/.cover-press)
+2. components/bg-fx/bg-fx.ts: 新增 CoverCell/CoverPiece interface + buildCoverGridCells + buildCoverArt,
+   data 加 coverArt, lifetimes attached 调 buildCoverArt()
+3. components/bg-fx/bg-fx.wxss: 新增 .band-cover/.bob-4/.cover-piece/.cover-grid/.cover-cell/.cover-cell-filled/
+   .cover-cell-n/.cover-brand-text/.cover-press/.cover-press-text/.cover-press-pulse 样式,
+   cover-grid 复刻 title-scene .board 的 9 宫粗紫线布局, cover-press 复刻 title-scene .press-start 糖果胶囊
+
+#### 验证
+- IDE 语言服务 read_lints 0 诊断
+- cover-press 内层 scale 动画 vs cover-piece 外层 rotate 动画分属不同元素, 不冲突
+
+---
+
 ## V0.45 — 全场景糖果亮底视觉统一 (标题 / 按钮 / 文本风格一致)
 
 ### 2026-09-03
