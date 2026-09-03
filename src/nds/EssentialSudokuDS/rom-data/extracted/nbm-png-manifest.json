@@ -1,20 +1,20 @@
 {
   "total": 42,
-  "totalBytes": 242109,
-  "totalKb": 236.43,
+  "totalBytes": 241062,
+  "totalKb": 235.41,
   "entries": [
     {
       "name": "download.nbm",
       "png": "download.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\download.nbm.png",
-      "size": 2337,
+      "size": 2194,
       "ok": true
     },
     {
       "name": "dwlogo.nbm",
       "png": "dwlogo.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\dwlogo.nbm.png",
-      "size": 6230,
+      "size": 6145,
       "ok": true
     },
     {
@@ -56,63 +56,63 @@
       "name": "pazl_select2a.nbm",
       "png": "pazl_select2a.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_select2a.nbm.png",
-      "size": 11591,
+      "size": 11529,
       "ok": true
     },
     {
       "name": "pazl_select2b.nbm",
       "png": "pazl_select2b.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_select2b.nbm.png",
-      "size": 12019,
+      "size": 11936,
       "ok": true
     },
     {
       "name": "pazl_select2c.nbm",
       "png": "pazl_select2c.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_select2c.nbm.png",
-      "size": 16625,
+      "size": 16806,
       "ok": true
     },
     {
       "name": "pazl_yajirusi.nbm",
       "png": "pazl_yajirusi.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_yajirusi.nbm.png",
-      "size": 1141,
+      "size": 872,
       "ok": true
     },
     {
       "name": "select1.nbm",
       "png": "select1.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select1.nbm.png",
-      "size": 14713,
+      "size": 14641,
       "ok": true
     },
     {
       "name": "select3.nbm",
       "png": "select3.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select3.nbm.png",
-      "size": 9073,
+      "size": 9011,
       "ok": true
     },
     {
       "name": "select4.nbm",
       "png": "select4.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select4.nbm.png",
-      "size": 5084,
+      "size": 4974,
       "ok": true
     },
     {
       "name": "select6.nbm",
       "png": "select6.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select6.nbm.png",
-      "size": 3211,
+      "size": 3129,
       "ok": true
     },
     {
       "name": "setu03.nbm",
       "png": "setu03.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\setu03.nbm.png",
-      "size": 7834,
+      "size": 7312,
       "ok": true
     },
     {
@@ -210,7 +210,7 @@
       "name": "title.nbm",
       "png": "title.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\title.nbm.png",
-      "size": 55564,
+      "size": 56255,
       "ok": true
     },
     {
@@ -224,14 +224,14 @@
       "name": "tutorial_00.nbm",
       "png": "tutorial_00.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\tutorial_00.nbm.png",
-      "size": 2197,
+      "size": 2039,
       "ok": true
     },
     {
       "name": "usa.nbm",
       "png": "usa.nbm.png",
       "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\usa.nbm.png",
-      "size": 6888,
+      "size": 6617,
       "ok": true
     },
     {

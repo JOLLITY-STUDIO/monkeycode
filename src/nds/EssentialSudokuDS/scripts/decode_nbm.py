@@ -79,12 +79,18 @@ FNT_MAPPING = os.path.join(WORKSPACE, 'rom-data', 'fnt-mapping.json')
 OUT_DIR = os.path.join(WORKSPACE, 'rom-data', 'extracted', 'nbm')
 
 # Palette: 16 colors x 2 bytes BGR555 LE → RGBA8888
-# 透明规则 (V0.19.8):
+# 透明规则 (V0.19.8 + V0.20.6):
 #   - BGR555 == 0x0000         → color 0, 全透明 (原始规则, staff 系列黑底)
 #   - (BGR555 & 0x7FFF) == 0x03E0 → chroma key 纯绿 (0,248,0), 全透明
 #     0x03E0 = 0b0000001111100000: red=0, green=0x1F→248, blue=0
 #     兼容 bit15 置位变体 (title.nbm p0=0x83E0), 即 NDS 标准 transparent green
 #     此前只查 c==0 导致 UI 大面积绿底方块 (14/42 张 NBM)
+#
+# V0.20.6: 透明像素 RGB 强制 (0,0,0) 黑, 而非保留 chroma green RGB (0,248,0).
+#   原因: 开发者工具图片预览 / 部分图片查看器会忽略 alpha 通道, 直接显示 RGB,
+#   导致 tutorial_00/usa/title/pazl/select*/setu03 等 15 张 GREEN-CHROMA NBM
+#   显示为绿底 (而非预期的黑底). 改为统一黑 RGB, 即使 alpha 丢失也是黑底,
+#   与 NDS 实际显示 (深色屏底) 一致.
 def palette_to_rgba(palette_bytes: bytes) -> list:
     colors = []
     for i in range(16):
@@ -96,6 +102,7 @@ def palette_to_rgba(palette_bytes: bytes) -> list:
         a = 255
         if c == 0 or (c & 0x7FFF) == 0x03E0:
             a = 0  # color 0 / chroma key green = transparent
+            r, g, b = 0, 0, 0  # V0.20.6: 透明像素 RGB 统一黑, 避免 alpha 丢失时显示 chroma green
         colors.append((r, g, b, a))
     return colors
 
