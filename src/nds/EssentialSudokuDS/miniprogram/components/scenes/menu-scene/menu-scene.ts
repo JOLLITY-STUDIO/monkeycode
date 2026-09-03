@@ -1,6 +1,6 @@
 // components/scenes/menu-scene/menu-scene.ts — 主菜单场景组件
-// V0.30: 重写为主视觉双宫格 (数独 + 图画谜题大卡片)
-// 二级入口 (玩法/选项/人员/返回) 移到底部 4 列等宽
+// V0.30: 重写为两行大蓝胶囊主入口 (数独 / 图画谜题) + 底部 4 列辅助入口
+// V0.35: 明亮天空 bg-fx 之上深色玻璃按钮可读性优化
 // 移除"SELECT MODE"小卡片标题 + 模式 (Number Puzzle) 副标题括号
 // 不再使用任何 NBM 按键图片素材.
 
@@ -8,7 +8,7 @@ import { audioService } from '../../../utils/audio/audioService';
 
 Component({
   data: {
-    buildVersion: 'v0.35.1',
+    buildVersion: 'v0.35.2',
   },
 
   methods: {

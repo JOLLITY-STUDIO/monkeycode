@@ -158,7 +158,7 @@
   font-weight: 700;
 }
 
-/* 数字键盘 (原版 select1.nbm 数字图) */
+/* 数字键盘 1-9 (文本双态按钮, 不再用 NBM 图; 与 select-scene/picture 统一) */
 .number-pad {
   width: 100%;
   margin-top: 12px;

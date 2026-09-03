@@ -1,6 +1,6 @@
 // components/scenes/title-scene/title-scene.ts — 启动标题场景组件
-// 全屏 title.nbm + TAP TO START 脉冲提示
-// 点击 → triggerEvent('start') → 页面壳 navigateTo 主菜单
+// 全屏 title.nbm (横幅图合规) + "点击开始" 脉冲提示
+// 点击 → triggerEvent('start') → index 场景控制器 _switchScene('menu') (无页面跳转)
 
 import { audioService } from '../../../utils/audio/audioService';
 

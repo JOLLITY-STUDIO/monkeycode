@@ -4,6 +4,27 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.35.2 — 注释清理 (对齐纯中文 UI + 文本按钮规范)
+
+### 2026-09-03
+
+#### 变更
+- 勘察全项目场景组件确认: 两条玩法链路 (数独 select→对局→通关; 图画 puzzleMode→类别→对局→通关)
+  已闭环有界、无 NBM 按钮图 (仅 title/dwlogo/license/tutorial_00 横幅图 + staff 人员图合规保留)、
+  无英文/日文可见文案、11 场景根节点全部 transparent 透出明亮 bg-fx、IDE 诊断 0 错误
+- 清理 3 处过期/误导注释 (会诱使后续重新引入 NBM 按钮或页面壳跳转, 与现行规范冲突):
+  - `title-scene.ts`: "TAP TO START" 英文 + "页面壳 navigateTo 主菜单" → 中文描述 +
+    index 场景控制器 _switchScene (无页面跳转)
+  - `sudoku-scene.wxss`: 数字键盘注释 "原版 select1.nbm 数字图" → 文本双态按钮 (已无 NBM)
+  - `menu-scene.ts`: "双宫格大卡片" 过期描述 → 两行大蓝胶囊; picture-mode-scene.ts 注释
+    「ヌクロ/カード/ポピュレーション」 → 中文
+- 版本号 v0.35.1 → v0.35.2
+
+#### 验证
+- IDE 语言服务 0 诊断 (title/sudoku/menu/picture-mode)
+
+---
+
 ## V0.35.1 — picture-mode 按钮中文化 + picture 返回条文案修正
 
 ### 2026-09-03
