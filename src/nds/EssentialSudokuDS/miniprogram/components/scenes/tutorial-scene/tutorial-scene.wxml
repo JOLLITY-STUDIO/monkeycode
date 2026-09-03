@@ -11,7 +11,7 @@
 
   <view class="tut-card">
     <view class="tut-section">
-      <view class="tut-title">🎮 数独</view>
+      <view class="tut-title">🎮 数字谜题</view>
       <view class="tut-text">在 9×9 网格中填入 1-9，使每行、每列、每个 3×3 宫格都恰好包含 1-9 各一次。给定格不可修改。</view>
       <view class="tut-text">提示：先找只有一种可能的格子；利用候选笔记标记每个空格的可能数字。</view>
     </view>

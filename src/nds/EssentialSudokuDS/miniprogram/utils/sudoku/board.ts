@@ -52,7 +52,7 @@ export interface BoardPersistSnapshot {
   moves: number;
 }
 
-/** 完整持久化状态 (含 undo/redo 栈), 供数独进度存档/恢复 (V0.19+) */
+/** 完整持久化状态 (含 undo/redo 栈), 供数字谜题 (旧称数独) 进度存档/恢复 (V0.19+) */
 export interface BoardPersistState extends BoardPersistSnapshot {
   history: BoardPersistSnapshot[];
   redoStack: BoardPersistSnapshot[];
@@ -332,7 +332,7 @@ export class SudokuBoard {
   }
 
   /**
-   * 导出完整可 JSON 序列化状态 (当前盘面 + 候选笔记 + undo/redo 栈) — 数独进度存档.
+   * 导出完整可 JSON 序列化状态 (当前盘面 + 候选笔记 + undo/redo 栈) — 数字谜题 (旧称数独) 进度存档.
    * given/puzzle/solution 不存 (由 puzzleId 重建), isError 不存 (由值幂等重算).
    */
   exportPersist(): BoardPersistState {

@@ -96,7 +96,7 @@ Page({
   },
 
   onLoad(query?: any) {
-    // 支持外部直达: ?id=numpleX.data_NNN → 直接进数独; ?file=xxx&idx=N → 进图画
+    // 支持外部直达: ?id=numpleX.data_NNN → 直接进数字谜题; ?file=xxx&idx=N → 进图画
     // 首屏直达无需过渡 (title 从未显示过)
     if (query && query.id) {
       this.setData({ scene: 'sudoku', puzzleId: String(query.id) });
@@ -173,7 +173,7 @@ Page({
     this._switchScene('title');
   },
 
-  // ---- select-scene: start({ id, no }) → 数独对局; back → 主菜单 ----
+  // ---- select-scene: start({ id, no }) → 数字谜题对局 (旧称数独); back → 主菜单 ----
   onSelectStart(e: any) {
     const id = e.detail && e.detail.id;
     if (!id) {

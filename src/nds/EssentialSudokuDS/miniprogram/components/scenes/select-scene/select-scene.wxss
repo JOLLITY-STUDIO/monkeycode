@@ -1,4 +1,4 @@
-/* select-scene.wxss — 数独选题场景样式
+/* select-scene.wxss — 数字谜题选题场景样式 (旧称数独选题)
  * PICTURE-V0.30: 全部按钮改中文文本双态胶囊 (纯中文版 UI)
  *   - normal   = #28A0F0 亮蓝渐变 + 白字 (select1.nbm NORMAL 帧取色)
  *   - selected = #2060D0 深蓝渐变 + 白字 (select1.nbm SELECTED 帧取色)

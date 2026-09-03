@@ -1,4 +1,4 @@
-/* sudoku-scene.wxss — V0.16 DS 化深色主题 (双态文本按钮 + 深蓝底) */
+/* sudoku-scene.wxss — V0.36 数字谜题对局 (旧称数独) DS 化深色主题 (双态文本按钮 + 深蓝底) */
 @import '../../../styles/ds-buttons.wxss';
 
 .sudoku-page {
@@ -92,7 +92,7 @@
   border-color: #3f83e0;
 }
 
-/* 9x9 棋盘 — 标准数独网格: 白底 + 深色粗 3x3 分块线 (数独必须清晰, 保持白底) */
+/* 9x9 棋盘 — 标准数字谜题网格 (旧称数独): 白底 + 深色粗 3x3 分块线 (数独必须清晰, 保持白底) */
 .sudoku-grid {
   width: 100%;
   aspect-ratio: 1 / 1;

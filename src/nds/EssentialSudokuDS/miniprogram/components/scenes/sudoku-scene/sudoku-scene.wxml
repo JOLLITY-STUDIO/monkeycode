@@ -27,7 +27,7 @@
     >{{diffLabels[item] || item}}</view>
   </view>
 
-  <!-- 9x9 数独棋盘 -->
+  <!-- 9x9 数字谜题棋盘 (旧称数独, V0.36 改名为"数字谜题"贴合用户语义) -->
   <view class="sudoku-grid">
     <view
       class="grid-row"

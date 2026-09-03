@@ -1,4 +1,4 @@
-// components/scenes/select-scene/select-scene.ts — 数独选题场景组件
+// components/scenes/select-scene/select-scene.ts — 数字谜题选题场景组件 (旧称数独)
 // PICTURE-V0.30: 全部按钮改中文文本双态胶囊 (纯中文版 UI)
 //   - normal   = #28A0F0 亮蓝胶囊 + 白字 (select1.nbm NORMAL 帧取色)
 //   - selected = #2060D0 深蓝胶囊 + 白字 (select1.nbm SELECTED 帧取色)

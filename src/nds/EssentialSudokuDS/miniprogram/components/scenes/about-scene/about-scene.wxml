@@ -25,7 +25,7 @@
     </view>
     <view class="about-row">
       <text class="about-label">玩法</text>
-      <text class="about-value">数独 1000 题 + 图画谜题 1525 题</text>
+      <text class="about-value">数字谜题 1000 题 + 图画谜题 1525 题</text>
     </view>
     <view class="about-row">
       <text class="about-label">版本</text>

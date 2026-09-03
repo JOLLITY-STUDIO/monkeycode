@@ -1,4 +1,4 @@
-// components/scenes/sudoku-scene/sudoku-scene.ts — 数独对局场景组件
+// components/scenes/sudoku-scene/sudoku-scene.ts — 数字谜题对局场景组件
 // 9x9 grid 渲染 / 选中 / 数字键盘 / 清除 / 提示 / 计时 / 完成检测 / 难度切换
 // puzzleId property 支持选题页跳入; 返回 → triggerEvent('back')
 

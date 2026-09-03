@@ -1,7 +1,7 @@
 <view class="select-page">
   <!-- 标题 -->
   <view class="select-header">
-    <text class="select-title">数独选题</text>
+    <text class="select-title">数字谜题选题</text>
     <text class="select-subtitle">全局题库 1-1000</text>
   </view>
 
