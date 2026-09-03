@@ -4,43 +4,42 @@ All notable changes to this project are documented here.
 
 ---
 
-## V0.46 — 封面装饰下沉到 bg-fx 背景层 (封面元素作为氛围背景平铺)
+## V0.47 — 撤销 V0.46 封面装饰 + 加密背景网格/数字铺满
 
 ### 2026-09-03
 
 #### 用户反馈
-- "不是说了封面添加到作为背景全局平铺吗"
+- "我是说这个中间的框，不是连按钮也要放到背景啊大哥"
+- "算了你给背景在增加静态的网格和随机数字铺满背景就好了"
+- "然后把中间整个封面去掉"
 
-#### 设计目的
-- 之前 bg-fx 只放抽象的"散落数字 + 小网格方块 + 柔光点", 没有把 title-scene 封面的核心识别元素作为背景
-- 现在把封面的 3 类核心元素作为静态氛围背景固定在屏幕 4 角:
-  - 9×9 数独网格 (白玻璃 + 糖果紫边 + 9 宫粗线 + 9 格糖果填色 + 数字)
-  - 品牌标题 "ESSENTIAL SUDOKU DS" (粉橙黄渐变文字)
-  - Press START 胶囊 (糖果粉橙渐变 + 脉冲呼吸)
-- 所有场景 (title/menu/select/options/pict-list/picture-mode/picture/sudoku/tutorial/about/staff) 都能看到这些封面元素, 强化"封面即背景"的视觉延续性
-
-#### 布局策略
-- 坐标避开中央 50% 区域 (40-60% 横, 38-62% 纵), 不遮挡前景 UI
-- 元素透明度 0.32-0.55, 微旋转 (-6° ~ +8°), 营造"漂浮氛围"
-- 左上: 9×9 数独 (x=-3%, y=4%, r=-6°, o=0.32)
-- 中上: 品牌字 (x=10%, y=-1.5%, r=-3°, o=0.4)
-- 左下: Press START (x=6%, y=78%, r=4°, o=0.55, 脉冲)
-- 右下: 9×9 数独 (x=78%, y=60%, r=8°, o=0.32)
-- 右下角: Press START (x=64%, y=84%, r=-5°, o=0.45, 脉冲)
+#### 设计意图修正
+- V0.46 把整个封面 (9×9 数独网格 + ESSENTIAL SUDOKU DS 品牌字 + Press START 胶囊) 都加到了 bg-fx 背景层
+- 用户澄清: 只要那部分画面元素作为氛围平铺, 不需要把"按钮/品牌字" 等可交互元素也复制到背景 (避免 UI 重复)
+- V0.47: 删 V0.46 整个封面装饰层, 反过来加强原有 band-distal (大数字) 和 band-grids (小网格) 的密度, 让画面真正铺满
 
 #### 改动清单 (3 文件)
-1. components/bg-fx/bg-fx.wxml: 新增 band-cover 静态层 (含 .cover-piece/.cover-grid/.cover-brand-text/.cover-press)
-2. components/bg-fx/bg-fx.ts: 新增 CoverCell/CoverPiece interface + buildCoverGridCells + buildCoverArt,
-   data 加 coverArt, lifetimes attached 调 buildCoverArt()
-3. components/bg-fx/bg-fx.wxss: 新增 .band-cover/.bob-4/.cover-piece/.cover-grid/.cover-cell/.cover-cell-filled/
-   .cover-cell-n/.cover-brand-text/.cover-press/.cover-press-text/.cover-press-pulse 样式,
-   cover-grid 复刻 title-scene .board 的 9 宫粗紫线布局, cover-press 复刻 title-scene .press-start 糖果胶囊
+1. components/bg-fx/bg-fx.wxml:
+   - **删除** `band band-cover` 整个静态装饰块 (.cover-piece/.cover-grid/.cover-brand-text/.cover-press),
+     约 38 行 wxml
+2. components/bg-fx/bg-fx.ts:
+   - **删除** CoverCell/CoverPiece interface + buildCoverGridCells + buildCoverArt 函数, 约 70 行
+   - **删除** data.coverArt 字段
+   - **加密** bigNums 28 → 48 个/屏 (x 范围 2-94 → 1-99, y 范围 3-91 → 2-94, font 28-76, opacity 0.45-0.75)
+   - **加密** miniGrids 12 → 20 件 (新增 8 件填缝隙, 坐标散布在 -4 ~ 96%, size 48-100px, 透明度降至 0.22-0.42 避免堆叠抢戏)
+3. components/bg-fx/bg-fx.wxss:
+   - **删除** .band-cover / .bob-4 / .cover-piece / .cover-grid / .cover-cell (6 条 nth-child) / .cover-cell-filled / .cover-cell-n / .cover-brand-text / .cover-press / .cover-press-text / .cover-press-pulse + @keyframes cover-press-pulse, 约 130 行
 
 #### 验证
 - IDE 语言服务 read_lints 0 诊断
-- cover-press 内层 scale 动画 vs cover-piece 外层 rotate 动画分属不同元素, 不冲突
+- band-cover 完全移除, 所有引用连带删除, 不会留 dead CSS/class
+- 背景视觉密度显著提升: 大数字从 28 → 48 个, 小网格从 12 → 20 件, 颜色更密但单件透明度降低, 整体仍是"氛围平铺"不抢前景
 
 ---
+
+## V0.46 — 封面装饰下沉到 bg-fx 背景层 (封面元素作为氛围背景平铺, 已被 V0.47 撤销)
+
+### 2026-09-03
 
 ## V0.45 — 全场景糖果亮底视觉统一 (标题 / 按钮 / 文本风格一致)
 

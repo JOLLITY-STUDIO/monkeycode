@@ -1,13 +1,13 @@
-/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.44)
-   欢快糖果风 (替代 V0.36 暗夜书桌 / V0.35 明亮天空):
-   - 糖果渐变底 + 彩色柔光团, 整屏明亮欢快
-   - 满屏大数字 1-9 (糖果 6 色) → 数独/数字玩法
-   - 3×3/4×4/5×5/6×6 小网格方块 (部分小格填色) → 图画谜题玩法
-   - 彩色柔光点点缀 + 顶部暖白呼吸
-   skyline 渲染器支持 transform + opacity + animation, 对 filter 兼容性差。
-   全项目禁用 rpx, 一律 px。
-   层级: 本组件绝对定位填满 .scene-area, z-index 0;
-         场景层 (scene-stage) z-index 1/2 浮在其上。
+/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.47)
+  欢快糖果风 (替代 V0.36 暗夜书桌 / V0.35 明亮天空):
+  - 糖果渐变底 + 彩色柔光团, 整屏明亮欢快
+  - 满屏大数字 1-9 (糖果 6 色, V0.47 加密 48 个) → 数独/数字玩法
+  - 3×3/4×4/5×5/6×6 小网格方块 (V0.47 加密 20 件, 部分小格填色) → 图画谜题玩法
+  - 彩色柔光点点缀 + 顶部暖白呼吸
+  skyline 渲染器支持 transform + opacity + animation, 对 filter 兼容性差。
+  全项目禁用 rpx, 一律 px。
+  层级: 本组件绝对定位填满 .scene-area, z-index 0;
+        场景层 (scene-stage) z-index 1/2 浮在其上。
 */
 
 .bg-fx {
@@ -160,133 +160,6 @@
   border: none;
   border-radius: 2px;
   box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.55);
-}
-
-/* ===========================================================
- * 3.5 封面装饰 (V0.46): 9×9 数独网格 + 品牌标题 + Press START 胶囊
- *    屏幕 4 角静态分布, 淡化不抢前景 UI, 让"封面元素"作为氛围背景平铺可见
- *    .band-cover  层 (z 同 mid, 但渲染顺序在中景后近景前, 不抢前景)
- *    .cover-piece 通用锚定框 (absolute + left/top, 旋转)
- *    .cover-grid  9×9 数独装饰 (白玻璃, 9 宫粗紫线 + 若干糖果格)
- *    .cover-brand 品牌字 (与 title-scene .brand-en 同款渐变)
- *    .cover-press Press START 胶囊 (糖果粉橙, 脉冲呼吸)
- * =========================================================== */
-.band-cover {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-.bob-4 { animation-duration: 9.6s; }
-
-/* 通用 piece 锚定 (absolute, 旋转, 不参与点击) */
-.cover-piece {
-  position: absolute;
-  pointer-events: none;
-  transform-origin: center center;
-}
-
-/* 9×9 数独网格装饰: 与 title-scene .board 同款 (白底卡片 + 糖果紫边 + 阴影) */
-.cover-grid {
-  position: relative;
-  width: 96px;
-  height: 96px;
-  display: flex;
-  flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.92);
-  border: 2px solid #b66ce5;
-  border-radius: 8px;
-  box-shadow:
-    0 6px 18px rgba(182, 108, 229, 0.22),
-    0 0 0 3px rgba(255, 255, 255, 0.55);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.cover-cell {
-  position: relative;
-  box-sizing: border-box;
-  border-right: 1px solid #e3d6f0;
-  border-bottom: 1px solid #e3d6f0;
-}
-.cover-cell:nth-child(3n):not(:nth-child(9n)) {
-  border-right-width: 2px;
-  border-right-color: #b66ce5;
-}
-.cover-cell:nth-child(6n):not(:nth-child(9n)) {
-  border-right-width: 2px;
-  border-right-color: #b66ce5;
-}
-.cover-cell:nth-child(n+19):nth-child(-n+27),
-.cover-cell:nth-child(n+46):nth-child(-n+54) {
-  border-bottom-width: 2px;
-  border-bottom-color: #b66ce5;
-}
-.cover-cell:nth-child(9n) { border-right: none; }
-.cover-cell:nth-child(n+73) { border-bottom: none; }
-
-.cover-cell-filled {
-  border-radius: 1.5px;
-  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.55);
-}
-.cover-cell-n {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 7px;
-  font-weight: 800;
-  color: #ffffff;
-  font-family: 'Georgia', 'Times New Roman', serif;
-  line-height: 1;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.28);
-}
-
-/* 品牌字: 与 title-scene .brand-en 同款渐变 (粉 → 橙 → 黄) */
-.cover-brand-text {
-  display: inline-block;
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: 1.5px;
-  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif;
-  background: linear-gradient(180deg, #ff6b81 0%, #ff9f43 55%, #ffd93d 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
-  line-height: 1.1;
-  white-space: nowrap;
-}
-
-/* Press START 胶囊: 与 title-scene .press-start 同款 (糖果粉橙渐变 + 脉冲) */
-.cover-press {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 22px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #ff6b81 0%, #ff4f6e 60%, #e83c5c 100%);
-  border: 1.2px solid rgba(255, 255, 255, 0.8);
-  box-shadow:
-    0 4px 12px rgba(232, 60, 92, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-.cover-press-text {
-  font-size: 10px;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: 2px;
-  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.22);
-}
-.cover-press-pulse {
-  animation: cover-press-pulse 1.7s ease-in-out infinite;
-}
-@keyframes cover-press-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.82; transform: scale(0.97); }
 }
 
 /* ===========================================================

@@ -1,11 +1,10 @@
-<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.46)
-  欢快糖果风, 背景 = 封面内容:
+<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.47)
+  欢快糖果风, 背景由画面元素铺满:
   - .fx-base         糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 彩色柔光团
   - band-distal      远景: 满屏漂浮大数字 1-9 (糖果 6 色), 最慢横滚 ~90s → 数独/数字玩法
-  - band-grids       中景: 3×3/4×4/5×5/6×6 小网格方块 (若干小格已填色) → 图画谜题玩法
+  - band-grids       中景: 3×3/4×4/5×5/6×6 小网格方块 (若干小格已填色) → 图画谜题玩法,
+                     V0.47 加密到 20 件铺满
   - band-thought     近景: 彩色柔光点 (慢飘 + 闪烁), 最快横滚 ~30s
-  - band-cover       封面装饰 (V0.46): 9×9 数独网格 + 品牌标题 + Press START 胶囊,
-                     静态分布在屏幕 4 角 (淡化, 不抢前景 UI, 全场景平铺可见)
   每层 = .bob (上下缓浮) > .roll (width:200%, translateX 0→-50% 无缝循环)
        > 两个相同 .seg (各 50% 视口宽), seg 内放置装饰物
   - .fx-beat         顶部暖白柔光呼吸 (周期 = pulseMs, 平缓不闪)
@@ -31,7 +30,7 @@
     </view>
   </view>
 
-  <!-- 3. 中景: 小网格方块 (图画谜题玩法) -->
+  <!-- 3. 中景: 小网格方块 (图画谜题玩法, V0.47 加密 20 件铺满) -->
   <view class="band band-grids">
     <view class="bob bob-2">
       <view class="roll roll-2">
@@ -58,45 +57,6 @@
             ></view>
           </view>
         </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 3.5 封面装饰 (V0.46): 9×9 数独网格 + 品牌标题 + Press START 胶囊, 静态分布在屏幕 4 角 -->
-  <view class="band band-cover">
-    <view class="bob bob-4">
-      <view
-        wx:for="{{coverArt}}"
-        wx:key="i"
-        class="cover-piece cover-{{item.kind}}"
-        style="left: {{item.x}}%; top: {{item.y}}%; opacity: {{item.o}}; transform: rotate({{item.r}}deg);"
-      >
-        <block wx:if="{{item.kind === 'grid'}}">
-          <view class="cover-grid">
-            <view
-              wx:for="{{item.cells}}"
-              wx:for-item="cell"
-              wx:for-index="ci"
-              wx:key="ci"
-              class="cover-cell {{cell.f ? 'cover-cell-filled' : ''}}"
-              style="
-                width: {{100 / 9}}%;
-                height: {{100 / 9}}%;
-                {{cell.f ? 'background: ' + cell.c + ';' : ''}}
-              "
-            >
-              <text wx:if="{{cell.f}}" class="cover-cell-n {{cell.n === '0' ? 'cover-cell-n-blank' : ''}}">{{cell.n}}</text>
-            </view>
-          </view>
-        </block>
-        <block wx:elif="{{item.kind === 'brand'}}">
-          <text class="cover-brand-text">{{item.label}}</text>
-        </block>
-        <block wx:elif="{{item.kind === 'press'}}">
-          <view class="cover-press {{item.pulse ? 'cover-press-pulse' : ''}}">
-            <text class="cover-press-text">{{item.label}}</text>
-          </view>
-        </block>
       </view>
     </view>
   </view>
