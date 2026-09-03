@@ -74,12 +74,13 @@
     </view>
   </view>
 
-  <!-- 教程模式提示图 (numclo_tu.data) -->
-  <view wx:if="{{currentFile === 'numclo_tu.data' && !tutorialClosed}}" class="tutorial-bar">
-    <image class="tutorial-image" src="/assets/nbm/tutorial_00.nbm.png" mode="aspectFit" lazy-load></image>
-    <view class="tutorial-close" bindtap="onCloseTutorial">
-      <text class="tutorial-close-x">×</text>
+  <!-- 教程类别 (numclo_tu.data): 打开玩法图文教程 -->
+  <view wx:if="{{currentFile === 'numclo_tu.data'}}" class="tutorial-strip">
+    <view class="ds-btn tutorial-open" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onOpenTutorial">
+      📖 玩法图文教程
+      <view wx:if="{{!tutSeen}}" class="tutorial-dot"></view>
     </view>
+    <text class="tutorial-hint">第一次玩？先花 1 分钟学会看行列提示</text>
   </view>
 
   <!-- 正确进度 -->
@@ -130,6 +131,193 @@
       <view class="celebrate-check">✓</view>
       <view class="celebrate-title">通关成功!</view>
       <view class="celebrate-sub">{{puzzleName}} · {{timerText}} · {{moves}} 步</view>
+    </view>
+  </view>
+
+  <!-- 图文教程弹层 (A): 5 页纯 CSS 自绘教学, 每页示意图 + 要点 -->
+  <view wx:if="{{tutOpen}}" class="tut-mask">
+    <view class="tut-card">
+      <view class="tut-header">
+        <text class="tut-header-title">📖 玩法图文教程</text>
+        <text class="tut-page-count">{{tutPage + 1}} / {{tutSteps.length}}</text>
+        <view class="tut-close" bindtap="onCloseTutorial">×</view>
+      </view>
+
+      <scroll-view scroll-y class="tut-body">
+        <!-- 页 1: 认识界面 -->
+        <block wx:if="{{tutPage === 0}}">
+          <view class="tut-demo tut-demo-layout">
+            <view class="demo-top-clues">
+              <view class="demo-col"><view class="demo-c dot-r">2</view><view class="demo-c dot-y">1</view></view>
+              <view class="demo-col"><view class="demo-c dot-r">3</view></view>
+              <view class="demo-col"><view class="demo-c dot-y">2</view></view>
+            </view>
+            <view class="demo-middle">
+              <view class="demo-row-clues">
+                <view class="demo-c dot-r">3</view>
+                <view class="demo-c dot-y">2</view>
+              </view>
+              <view class="demo-mini-grid">
+                <view class="demo-g demo-g-fill-r"></view>
+                <view class="demo-g demo-g-fill-r"></view>
+                <view class="demo-g demo-g-fill-r"></view>
+                <view class="demo-g demo-g-fill-y"></view>
+                <view class="demo-g demo-g-fill-y"></view>
+                <view class="demo-g"></view>
+                <view class="demo-g demo-g-fill-b"></view>
+                <view class="demo-g demo-g-fill-b"></view>
+                <view class="demo-g"></view>
+              </view>
+            </view>
+          </view>
+          <view class="tut-title">1 · 认识对局界面</view>
+          <view class="tut-point">• 中间是 15×15 画板：把每一格涂上正确的颜色</view>
+          <view class="tut-point">• <text class="dot dot-r"></text> 顶部色条 = 每一列各颜色格数</view>
+          <view class="tut-point">• <text class="dot dot-y"></text> 左侧色条 = 每一行各颜色格数</view>
+          <view class="tut-point">• 色条数字会告诉你怎么涂，不需要猜</view>
+        </block>
+
+        <!-- 页 2: 行列提示读法 -->
+        <block wx:if="{{tutPage === 1}}">
+          <view class="tut-demo tut-demo-layout">
+            <view class="demo-top-clues">
+              <view class="demo-col"><view class="demo-c dot-r">3</view><view class="demo-c dot-b">2</view></view>
+              <view class="demo-col"><view class="demo-c dot-y">1</view><view class="demo-c dot-b">2</view></view>
+            </view>
+            <view class="demo-middle">
+              <view class="demo-row-clues">
+                <view class="demo-c dot-r">2</view>
+                <view class="demo-c dot-b">3</view>
+              </view>
+              <view class="demo-mini-grid">
+                <view class="demo-g demo-g-fill-r"></view>
+                <view class="demo-g demo-g-fill-r"></view>
+                <view class="demo-g demo-g-fill-b"></view>
+                <view class="demo-g demo-g-fill-b"></view>
+                <view class="demo-g demo-g-fill-b"></view>
+                <view class="demo-g demo-g-fill-y"></view>
+                <view class="demo-g demo-g-fill-b"></view>
+                <view class="demo-g demo-g-fill-r"></view>
+                <view class="demo-g"></view>
+              </view>
+            </view>
+          </view>
+          <view class="tut-title">2 · 提示怎么读</view>
+          <view class="tut-point">• <text class="dot dot-r"></text>红块 3 + <text class="dot dot-y"></text>黄块 2 → 这一行有 3 个红色格、2 个黄色格</view>
+          <view class="tut-point">• 提示只按「颜色」计数，不看位置</view>
+          <view class="tut-point">• 某色数字 = 0 时不会显示，这行/列就没有该颜色</view>
+          <view class="tut-point">• 上下、左右推理着涂，越来越简单</view>
+        </block>
+
+        <!-- 页 3: 选色涂色 -->
+        <block wx:if="{{tutPage === 2}}">
+          <view class="tut-demo tut-demo-palette">
+            <view class="demo-pal-row">
+              <view class="demo-key demo-key-r"></view>
+              <view class="demo-key demo-key-y"></view>
+              <view class="demo-key demo-key-b"></view>
+              <view class="demo-key demo-key-g"></view>
+              <view class="demo-key demo-key-k"></view>
+              <view class="demo-erase">擦除</view>
+            </view>
+            <view class="demo-pal-arrow">▼ 先选颜色</view>
+            <view class="demo-mini-grid demo-pal-grid">
+              <view class="demo-g demo-g-fill-r demo-g-target"></view>
+              <view class="demo-g"></view>
+              <view class="demo-g"></view>
+            </view>
+            <view class="demo-pal-arrow">▲ 再点格子涂上 (手指点哪涂哪)</view>
+          </view>
+          <view class="tut-title">3 · 涂色操作</view>
+          <view class="tut-point">• 先点下方色块「选中」颜色，再点画板格子涂色</view>
+          <view class="tut-point">• 色块下的小数字 = 该颜色还剩几格要涂 (变绿 = 涂完)</view>
+          <view class="tut-point">• 在已涂的格子上再点一次同一颜色 = 擦除</view>
+          <view class="tut-point">• 左下「擦除」可当橡皮用 (选中后点格子擦掉)</view>
+        </block>
+
+        <!-- 页 4: 工具 -->
+        <block wx:if="{{tutPage === 3}}">
+          <view class="tut-demo tut-demo-tools">
+            <view class="demo-tool demo-tool-plain">显示答案</view>
+            <view class="demo-tool demo-tool-plain">撤销</view>
+            <view class="demo-tool demo-tool-plain">重做</view>
+            <view class="demo-tool demo-tool-danger">清空</view>
+          </view>
+          <view class="tut-demo tut-demo-tools">
+            <view class="demo-key demo-key-r"></view>
+            <view class="demo-key demo-key-y"></view>
+            <view class="demo-key demo-key-b"></view>
+            <view class="demo-key demo-key-g"></view>
+            <view class="demo-key demo-key-k"></view>
+            <view class="demo-erase">擦除</view>
+          </view>
+          <view class="tut-title">4 · 常用工具</view>
+          <view class="tut-point">• <b>撤销</b>：涂错了退一步；<b>重做</b>：把撤销找回来</view>
+          <view class="tut-point">• <b>清空</b>：整幅画板清掉重来 (步数也归零)</view>
+          <view class="tut-point">• <b>显示答案</b>：卡住时直接看完整答案（看完可再点隐藏）</view>
+          <view class="tut-point">• 看答案不会扣分，放心用</view>
+        </block>
+
+        <!-- 页 5: 通关 -->
+        <block wx:if="{{tutPage === 4}}">
+          <view class="tut-demo tut-demo-win">
+            <view class="demo-mini-grid">
+              <view class="demo-g demo-g-fill-r"></view>
+              <view class="demo-g demo-g-fill-r"></view>
+              <view class="demo-g demo-g-fill-r"></view>
+              <view class="demo-g demo-g-fill-y"></view>
+              <view class="demo-g demo-g-fill-y"></view>
+              <view class="demo-g demo-g-fill-b"></view>
+              <view class="demo-g demo-g-fill-b"></view>
+              <view class="demo-g demo-g-fill-b"></view>
+              <view class="demo-g demo-g-fill-b"></view>
+            </view>
+            <view class="demo-win-check">✓ 完成!</view>
+            <view class="demo-win-beans">
+              <view class="demo-win-bean"></view>
+              <view class="demo-win-bean"></view>
+              <view class="demo-win-bean"></view>
+              <view class="demo-win-bean"></view>
+              <view class="demo-win-bean"></view>
+            </view>
+          </view>
+          <view class="tut-title">5 · 完成一幅画</view>
+          <view class="tut-point">• 所有格子都涂对 → 自动判定通关</view>
+          <view class="tut-point">• 会记录你的用时和步数，标题出现 ✓ 已通关</view>
+          <view class="tut-point">• 左侧菜单的图库会同步打勾，通关越多越有成就感</view>
+          <view class="tut-point">• 涂到一半退出也会自动存档，下次接着涂</view>
+        </block>
+      </scroll-view>
+
+      <view class="tut-footer">
+        <view wx:if="{{tutPage > 0}}" class="ds-btn tut-prev" hover-class="ds-btn-hover" bindtap="onTutPrev">上一步</view>
+        <view wx:if="{{tutPage > 0}}" class="ds-btn tut-skip" hover-class="ds-btn-hover" bindtap="onTutSkip">跳过教程</view>
+        <view wx:if="{{tutPage < tutSteps.length - 1}}" class="ds-btn tut-next" hover-class="ds-btn-hover" bindtap="onTutNext">下一步</view>
+        <view wx:else class="ds-btn tut-next" hover-class="ds-btn-hover" bindtap="onCloseTutorial">开始涂色</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 首次进入引导 (B): 高亮蒙版挖洞 + 底部步骤卡, 3 步 -->
+  <view wx:if="{{guideVisible}}" class="guide-mask">
+    <view class="guide-dim" style="top: 0; left: 0; width: 100%; height: {{guideDimTop}}px;"></view>
+    <view class="guide-dim" style="top: {{guideRectBottom}}px; left: 0; width: 100%; height: calc(100% - {{guideRectBottom}}px);"></view>
+    <view class="guide-dim" style="top: {{guideRectTop}}px; left: 0; width: {{guideRectLeft}}px; height: {{guideRectH}}px;"></view>
+    <view class="guide-dim" style="top: {{guideRectTop}}px; left: {{guideRectRight}}px; width: calc(100% - {{guideRectRight}}px); height: {{guideRectH}}px;"></view>
+    <view class="guide-spot" style="top: {{guideRectTop}}px; left: {{guideRectLeft}}px; width: {{guideRectW}}px; height: {{guideRectH}}px;">
+      <view wx:if="{{guideArrow !== 'none'}}" class="guide-arrow guide-arrow-{{guideArrowPos}}">{{guideArrow === 'up' ? '▲' : '▼'}}</view>
+    </view>
+    <view class="guide-card">
+      <view class="guide-dots">
+        <view wx:for="{{guideSteps}}" wx:key="title" class="guide-dot {{index === guideStep ? 'guide-dot-on' : ''}}"></view>
+      </view>
+      <view class="guide-title">{{guideSteps[guideStep].title}}</view>
+      <view class="guide-desc">{{guideSteps[guideStep].desc}}</view>
+      <view class="guide-actions">
+        <view class="guide-skip" bindtap="onGuideSkip">跳过</view>
+        <view wx:if="{{guideStep > 0}}" class="ds-btn guide-prev" hover-class="ds-btn-hover" bindtap="onGuidePrev">上一步</view>
+        <view class="ds-btn guide-next" hover-class="ds-btn-hover" bindtap="onGuideNext">{{guideStep < guideSteps.length - 1 ? '下一步' : '开始涂色'}}</view>
+      </view>
     </view>
   </view>
 </view>

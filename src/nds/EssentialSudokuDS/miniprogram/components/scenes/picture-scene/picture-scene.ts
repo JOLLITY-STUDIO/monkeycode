@@ -140,13 +140,62 @@ Component({
     history: [] as Array<{ i: number; prev: CellColor }>,
     /** 重做栈: undo 弹出的操作, from=撤销后格值, to=撤销前格值 (redo 恢复) */
     redoStack: [] as Array<{ i: number; from: CellColor; to: CellColor }>,
-    /** 教程提示图是否被用户关闭 */
-    tutorialClosed: false,
+    /** 图文教程弹层是否打开 (A) */
+    tutOpen: false,
+    /** 当前教程页 (0-based) */
+    tutPage: 0,
+    /** 教程是否已看过 (未看过时按钮带红点提示) */
+    tutSeen: false,
+    /** 教程总页数占位 (仅用于 wxml 页计数/边界判断) */
+    tutSteps: [
+      { title: '认识对局界面' },
+      { title: '提示怎么读' },
+      { title: '涂色操作' },
+      { title: '常用工具' },
+      { title: '完成一幅画' },
+    ],
+    /** 首次进入引导是否显示 (B) */
+    guideVisible: false,
+    /** 当前引导步 0..guideSteps.length-1 */
+    guideStep: 0,
+    /** 引导步骤定义 (高亮目标 selector + 文案) */
+    guideSteps: [
+      {
+        sel: '.puzzle-area',
+        title: '认识提示区',
+        desc: '顶部和左侧的彩色小方块 + 数字，告诉你每一行/每一列里各种颜色各有几格。先看懂它，再动手涂。',
+      },
+      {
+        sel: '.palette',
+        title: '选色 → 涂色',
+        desc: '先点下方色块选中颜色（色块下的小数字 = 该色还剩几格），再点画板格子涂上去。再点一次同色格子可以擦除。',
+      },
+      {
+        sel: '.tool-row',
+        title: '常用工具',
+        desc: '涂错了用「撤销」退一步；想重来点「清空」；实在卡住可以「显示答案」再隐藏，不扣分。',
+      },
+    ],
+    /** 高亮框 rect (px, 相对视口), 未定位时为 0 → 全遮 fallback */
+    guideRectTop: 0,
+    guideRectLeft: 0,
+    guideRectRight: 0,
+    guideRectBottom: 0,
+    guideRectW: 0,
+    guideRectH: 0,
+    /** 顶部遮罩高度 (= target.top) */
+    guideDimTop: 0,
+    /** 高亮框箭头方向 ('up'=▲ 指向上方目标 / 'down'=▼ / 'none'=隐藏) */
+    guideArrow: 'up',
+    /** 箭头相对高亮框的位置 ('above'=框上方 / 'below'=框下方) */
+    guideArrowPos: 'below',
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,
     _saveTimer: 0,
     _celebrateTimer: 0,
+    _guideChecked: false,
+    _guideTimer: 0,
   },
 
   observers: {
@@ -171,6 +220,14 @@ Component({
         // 默认打开动物类第 1 题
         this._startPuzzle('numclo0.data', 0);
       }
+      // 读教程已读标记 (未读时教程按钮带红点)
+      let seen = false;
+      try {
+        seen = wx.getStorageSync('esds_pic_tut_seen') === 1;
+      } catch (_e) { /* ignore */ }
+      this.setData({ tutSeen: seen });
+      // 首次进入玩法 → 高亮引导
+      this._maybeShowGuide();
     },
     detached() {
       this.data._attachedDone = false;
@@ -178,6 +235,8 @@ Component({
       this._stopTimer();
       this._clearSaveTimer();
       this._clearCelebrateTimer();
+      this._clearGuideTimer();
+      this.setData({ guideVisible: false, tutOpen: false });
     },
   },
 
@@ -188,10 +247,155 @@ Component({
       this.triggerEvent('back');
     },
 
-    /** 关闭教程提示图 */
-    onCloseTutorial() {
-      this.setData({ tutorialClosed: true });
+    /** 打开图文教程弹层 (A); 未看过则标记已读 (红点消失) */
+    onOpenTutorial() {
+      if (!this.data._attachedDone) return;
       audioService.playSe('tap');
+      this.setData({ tutOpen: true, tutPage: 0 });
+      if (!this.data.tutSeen) {
+        this.setData({ tutSeen: true });
+        try {
+          wx.setStorageSync('esds_pic_tut_seen', 1);
+        } catch (_e) { /* ignore */ }
+      }
+    },
+
+    /** 关闭图文教程弹层 (× / 最后一页的「开始涂色」/ 跳过) */
+    onCloseTutorial() {
+      if (!this.data._attachedDone) return;
+      audioService.playSe('back');
+      this.setData({ tutOpen: false });
+    },
+
+    /** 教程下一页 */
+    onTutNext() {
+      if (!this.data._attachedDone) return;
+      const total = this.data.tutSteps.length;
+      const page = Math.min(this.data.tutPage + 1, total - 1);
+      audioService.playSe('slide');
+      this.setData({ tutPage: page });
+    },
+
+    /** 教程上一页 */
+    onTutPrev() {
+      if (!this.data._attachedDone) return;
+      audioService.playSe('slide');
+      this.setData({ tutPage: Math.max(0, this.data.tutPage - 1) });
+    },
+
+    /** 跳过图文教程 (已打开即视为看过, 标记在 onOpenTutorial 里完成) */
+    onTutSkip() {
+      this.onCloseTutorial();
+    },
+
+    /* ============ 首次进入引导 (B) ============ */
+
+    /** 首次进入玩法时检查并启动引导 (storage: esds_pic_guide_done) */
+    _maybeShowGuide() {
+      if (this.data._guideChecked) return;
+      this.data._guideChecked = true;
+      let done = false;
+      try {
+        done = wx.getStorageSync('esds_pic_guide_done') === 1;
+      } catch (_e) { /* ignore */ }
+      if (done) return;
+      // 等首题 setData 渲染 + 场景转场稳定后再定位目标
+      this._clearGuideTimer();
+      this.data._guideTimer = setTimeout(() => {
+        if (!this.data._attachedDone) return;
+        this.setData({ guideVisible: true, guideStep: 0 });
+        this._locateGuideStep(0);
+      }, 350);
+    },
+
+    _clearGuideTimer() {
+      if (this.data._guideTimer) {
+        clearTimeout(this.data._guideTimer);
+        this.data._guideTimer = 0;
+      }
+    },
+
+    /** 定位第 step 步高亮目标 rect (组件内 selectorQuery); 失败 → 整屏遮罩 fallback */
+    _locateGuideStep(step: number) {
+      const def = this.data.guideSteps[step];
+      if (!def || !this.data._attachedDone) return;
+      const done = (rect: any) => {
+        if (!this.data._attachedDone) return;
+        if (rect && rect.width > 0 && rect.height > 0) {
+          // 目标在屏幕上方 → 箭头放框下方指上; 否则放框上方指下
+          const pos = rect.top > 300 ? 'above' : 'below';
+          this.setData({
+            guideRectTop: rect.top,
+            guideRectLeft: rect.left,
+            guideRectRight: rect.right,
+            guideRectBottom: rect.bottom,
+            guideRectW: rect.width,
+            guideRectH: rect.height,
+            guideDimTop: rect.top,
+            guideArrow: pos === 'above' ? 'down' : 'up',
+            guideArrowPos: pos,
+          });
+        } else {
+          // fallback: rect 全 0 → 高亮框隐藏, 四块 dim 拼成整屏遮罩 (仅底部卡可见)
+          this.setData({
+            guideRectTop: 0,
+            guideRectLeft: 0,
+            guideRectRight: 0,
+            guideRectBottom: 0,
+            guideRectW: 0,
+            guideRectH: 0,
+            guideDimTop: 0,
+            guideArrow: 'none',
+            guideArrowPos: 'below',
+          });
+        }
+      };
+      try {
+        wx.createSelectorQuery()
+          .in(this)
+          .select(def.sel)
+          .boundingClientRect(done)
+          .exec();
+      } catch (_e) {
+        done(null);
+      }
+    },
+
+    /** 引导下一步; 走完最后一步 → 结束 */
+    onGuideNext() {
+      if (!this.data._attachedDone) return;
+      audioService.playSe('tap');
+      const next = this.data.guideStep + 1;
+      if (next >= this.data.guideSteps.length) {
+        this._finishGuide();
+        return;
+      }
+      this.setData({ guideStep: next });
+      this._locateGuideStep(next);
+    },
+
+    /** 引导上一步 */
+    onGuidePrev() {
+      if (!this.data._attachedDone) return;
+      audioService.playSe('slide');
+      const prev = Math.max(0, this.data.guideStep - 1);
+      this.setData({ guideStep: prev });
+      this._locateGuideStep(prev);
+    },
+
+    /** 跳过引导 */
+    onGuideSkip() {
+      if (!this.data._attachedDone) return;
+      audioService.playSe('back');
+      this._finishGuide();
+    },
+
+    /** 结束引导 (不再自动弹出) */
+    _finishGuide() {
+      this.setData({ guideVisible: false });
+      try {
+        wx.setStorageSync('esds_pic_guide_done', 1);
+      } catch (_e) { /* ignore */ }
     },
 
     /** 开一题: fileKey + indexInFile (先落盘上一题进度, 再载入本题/恢复进度) */
@@ -256,7 +460,6 @@ Component({
         colClues: clues.cols,
         history: [],
         redoStack: [],
-        tutorialClosed: false,
       });
       this._startTimer();
     },
