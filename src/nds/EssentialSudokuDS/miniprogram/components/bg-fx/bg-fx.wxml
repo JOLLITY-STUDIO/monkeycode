@@ -15,8 +15,15 @@
   <!-- 1. 糖果渐变底 -->
   <view class="fx-base"></view>
 
-  <!-- 2. 整屏平铺网格线 (V0.49 数独格纸: 细格 24px + 宫粗线 72px) -->
-  <view class="fx-grid"></view>
+  <!-- 2. 整屏平铺网格线 (V0.49.1 数独格纸: 24px 细格 + 72px 宫粗线)
+       Skyline 不解析 background-size 多值列表, 故拆成 4 个单 view 单 background
+       每个用 repeating-linear-gradient (单 background-image + 不需 size 列表) -->
+  <view class="fx-grid">
+    <view class="fx-grid-bold-h"></view>
+    <view class="fx-grid-bold-v"></view>
+    <view class="fx-grid-fine-h"></view>
+    <view class="fx-grid-fine-v"></view>
+  </view>
 
   <!-- 3. 远景: 满屏漂浮大数字 (数独/数字玩法) -->
   <view class="band band-distal">

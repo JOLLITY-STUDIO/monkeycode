@@ -62,11 +62,15 @@
 }
 
 /* ===========================================================
- * 2. 整屏平铺网格线 (V0.49 数独格纸感)
- *    纯 CSS repeating-linear-gradient, 两层叠出细格 + 宫粗线:
- *    - 细线 24px 周期: 柔和紫 (比渐变底深一档, 弱对比不抢戏)
- *    - 宫线 72px 周期 (3 × 24 = 数独 3×3 宫): 糖果粉, 2px 更清楚
- *    线从坐标 0 起铺, 72 恰为 24 整数倍 → 宫线与细线天然对齐
+ * 2. 整屏平铺网格线 (V0.49.1 数独格纸感)
+ *    Skyline 渲染器对 `background-size: a, b, c, d;` 多值列表解析失败,
+ *    故拆成 4 个 view 各画一个方向, 每个 view 用单 background-image:
+ *      .fx-grid-bold-h  宫粗线横线 (每 72px 一条 2px 糖果粉横线)
+ *      .fx-grid-bold-v  宫粗线竖线
+ *      .fx-grid-fine-h  细格横线 (每 24px 一条 1px 柔和紫横线)
+ *      .fx-grid-fine-v  细格竖线
+ *    用 repeating-linear-gradient 直接表达周期 (不依赖 background-size 列表)。
+ *    72 = 3 × 24 → 宫线与细线在 (0,0) 天然对齐, 整屏像一张数独格纸。
  * =========================================================== */
 .fx-grid {
   position: absolute;
@@ -74,19 +78,62 @@
   top: 0;
   width: 100%;
   height: 100%;
-  background-image:
-    /* 宫粗线 (先画, 被细线层盖也不影响, 2px 更醒目) */
-    linear-gradient(to right, rgba(255, 122, 166, 0.30) 2px, transparent 2px),
-    linear-gradient(to bottom, rgba(255, 122, 166, 0.30) 2px, transparent 2px),
-    /* 细格线 (后画, 压在最上) */
-    linear-gradient(to right, rgba(182, 108, 229, 0.13) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(182, 108, 229, 0.13) 1px, transparent 1px);
-  background-size:
-    72px 72px,
-    72px 72px,
-    24px 24px,
-    24px 24px;
-  background-repeat: repeat;
+  pointer-events: none;
+}
+
+.fx-grid-bold-h {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(to bottom,
+    rgba(255, 122, 166, 0.30) 0,
+    rgba(255, 122, 166, 0.30) 2px,
+    transparent 2px,
+    transparent 72px);
+  pointer-events: none;
+}
+
+.fx-grid-bold-v {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(to right,
+    rgba(255, 122, 166, 0.30) 0,
+    rgba(255, 122, 166, 0.30) 2px,
+    transparent 2px,
+    transparent 72px);
+  pointer-events: none;
+}
+
+.fx-grid-fine-h {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(to bottom,
+    rgba(182, 108, 229, 0.18) 0,
+    rgba(182, 108, 229, 0.18) 1px,
+    transparent 1px,
+    transparent 24px);
+  pointer-events: none;
+}
+
+.fx-grid-fine-v {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(to right,
+    rgba(182, 108, 229, 0.18) 0,
+    rgba(182, 108, 229, 0.18) 1px,
+    transparent 1px,
+    transparent 24px);
   pointer-events: none;
 }
 

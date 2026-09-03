@@ -4,6 +4,36 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.49.1 — bg-fx 网格线 Skyline 兼容修复 (4 子 view 各画方向)
+
+### 2026-09-03
+
+#### 用户反馈
+- "你不是平铺了网格线了吗怎么没看到" (启动页截图: 背景糖果渐变 + 漂浮装饰, 无网格线)
+
+#### 根因
+- V0.49 在 `.fx-grid` 用了 4 个 `linear-gradient` + 4 个 `background-size` 多值列表 + `background-repeat`
+- Skyline 渲染器**不解析 `background-size: a, b, c, d;` 多值列表**, 整个 background-image 被当作非法整层丢弃
+- 结果: .fx-grid 节点存在但绘制为空, 网格线完全不显示
+- .fx-base 没踩坑是因为它用 background-size 默认值 (100%×100%)
+
+#### 改动清单 (2 文件, components/bg-fx/)
+1. bg-fx.wxml:
+   - `.fx-grid` 内嵌 4 个子 view: fx-grid-bold-h / fx-grid-bold-v / fx-grid-fine-h / fx-grid-fine-v
+   - 每个子 view 用单 background-image + 无需 size 列表, Skyline 完全兼容
+2. bg-fx.wxss:
+   - 删 `.fx-grid` 的 multi-image + multi-size + repeat 写法
+   - 4 个子 view 各自 `repeating-linear-gradient` (单 background, 周期通过 color stop 表达):
+     - bold-h/v: 72px 周期 × 2px 糖果粉 rgba(255,122,166,0.30) — 宫粗线
+     - fine-h/v: 24px 周期 × 1px 柔和紫 rgba(182,108,229,0.18) — 细格线
+   - 细线 alpha 0.13 → 0.18 (略提对比度, 浅背景更可见)
+
+#### 视觉效果
+- 启动页背景 = 糖果渐变 + 整屏 24px 数独格纸细线 + 72px 宫粗线 + 漂浮数字/小方块
+- 真正"整张纸都是数独格", 不再是空糖果底
+
+---
+
 ## V0.49 — bg-fx 全局背景整屏平铺网格线 (数独格纸)
 
 ### 2026-09-03
