@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.49.8 — tutorial-scene 还原原版: 只保留原版触屏示意图, 移除自造中文卡片
+
+### 2026-09-04
+
+#### 背景
+- 用户报告教程页跟原 ROM 不一样。原 ROM 只有 `tutorial_00.nbm` (128×256, 绿底触屏操作图例), 文字由 DS 字体实时渲染日文/韩文
+- 当前 `tutorial-scene.wxml` 是 V0.19 自造的3 张中文卡片 (`数字谜题` / `图画谜题` / `操作`), 这些内容原 ROM 根本没有, 完全是 H5 端自己编的
+- 原版教程屏 = 下屏显示 `tutorial_00.nbm` 触屏示意图, 上屏用 DS 字体渲染本地化文本 (这层文本当前不在 ROM 已解码资源里)
+
+#### 修改
+- ✅ `tutorial-scene.wxml`: 移除 3 张中文 `tut-card` + `tut-section` + `tut-divider` 结构; 新增 `tut-frame` + `tut-screen` (16:9 模拟 DS 下屏) + `tut-cap` (说明性 caption)
+- ✅ `tutorial-scene.wxss`: 改深色主题 (rgba(22,42,66,0.85) 顶栏 + #0d1b2a 屏框 + 蓝灰说明文字), 跟 staff/about/menu 等场景 DS 化统一
+- ✅ `tutorial_00.nbm.png` 改成 16:9 模拟 DS 下屏显示 (aspect-ratio 256/192 + image-rendering: pixelated 保留 NDS 像素感)
+- ✅ `tut-image` 加 `image-rendering: pixelated` (跟其他 NBM 原图一致)
+- ✅ `tut-cap` 文案改: "原版教程 · 触屏示意图（tutorial_00.nbm）" — 标明这是原 ROM 唯一可解码的教程资源
+
+#### 不做的事 (留给后续)
+- DS 字体渲染日文/韩文教程正文: 需要 1) 解码 SDAT/SMSG 文本资源 2) 提 NDS 字库 NCGR/NCLR 3) 排版引擎 — 大工程, 单独开 task
+- 当前保留原版触屏示意图 + 中文 "返回主菜单" 按钮 (菜单已深色化统一), 不假装翻译日文
+
+---
+
 ## V0.49.7 — 图画谜题新手引导: 图文教程弹层 + 首次进入高亮引导
 
 ### 2026-09-04
