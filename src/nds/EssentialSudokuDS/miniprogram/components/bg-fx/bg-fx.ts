@@ -1,24 +1,23 @@
 /* components/bg-fx/bg-fx.ts
- * 全局动态背景层 (Playful Sudoku, V0.47): 欢快糖果风
+ * 全局动态背景层 (Playful Sudoku, V0.49.2): 欢快糖果风 + 景深
  * 由 pages/index/index 放置在 .scene-area 第一层 (z-index 0),
  * 场景 (z-index 1/2) 浮在其上, 场景根背景已设为 transparent。
  *
- * 结构 (从后到前 6 层):
+ * 结构 (从后到前 6 层) + V0.49.2 景深方案:
  *   1. .fx-base       糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 4 团彩色柔光
- *   2. .fx-grid       V0.49.1 整屏平铺网格线层 (数独格纸: 24px 细线 + 72px 宫粗线,
- *                       Skyline 兼容性: 拆 4 个子 view 各画一个方向, 不依赖 background-size 多值列表)
- *   3. 远景 band-distal : 满屏漂浮大数字 1-9 (糖果 6 色), 最慢横滚 (~90s),
- *                        V0.47 加密到 48 个铺满
- *   4. 中景 band-grids  : 3×3 / 4×4 / 5×5 / 6×6 小网格方块
- *                        (代表"图画谜题"玩法, 若干小格已填糖果色), 中速横滚 (~60s),
- *                        V0.47 加密到 20 件铺满
- *   5. 近景 band-thought: 彩色柔光点 (6 色淡光, 慢飘 + 闪烁), 最快横滚 (~30s)
+ *   2. .fx-grid       V0.49.2 整屏平铺网格线层 (数独格纸: 24px 深紫细线 + 72px 深粉宫粗线,
+ *                       alpha 0.42/0.55 浅底肉眼清晰, 拆 4 子 view 兼容 Skyline)
+ *   3. 远景 band-distal : V0.49.2 深紫/深蓝调色板大数字 (alpha 0.40-0.55, 远而虚),
+ *                        4 方向深紫描边 + 浅色顶部高光, size 32-88 (远处更大)
+ *   4. 中景 band-grids  : 糖果色小网格方块 (alpha 0.55-0.76, 近而实),
+ *                        深色 box-shadow + 白色内边框 = 在网格纸上"浮起"
+ *   5. 近景 band-thought: 高亮柔光点 (alpha 0.80-1.00 + 双层 box-shadow 光晕, 最近最亮)
  *   6. .fx-beat       顶部暖白呼吸光晕 (周期 = pulseMs, 平缓不闪)
  *
  * 无缝循环实现: 每个横滚层 = .roll (width:200%) 内两个相同 .seg,
  *   roll 动画 translateX 0 → -50% (= 恰好一个 seg 宽度), 循环无缝。
  *   层上再包一层 .bob 做缓慢上下浮动 → 斜向走动感。
- * 全部纯 CSS 绘制 (数字 + 网格线), skyline 兼容良好, 不依赖任何图片。
+ * 全部纯 CSS 绘制 (数字 + 网格线 + 光晕), skyline 兼容良好, 不依赖任何图片。
  * 全项目禁用 rpx, 一律 px。
  */
 
@@ -30,6 +29,17 @@ const CANDY = [
   '#6bcb77', // 薄荷绿
   '#4d96ff', // 天蓝
   '#b66ce5', // 葡萄紫
+];
+
+/* ---------------- 远景深色调色板 (V0.49.2 远而虚景深)
+ *      深紫/深蓝/暗红/深青: 远处数字"雾里看"的感觉 ---------------- */
+const DARK_CANDY = [
+  '#6a4ba8', // 深葡萄紫
+  '#3d6ba8', // 深天蓝
+  '#a84a8a', // 深玫红
+  '#3d8a8a', // 深青
+  '#a86a3d', // 深橙棕
+  '#5a3d8a', // 深靛
 ];
 
 interface FloatNum {
@@ -49,17 +59,17 @@ function buildBigNums(): FloatNum[] {
     seed = (seed * 9301 + 49297) % 233280;
     return seed / 233280;
   };
-  // V0.47 加密: 48 个/屏, 满铺 1-99%
+  // V0.49.2 远景大数字: 深色糖果 + alpha 0.40-0.55 (远而虚)
   for (let i = 0; i < 48; i++) {
     arr.push({
       i,
       x: Math.round(1 + rnd() * 98),
       y: Math.round(2 + rnd() * 92),
       n: String(1 + Math.floor(rnd() * 9)),
-      s: Math.round(28 + rnd() * 48), // 28-76
+      s: Math.round(32 + rnd() * 56), // 32-88 (远处更大)
       r: Math.round(rnd() * 40 - 20),
-      o: 0.45 + rnd() * 0.3, // 0.45-0.75
-      c: CANDY[Math.floor(rnd() * CANDY.length)],
+      o: 0.40 + rnd() * 0.15, // 0.40-0.55 远而虚 (v0.47: 0.45-0.75 太实)
+      c: DARK_CANDY[Math.floor(rnd() * DARK_CANDY.length)],
     });
   }
   return arr;
@@ -132,7 +142,7 @@ function buildMiniGrids(): MiniGrid[] {
       size: s[2],
       n,
       rot: s[4],
-      o: 0.22 + (i % 5) * 0.05, // 0.22-0.42 (V0.47 件数多, 透明度略降避免堆叠抢戏)
+      o: 0.55 + (i % 4) * 0.07, // 0.55-0.76 (V0.49.2 中景近而实, 显著提高)
       c,
       cells,
     };
@@ -155,13 +165,14 @@ function buildThoughts(): Thought[] {
     return seed / 233280;
   };
   const arr: Thought[] = [];
+  // V0.49.2 近景: size 略小 (8-22) + alpha 0.8-1.0 (近而亮)
   for (let i = 0; i < 18; i++) {
     arr.push({
       i,
       x: Math.round(2 + rnd() * 94),
       y: Math.round(3 + rnd() * 90),
-      s: Math.round(10 + rnd() * 18),
-      o: 0.55 + rnd() * 0.35,
+      s: Math.round(8 + rnd() * 14), // 8-22 (缩小, 留空间给大数字)
+      o: 0.80 + rnd() * 0.20, // 0.80-1.00 (近而亮)
       c: CANDY[Math.floor(rnd() * CANDY.length)],
     });
   }

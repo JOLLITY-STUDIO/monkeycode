@@ -1,23 +1,22 @@
-<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.49)
-  欢快糖果风, 背景由画面元素铺满:
+<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Playful Sudoku, V0.49.2)
+  欢快糖果风 + 景深 (V0.49.2):
   - .fx-base         糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 彩色柔光团
-  - .fx-grid         V0.49 整屏平铺网格线层 (数独格纸感: 24px 细线 + 3×3=72px 宫粗线)
-  - band-distal      远景: 满屏漂浮大数字 1-9 (糖果 6 色), 最慢横滚 ~90s → 数独/数字玩法
-  - band-grids       中景: 3×3/4×4/5×5/6×6 小网格方块 (若干小格已填色) → 图画谜题玩法,
-                     V0.47 加密到 20 件铺满
-  - band-thought     近景: 彩色柔光点 (慢飘 + 闪烁), 最快横滚 ~30s
+  - .fx-grid         V0.49.2 整屏平铺数独格纸 (深紫 24px 细线 + 深粉 72px 宫粗线, 浅底肉眼清晰)
+  - band-distal      远景: 满屏漂浮大数字 1-9 (V0.49.2 深紫/深蓝调色板 + alpha 0.40-0.55, 远处感)
+  - band-grids       中景: 3×3/4×4/5×5/6×6 小网格方块 (糖果色 + alpha 0.55-0.76, 中近而实)
+  - band-thought     近景: 高亮柔光点 (alpha 0.80-1.00 + 双层光晕, 最近最亮)
+  - .fx-beat         顶部暖白柔光呼吸 (周期 = pulseMs)
   每层 = .bob (上下缓浮) > .roll (width:200%, translateX 0→-50% 无缝循环)
        > 两个相同 .seg (各 50% 视口宽), seg 内放置装饰物
-  - .fx-beat         顶部暖白柔光呼吸 (周期 = pulseMs, 平缓不闪)
   整个 view z-index 0, pointer-events none。全项目禁用 rpx, 一律 px。
 -->
 <view class="bg-fx">
   <!-- 1. 糖果渐变底 -->
   <view class="fx-base"></view>
 
-  <!-- 2. 整屏平铺网格线 (V0.49.1 数独格纸: 24px 细格 + 72px 宫粗线)
-       Skyline 不解析 background-size 多值列表, 故拆成 4 个单 view 单 background
-       每个用 repeating-linear-gradient (单 background-image + 不需 size 列表) -->
+  <!-- 2. 整屏平铺网格线 (V0.49.2 数独格纸: 24px 细格 + 72px 宫粗线)
+       alpha 0.42/0.55 + 深紫/深粉色, 浅渐变底上肉眼清晰可见
+       Skyline 不解析 background-size 多值列表, 故拆成 4 个单 view 单 background -->
   <view class="fx-grid">
     <view class="fx-grid-bold-h"></view>
     <view class="fx-grid-bold-v"></view>
@@ -25,7 +24,7 @@
     <view class="fx-grid-fine-v"></view>
   </view>
 
-  <!-- 3. 远景: 满屏漂浮大数字 (数独/数字玩法) -->
+  <!-- 3. 远景: 满屏漂浮大数字 (数独/数字玩法, V0.49.2 深紫色 远而虚) -->
   <view class="band band-distal">
     <view class="bob bob-1">
       <view class="roll roll-1">
@@ -41,7 +40,7 @@
     </view>
   </view>
 
-  <!-- 3. 中景: 小网格方块 (图画谜题玩法, V0.47 加密 20 件铺满) -->
+  <!-- 3. 中景: 小网格方块 (图画谜题玩法, V0.49.2 糖果色 + alpha 0.55-0.76 中近而实) -->
   <view class="band band-grids">
     <view class="bob bob-2">
       <view class="roll roll-2">
@@ -72,7 +71,7 @@
     </view>
   </view>
 
-  <!-- 4. 近景: 彩色柔光点 -->
+  <!-- 4. 近景: 高亮柔光点 (V0.49.2 alpha 0.80-1.00 + 双层光晕) -->
   <view class="band band-thought">
     <view class="bob bob-3">
       <view class="roll roll-3">
@@ -81,7 +80,7 @@
             wx:for="{{thoughts}}"
             wx:key="i"
             class="thought"
-            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.s}}px; height: {{item.s}}px; opacity: {{item.o}}; box-shadow: 0 0 10px {{item.c}};"
+            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.s}}px; height: {{item.s}}px; opacity: {{item.o}}; box-shadow: 0 0 14px 2px {{item.c}}, 0 0 28px 6px {{item.c}};"
           ></view>
         </view>
       </view>

@@ -1,10 +1,11 @@
-/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.47)
-  欢快糖果风 (替代 V0.36 暗夜书桌 / V0.35 明亮天空):
-  - 糖果渐变底 + 彩色柔光团, 整屏明亮欢快
-  - 满屏大数字 1-9 (糖果 6 色, V0.47 加密 48 个) → 数独/数字玩法
-  - 3×3/4×4/5×5/6×6 小网格方块 (V0.47 加密 20 件, 部分小格填色) → 图画谜题玩法
-  - 彩色柔光点点缀 + 顶部暖白呼吸
-  skyline 渲染器支持 transform + opacity + animation, 对 filter 兼容性差。
+/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.49.2)
+  欢快糖果风 + 景深 (V0.49.2 改造):
+  - 糖果渐变底 + 彩色柔光团 (明亮欢快)
+  - V0.49.2 整屏平铺数独格纸 (深紫 24px 细线 + 深粉 72px 宫粗线, 浅底肉眼可见)
+  - 远景: 满屏大数字 1-9 (V0.49.2 深紫色调 + alpha 0.40-0.55, 远而虚, 4 方向深紫描边)
+  - 中景: 3×3/4×4/5×5/6×6 小网格方块 (糖果色 + alpha 0.55-0.76, 深色 box-shadow 浮起)
+  - 近景: 高亮柔光点 (alpha 0.80-1.00 + 双层光晕, 最近最亮)
+  skyline 渲染器支持 transform + opacity + animation + box-shadow。
   全项目禁用 rpx, 一律 px。
   层级: 本组件绝对定位填满 .scene-area, z-index 0;
         场景层 (scene-stage) z-index 1/2 浮在其上。
@@ -62,14 +63,14 @@
 }
 
 /* ===========================================================
- * 2. 整屏平铺网格线 (V0.49.1 数独格纸感)
- *    Skyline 渲染器对 `background-size: a, b, c, d;` 多值列表解析失败,
- *    故拆成 4 个 view 各画一个方向, 每个 view 用单 background-image:
- *      .fx-grid-bold-h  宫粗线横线 (每 72px 一条 2px 糖果粉横线)
+ * 2. 整屏平铺网格线 (V0.49.2 数独格纸感, 强可见)
+ *    Skyline 不解析 background-size 多值列表, 故拆 4 个 view 各画一方向。
+ *    4 子 view 用单 background-image + repeating-linear-gradient 直接表达周期。
+ *    V0.49.2: alpha 大幅提升 + 颜色加深, 浅渐变底上肉眼清晰可见:
+ *      .fx-grid-bold-h  宫粗线横线 (72px 周期 × 2px 深粉 alpha 0.55)
  *      .fx-grid-bold-v  宫粗线竖线
- *      .fx-grid-fine-h  细格横线 (每 24px 一条 1px 柔和紫横线)
+ *      .fx-grid-fine-h  细格横线 (24px 周期 × 1px 深紫 alpha 0.42, 至少 1px 实线)
  *      .fx-grid-fine-v  细格竖线
- *    用 repeating-linear-gradient 直接表达周期 (不依赖 background-size 列表)。
  *    72 = 3 × 24 → 宫线与细线在 (0,0) 天然对齐, 整屏像一张数独格纸。
  * =========================================================== */
 .fx-grid {
@@ -81,6 +82,7 @@
   pointer-events: none;
 }
 
+/* 宫粗线: 72px 一条 2px 深粉 (3×3 宫边界) */
 .fx-grid-bold-h {
   position: absolute;
   left: 0;
@@ -88,13 +90,12 @@
   width: 100%;
   height: 100%;
   background: repeating-linear-gradient(to bottom,
-    rgba(255, 122, 166, 0.30) 0,
-    rgba(255, 122, 166, 0.30) 2px,
+    rgba(190, 70, 130, 0.55) 0,
+    rgba(190, 70, 130, 0.55) 2px,
     transparent 2px,
     transparent 72px);
   pointer-events: none;
 }
-
 .fx-grid-bold-v {
   position: absolute;
   left: 0;
@@ -102,13 +103,14 @@
   width: 100%;
   height: 100%;
   background: repeating-linear-gradient(to right,
-    rgba(255, 122, 166, 0.30) 0,
-    rgba(255, 122, 166, 0.30) 2px,
+    rgba(190, 70, 130, 0.55) 0,
+    rgba(190, 70, 130, 0.55) 2px,
     transparent 2px,
     transparent 72px);
   pointer-events: none;
 }
 
+/* 细格线: 24px 一条 1px 深紫 (数独单元格边线, 肉眼清晰可见) */
 .fx-grid-fine-h {
   position: absolute;
   left: 0;
@@ -116,13 +118,12 @@
   width: 100%;
   height: 100%;
   background: repeating-linear-gradient(to bottom,
-    rgba(182, 108, 229, 0.18) 0,
-    rgba(182, 108, 229, 0.18) 1px,
+    rgba(86, 46, 135, 0.42) 0,
+    rgba(86, 46, 135, 0.42) 1px,
     transparent 1px,
     transparent 24px);
   pointer-events: none;
 }
-
 .fx-grid-fine-v {
   position: absolute;
   left: 0;
@@ -130,8 +131,8 @@
   width: 100%;
   height: 100%;
   background: repeating-linear-gradient(to right,
-    rgba(182, 108, 229, 0.18) 0,
-    rgba(182, 108, 229, 0.18) 1px,
+    rgba(86, 46, 135, 0.42) 0,
+    rgba(86, 46, 135, 0.42) 1px,
     transparent 1px,
     transparent 24px);
   pointer-events: none;
@@ -196,8 +197,8 @@
 }
 
 /* ===========================================================
- * 4. 远景装饰: 满屏大数字 1-9 (糖果 6 色)
- *    数独/数字玩法的代表元素, 字体粗 + 白描边 + 彩色柔光
+ * 4. 远景装饰: 满屏大数字 1-9 (V0.49.2 深色景深)
+ *    远而虚: 深紫/深蓝调色板 + 0.40-0.55 alpha + 深紫描边, "雾里看远处数字"
  * =========================================================== */
 .big-num {
   position: absolute;
@@ -206,47 +207,56 @@
   line-height: 1;
   letter-spacing: 0;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9),
-    0 -1px 0 rgba(255, 255, 255, 0.9),
-    1px 0 0 rgba(255, 255, 255, 0.9),
-    -1px 0 0 rgba(255, 255, 255, 0.9);
+    /* 4 方向深紫描边 (深而虚, 远处感) */
+    0 1px 0 rgba(46, 22, 70, 0.85),
+    0 -1px 0 rgba(46, 22, 70, 0.85),
+    1px 0 0 rgba(46, 22, 70, 0.85),
+    -1px 0 0 rgba(46, 22, 70, 0.85),
+    /* 浅色高光在外 (上方一点, 立体感) */
+    0 -2px 2px rgba(255, 255, 255, 0.4);
   will-change: transform;
 }
 
 /* ===========================================================
  * 5. 中景装饰: 小网格方块 (3×3/4×4/5×5/6×6)
- *    图画谜题玩法代表 (N×N 网格, 部分小格已填色)
+ *    V0.49.2 中景近而实: 糖果色 + alpha 0.55-0.78 (由 ts 给的 o 决定)
+ *    + 深色外阴影 + 白色内边框, 让方块"浮起"在网格纸上方
  * =========================================================== */
 .mini-grid {
   position: absolute;
   border: 2px solid;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.6);
   box-sizing: border-box;
-  box-shadow: 0 2px 10px rgba(255, 120, 160, 0.18);
+  box-shadow:
+    0 3px 12px rgba(74, 50, 130, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 .mini-cell {
   position: absolute;
   box-sizing: border-box;
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-right: 1px solid rgba(74, 50, 130, 0.18);
+  border-bottom: 1px solid rgba(74, 50, 130, 0.18);
 }
 .mini-cell-filled {
   border: none;
   border-radius: 2px;
-  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 0 4px rgba(255, 255, 255, 0.6),
+    0 1px 3px rgba(74, 50, 130, 0.25);
 }
 
 /* ===========================================================
- * 6. 近景装饰: 彩色柔光点 (糖果色晕)
+ * 6. 近景装饰: 彩色柔光点 (V0.49.2 近而亮)
+ *    最近最亮: 高 alpha + 大光晕, box-shadow 注入 inline 颜色 (高反差闪光)
  * =========================================================== */
 .thought {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle at 36% 32%,
     rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.55) 45%,
+    rgba(255, 255, 255, 0.78) 38%,
     rgba(255, 255, 255, 0) 100%);
   animation: thought-twinkle 4s ease-in-out infinite alternate;
   will-change: opacity, transform;
