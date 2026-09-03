@@ -1,13 +1,10 @@
 /* components/scenes/title-scene/title-scene.wxss
-  V0.44 封面透明化 (视觉背景交给全局 bg-fx 糖果动态背景):
-  - .title-page     全屏透明容器 (column 布局: 网格撑中间, 底部按钮固定)
+  V0.48 封面内容全删 (视觉背景交给全局 bg-fx 糖果动态背景):
+  - .title-page     全屏透明容器 (column 布局: 品牌顶部 + press 中部 + 版权底部)
   - .brand-en       顶部品牌标题 (糖果渐变文字 + 白描边, 浅背景可读)
-  - .board-center   中央数独容器 (flex:1 垂直居中)
-  - .board          9×9 网格 (白底卡片 + 柔和彩框 + 阴影)
-  - .cell / .cell-n 单格与数字; 宫粗线 (糖果紫) 分割 3×3
-  - .cell-pop       6 色糖果格 (白字 + 高光)
-  - .press-start    Press START 糖果粉橙渐变胶囊 + 脉冲
+  - .press-start    Press START 糖果粉橙渐变胶囊 + 脉冲 (中部偏下, 替代原封面框位置)
   - .copyright      版权两行 (灰蓝, 浅背景可读)
+  (V0.48 移除: .board-center/.board/.cell 等中央 9×9 封面框全部样式)
   全项目禁用 rpx, 一律 px。
 */
 
@@ -53,96 +50,19 @@
 }
 
 /* ===========================================================
- * 中央 9×9 数独网格
- * =========================================================== */
-.board-center {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-}
-
-.board {
-  width: 225px;
-  height: 225px;
-  display: flex;
-  flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2.5px solid #b66ce5;
-  border-radius: 10px;
-  box-shadow:
-    0 10px 30px rgba(182, 108, 229, 0.28),
-    0 4px 14px rgba(255, 120, 140, 0.2),
-    0 0 0 4px rgba(255, 255, 255, 0.6);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* 单格: 25px = 225 / 9 */
-.cell {
-  width: 25px;
-  height: 25px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-right: 1px solid #e3d6f0;
-  border-bottom: 1px solid #e3d6f0;
-  position: relative;
-}
-
-/* 宫 (3×3) 粗分割: 第 3/6 列右粗线, 第 3/6 行下粗线 */
-.cell:nth-child(3n):not(:nth-child(9n)) {
-  border-right-width: 2px;
-  border-right-color: #b66ce5;
-}
-.cell:nth-child(6n):not(:nth-child(9n)) {
-  border-right-width: 2px;
-  border-right-color: #b66ce5;
-}
-.cell:nth-child(n+19):nth-child(-n+27),
-.cell:nth-child(n+46):nth-child(-n+54) {
-  border-bottom-width: 2px;
-  border-bottom-color: #b66ce5;
-}
-/* 去掉最右列 / 最下行边框 (board 自身已包边) */
-.cell:nth-child(9n) { border-right: none; }
-.cell:nth-child(n+73) { border-bottom: none; }
-
-.cell-n {
-  font-size: 14px;
-  font-weight: 800;
-  color: #4a3b63;
-  font-family: 'Georgia', 'Times New Roman', serif;
-  line-height: 1;
-}
-
-/* 糖果格 (背景色 inline 注入) → 白色粗数字 */
-.cell-pop {
-  border-radius: 2px;
-  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.45);
-}
-.cell-n-pop {
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
-}
-
-/* ===========================================================
  * Press START
  * =========================================================== */
 .press-area {
   position: relative;
-  flex: 0 0 auto;
+  flex: 1 1 auto; /* V0.48: 占满中部留白区, 内部垂直居中 */
+  min-height: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding-bottom: 10px;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 4px;
   z-index: 4;
 }
 

@@ -1,9 +1,9 @@
-<!--components/scenes/title-scene/title-scene.wxml — 启动封面 (V0.44 透明化)
+<!--components/scenes/title-scene/title-scene.wxml — 启动页 (V0.48)
   背景完全透明 → 全局 bg-fx 糖果动态背景透出 (数字 1-9 + 3×3/4×4/5×5/6×6 网格 + 呼吸)
-  本组件只承载前景 UI (自上而下):
+  不再显示中央 9×9 封面框 (V0.48 移除), 中间留空让背景氛围铺满
+  本组件只承载前景 UI:
     - brand     顶部品牌标题 (阴影保证浅色背景可读)
-    - board     中央 9×9 数独大网格 (白底卡片, 3×3 宫粗线内嵌 3×3, 9 宫各 1 糖果格)
-    - press     Press START 糖果色胶囊 (脉冲呼吸)
+    - press     Press START 糖果色胶囊 (脉冲呼吸, 中部偏下)
     - copyright 版权两行
   全屏点击 → onTapStart → triggerEvent('start')
 -->
@@ -14,21 +14,7 @@
     <view class="brand-en">ESSENTIAL SUDOKU DS</view>
   </view>
 
-  <!-- 中央 9×9 数独大网格 -->
-  <view class="board-center">
-    <view class="board">
-      <view
-        wx:for="{{sudokuCells}}"
-        wx:key="i"
-        class="cell {{item.pop ? 'cell-pop' : ''}}"
-        style="{{item.pop ? 'background: ' + item.cc + ';' : ''}}"
-      >
-        <text class="cell-n {{item.pop ? 'cell-n-pop' : ''}}">{{item.n}}</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- Press START -->
+  <!-- Press START (V0.48: 原中央封面删掉, press 上移到中部留白区) -->
   <view class="press-area">
     <view class="press-start {{pulse ? 'pulse' : ''}}">
       <text class="press-start-text">Press START</text>

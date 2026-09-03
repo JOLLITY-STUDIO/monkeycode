@@ -4,6 +4,41 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.48 — 删掉 title-scene 中央 9×9 封面框 (红框网格真身)
+
+### 2026-09-03
+
+#### 用户反馈
+- "整屏没有红色框的 9×9 装饰网格了（band-cover 全删） 怎么还有啊"
+
+#### 根因
+- V0.47 只删了 bg-fx 背景层里的 band-cover (4 角 9×9 网格 + 品牌字 + Press START 装饰)
+- 但用户截图里的红框 9×9 网格其实来自 **title-scene 启动页自身的中央封面**:
+  `.board-center > .board` (225px 白底 + 2.5px #b66ce5 粗紫框 + 9×9 小格 + 9 宫粗线)
+  它是 title 场景的前景封面内容, 一直浮在 bg-fx 之上 → band-cover 删了它还在屏中央
+- 用户要的是: 中间不要再有整块封面框, 让 bg-fx 的糖果网格 + 随机数字氛围铺满全屏
+
+#### 改动清单 (3 文件, components/scenes/title-scene/)
+1. title-scene.ts:
+   - **删除** SUDOKU_SOLUTION (完整 9×9 解) / CELL_POP (9 个糖果格坐标) / CANDY 常量
+   - **删除** SudokuCell interface + data.sudokuCells 81 格生成逻辑 (~40 行)
+   - attached 只保留 pulse 定时器
+2. title-scene.wxml:
+   - **删除** `<view class="board-center">` 整块中央 9×9 封面网格 (~13 行)
+   - Press START 胶囊 + hint 上移到原封面留白区
+3. title-scene.wxss:
+   - **删除** .board-center/.board/.cell/.cell-n/.cell-pop/.cell-n-pop 全部样式 + 6 条宫粗线 nth-child (~78 行)
+   - .press-area 改 flex:1 占满中部留白区垂直居中
+
+#### 验证
+- 全项目扫描 board-center/cell-pop/sudokuCells/cover-grid/band-cover/SUDOKU_SOLUTION 等关键字:
+  仅剩注释 + sudoku 玩法 game_service 的正常 board 数据字段, 无渲染残留
+- IDE 语言服务 read_lints 0 诊断
+- 视觉效果: 启动页 = bg-fx 糖果数字网格铺满整屏 + 顶部品牌字 + 中部 Press START,
+  屏幕正中间不再有白底紫粗框 9×9 封面
+
+---
+
 ## V0.47 — 撤销 V0.46 封面装饰 + 加密背景网格/数字铺满
 
 ### 2026-09-03
