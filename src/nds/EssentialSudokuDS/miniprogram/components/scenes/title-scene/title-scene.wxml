@@ -1,36 +1,26 @@
-<!--components/scenes/title-scene/title-scene.wxml — 启动标题场景
-  V0.42 极简封面 (贴合 DS 原版封面视觉):
-  - .cover-bg 深色底 (黑蓝渐变)
-  - .bg-num-layer 满屏散落大数字 1-9 (半透明, 微旋转, 数字背景)
-  - .board-center 中央一个 9×9 数独网格 (3×3 宫粗线, 格内填数字,
-    9 宫各一个 6 色方块格 → "3×3 里嵌 3×3 + 彩色数字方块" 观感)
-  - .press-start 底部 Press START 脉冲按钮
-  - .copyright 版权两行
+<!--components/scenes/title-scene/title-scene.wxml — 启动封面 (V0.44 透明化)
+  背景完全透明 → 全局 bg-fx 糖果动态背景透出 (数字 1-9 + 3×3/4×4/5×5/6×6 网格 + 呼吸)
+  本组件只承载前景 UI (自上而下):
+    - brand     顶部品牌标题 (阴影保证浅色背景可读)
+    - board     中央 9×9 数独大网格 (白底卡片, 3×3 宫粗线内嵌 3×3, 9 宫各 1 糖果格)
+    - press     Press START 糖果色胶囊 (脉冲呼吸)
+    - copyright 版权两行
   全屏点击 → onTapStart → triggerEvent('start')
 -->
-<view class="title-page" bindtap="onTapStart">
+<view class="title-page" bind:tap="onTapStart">
 
-  <!-- 背景: 深色底 + 中央微光 -->
-  <view class="cover-bg"></view>
-  <view class="cover-glow"></view>
-
-  <!-- 背景数字层 (满屏散落, 淡淡的) -->
-  <view class="bg-num-layer">
-    <text
-      wx:for="{{bgNums}}"
-      wx:key="i"
-      class="bg-num"
-      style="left: {{item.x}}%; top: {{item.y}}%; font-size: {{item.size}}px; opacity: {{item.o}}; color: {{item.c}}; transform: rotate({{item.rot}}deg);"
-    >{{item.n}}</text>
+  <!-- 前景: 品牌标题 -->
+  <view class="brand-wrap">
+    <view class="brand-en">ESSENTIAL SUDOKU DS</view>
   </view>
 
-  <!-- 中央: 9×9 数独网格 (3×3 宫) -->
+  <!-- 中央 9×9 数独大网格 -->
   <view class="board-center">
     <view class="board">
       <view
         wx:for="{{sudokuCells}}"
         wx:key="i"
-        class="cell"
+        class="cell {{item.pop ? 'cell-pop' : ''}}"
         style="{{item.pop ? 'background: ' + item.cc + ';' : ''}}"
       >
         <text class="cell-n {{item.pop ? 'cell-n-pop' : ''}}">{{item.n}}</text>
@@ -38,14 +28,18 @@
     </view>
   </view>
 
-  <!-- 底部: Press START + 版权 -->
-  <view class="bottom-area">
+  <!-- Press START -->
+  <view class="press-area">
     <view class="press-start {{pulse ? 'pulse' : ''}}">
       <text class="press-start-text">Press START</text>
     </view>
-    <view class="copyright">
-      <text class="copyright-text">© 2006 DIGITALWARE.</text>
-      <text class="copyright-text">© 2006 D3 Publisher. All Rights Reserved.</text>
-    </view>
+    <view class="hint-line">TAP ANYWHERE TO BEGIN</view>
   </view>
+
+  <!-- 版权 -->
+  <view class="copyright">
+    <text class="copyright-text">© 2006 DIGITALWARE.</text>
+    <text class="copyright-text">© 2006 D3 Publisher. All Rights Reserved.</text>
+  </view>
+
 </view>

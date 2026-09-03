@@ -1,9 +1,9 @@
-/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Night Study Desk, V0.36)
-   暗夜书桌 + 思考主题 (替代 V0.35 明亮天空横版射击风):
-   - 深色书桌 + 暖色台灯柔光, 不浮夸不抢戏
-   - 漂浮数字方块 (think tiles) 暗示"数独/数字"主题
-   - 草稿虚线方块 (drafts) 暗示"练习/推理"主题
-   - 思考光点 (thoughts) 是轻盈的细节, 模拟灵感涌现
+/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Playful Sudoku, V0.44)
+   欢快糖果风 (替代 V0.36 暗夜书桌 / V0.35 明亮天空):
+   - 糖果渐变底 + 彩色柔光团, 整屏明亮欢快
+   - 满屏大数字 1-9 (糖果 6 色) → 数独/数字玩法
+   - 3×3/4×4/5×5/6×6 小网格方块 (部分小格填色) → 图画谜题玩法
+   - 彩色柔光点点缀 + 顶部暖白呼吸
    skyline 渲染器支持 transform + opacity + animation, 对 filter 兼容性差。
    全项目禁用 rpx, 一律 px。
    层级: 本组件绝对定位填满 .scene-area, z-index 0;
@@ -19,12 +19,11 @@
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: #11152a; /* 兜底: 与 .fx-base 顶部同色, 防加载间隙露黑 */
+  background: #fff0f5; /* 兜底: 与 .fx-base 顶部同色, 防加载间隙露白 */
 }
 
 /* ===========================================================
- * 1. 暗夜书桌底 (蓝紫 → 暖琥珀 → 暗木 + 台灯柔光晕)
- * V0.37 提亮: 主色抬到中调, 暖光增强, 整体不再压抑
+ * 1. 糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 彩色柔光团
  * =========================================================== */
 .fx-base {
   position: absolute;
@@ -33,23 +32,33 @@
   width: 100%;
   height: 100%;
   background:
-    /* 台灯柔光晕 (中央偏上, 像一盏灯照在书桌) — 加强 */
-    radial-gradient(ellipse 75% 60% at 50% 25%,
-      rgba(255, 213, 138, 0.55) 0%,
-      rgba(255, 200, 120, 0.32) 35%,
-      rgba(255, 180, 100, 0.12) 65%,
-      transparent 80%),
-    /* 暖光底部反光 — 加强 */
-    radial-gradient(ellipse 80% 45% at 30% 95%,
-      rgba(255, 180, 120, 0.32) 0%,
-      rgba(255, 180, 120, 0) 65%),
-    /* 主渐变: 深夜蓝紫 → 暖琥珀 → 暗木 (整体调暖提亮) */
+    /* 顶部暖粉柔光 */
+    radial-gradient(ellipse 70% 45% at 50% 0%,
+      rgba(255, 214, 235, 0.85) 0%,
+      rgba(255, 214, 235, 0) 70%),
+    /* 左上蜜橙光团 */
+    radial-gradient(ellipse 42% 36% at 12% 22%,
+      rgba(255, 214, 165, 0.7) 0%,
+      rgba(255, 214, 165, 0) 70%),
+    /* 右中天蓝光团 */
+    radial-gradient(ellipse 46% 40% at 88% 46%,
+      rgba(183, 224, 255, 0.75) 0%,
+      rgba(183, 224, 255, 0) 70%),
+    /* 左下薄荷光团 */
+    radial-gradient(ellipse 40% 34% at 16% 82%,
+      rgba(196, 240, 214, 0.8) 0%,
+      rgba(196, 240, 214, 0) 70%),
+    /* 底部淡紫收尾 */
+    radial-gradient(ellipse 60% 30% at 72% 100%,
+      rgba(226, 214, 255, 0.7) 0%,
+      rgba(226, 214, 255, 0) 75%),
+    /* 主渐变: 奶白 → 粉 → 暖黄 → 天蓝 → 薄荷 (明亮欢快) */
     linear-gradient(180deg,
-      #2a2854 0%,
-      #3a3060 28%,
-      #4a3850 50%,
-      #5a4030 72%,
-      #2c1d14 100%);
+      #fff6fa 0%,
+      #ffe9f2 20%,
+      #fff3e0 42%,
+      #e6f4ff 66%,
+      #e2f7ec 100%);
 }
 
 /* ===========================================================
@@ -93,9 +102,9 @@
   animation: roll-x linear infinite;
   will-change: transform;
 }
-.roll-1 { animation-duration: 75s; }
-.roll-2 { animation-duration: 45s; }
-.roll-3 { animation-duration: 22s; }
+.roll-1 { animation-duration: 90s; }
+.roll-2 { animation-duration: 60s; }
+.roll-3 { animation-duration: 30s; }
 @keyframes roll-x {
   from { transform: translate3d(0, 0, 0); }
   to   { transform: translate3d(-50%, 0, 0); }
@@ -111,93 +120,79 @@
 }
 
 /* ===========================================================
- * 3. 远景装饰: 漂浮数字小方块 (think tiles)
- *    数字 1-9, 金/蓝双色, 慢速横滚
- * V0.37 提亮: 背景更深一点让数字更显眼, 边框/字色更亮
+ * 3. 远景装饰: 满屏大数字 1-9 (糖果 6 色)
+ *    数独/数字玩法的代表元素, 字体粗 + 白描边 + 彩色柔光
  * =========================================================== */
-.think-tile {
+.big-num {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px solid;
-  border-radius: 4px;
-  background: rgba(20, 24, 44, 0.7);
-  font-size: 13px;
   font-weight: 800;
-  font-family: monospace;
+  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+  line-height: 1;
   letter-spacing: 0;
-  box-shadow: 0 0 10px rgba(245, 210, 122, 0.32),
-    inset 0 0 4px rgba(255, 220, 160, 0.15);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9),
+    0 -1px 0 rgba(255, 255, 255, 0.9),
+    1px 0 0 rgba(255, 255, 255, 0.9),
+    -1px 0 0 rgba(255, 255, 255, 0.9);
+  will-change: transform;
 }
 
 /* ===========================================================
- * 4. 中景装饰: 草稿方块 (虚线格 / 已填一部分)
- *    像练习册的一行/一页, 已填的格子体现"做了一部分"状态
- * V0.37 提亮: 边框/填充色更饱和, 整体可读性更高
+ * 4. 中景装饰: 小网格方块 (3×3/4×4/5×5/6×6)
+ *    图画谜题玩法代表 (N×N 网格, 部分小格已填色)
  * =========================================================== */
-.draft {
+.mini-grid {
   position: absolute;
-  border-radius: 4px;
-}
-
-.draft-dashed {
-  border: 1.5px dashed rgba(245, 210, 122, 0.75);
-  background: rgba(20, 24, 44, 0.35);
-}
-
-.draft-partial {
-  border: 1.5px solid rgba(127, 200, 255, 0.75);
-  background: rgba(127, 200, 255, 0.08);
-  padding: 4px;
+  border: 2px solid;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.5);
   box-sizing: border-box;
+  box-shadow: 0 2px 10px rgba(255, 120, 160, 0.18);
 }
 
-.draft-cell {
+.mini-cell {
   position: absolute;
-  width: 22%;
-  height: 22%;
-  background: rgba(127, 200, 255, 0.55);
+  box-sizing: border-box;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.mini-cell-filled {
+  border: none;
   border-radius: 2px;
-  box-shadow: 0 0 4px rgba(127, 200, 255, 0.4);
+  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.55);
 }
 
 /* ===========================================================
- * 5. 近景装饰: 思考光点 (柔光圆 + 高光)
- * V0.37 提亮: 中心更白, 整体光晕更大更亮
+ * 5. 近景装饰: 彩色柔光点 (糖果色晕)
  * =========================================================== */
 .thought {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle at 36% 32%,
-    rgba(255, 250, 230, 1) 0%,
-    rgba(255, 235, 180, 0.7) 45%,
-    rgba(255, 210, 140, 0.15) 100%);
-  box-shadow: 0 0 10px rgba(255, 220, 160, 0.6);
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.55) 45%,
+    rgba(255, 255, 255, 0) 100%);
   animation: thought-twinkle 4s ease-in-out infinite alternate;
   will-change: opacity, transform;
 }
 @keyframes thought-twinkle {
   from { transform: scale(0.92); }
-  to   { transform: scale(1.08); }
+  to   { transform: scale(1.1); }
 }
 
 /* ===========================================================
- * 6. 节拍柔光 (台灯余晖呼吸, 周期 = pulseMs)
- *    跟场景 BGM 一小节同步, 周期 = pulseMs, 慢而平缓 (不闪缩)
- *    位置改成台灯下方书桌中央偏右, 跟 fx-base 的台灯光晕呼应
+ * 6. 顶部暖白呼吸光 (周期 = pulseMs)
+ *    跟场景 BGM 一小节同步, 慢而平缓 (不闪缩)
  * =========================================================== */
 .fx-beat {
   position: absolute;
-  left: 22%;
-  top: 8%;
-  width: 56%;
-  height: 50%;
-  background: radial-gradient(ellipse at 50% 30%,
-    rgba(255, 213, 138, 0.32) 0%,
-    rgba(255, 200, 120, 0.14) 45%,
+  left: 8%;
+  top: 0;
+  width: 84%;
+  height: 46%;
+  background: radial-gradient(ellipse at 50% 20%,
+    rgba(255, 228, 240, 0.5) 0%,
+    rgba(255, 235, 200, 0.22) 45%,
     transparent 72%);
   animation-name: beat-breath;
   animation-timing-function: ease-in-out;
@@ -205,7 +200,7 @@
   will-change: transform, opacity;
 }
 @keyframes beat-breath {
-  0%   { transform: scale(0.97); opacity: 0.65; }
-  50%  { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(0.97); opacity: 0.65; }
+  0%   { transform: scale(0.97); opacity: 0.5; }
+  50%  { transform: scale(1.05); opacity: 0.9; }
+  100% { transform: scale(0.97); opacity: 0.5; }
 }

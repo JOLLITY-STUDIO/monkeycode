@@ -1,14 +1,14 @@
 // components/scenes/title-scene/title-scene.ts — 启动标题场景组件
-// V0.42 极简封面 (贴合 DS 原版视觉):
-//   - 深色底 + 满屏散落数字背景 (bgNums, 半透明大字 1-9 微旋转)
-//   - 中央 9×9 数独网格 (3×3 宫粗线内嵌), 格内填数字,
-//     9 宫各点缀 1 个 6 色实色方块+白数字 (呼应图画谜题 6 色)
-//   - 底部 Press START 脉冲按钮 + 两行版权
+// V0.44 封面透明化 (视觉背景交给全局 bg-fx 糖果动态背景):
+//   - bg-fx 负责背景层: 浅色糖果渐变 + 满屏漂浮大数字 1-9 (number 玩法)
+//                       + 3×3/4×4/5×5/6×6 小网格方块 (picture 玩法) + 呼吸柔光
+//   - title-scene 只保留前景: 品牌标题 + 中央 9×9 数独大网格 (3×3 宫内嵌 3×3)
+//                            + Press START + 版权两行 (背景透明, bg-fx 透出)
 //   点击 → triggerEvent('start') → index _switchScene('menu')
 
 import { audioService } from '../../../utils/audio/audioService';
 
-/* ---------------- 中央数独: 一个完整 9×9 解 ---------------- */
+/* ---------------- 中央 9×9 数独: 一个完整合法解 ---------------- */
 const SUDOKU_SOLUTION: number[][] = [
   [5, 3, 4, 6, 7, 8, 9, 1, 2],
   [6, 7, 2, 1, 9, 5, 3, 4, 8],
@@ -21,51 +21,17 @@ const SUDOKU_SOLUTION: number[][] = [
   [3, 4, 5, 2, 8, 6, 1, 7, 9],
 ];
 
-/* 每宫一个彩色方块格 (r, c) — 呼应图画谜题 6 色调色板 */
+/* 每宫一个糖果格 (r, c) — 呼应图画谜题 6 色调色板 */
 const CELL_POP: Array<[number, number]> = [
   [0, 0], [0, 5], [1, 8],
   [3, 2], [4, 4], [5, 6],
   [7, 0], [7, 4], [8, 8],
 ];
-/* 6 色调色板 (与 picture-scene PALETTE_HEX 视觉同源) */
-const POP_COLORS = [
-  '#e8503a', '#f0a020', '#e6c521', '#3fae5a', '#2e9fd8', '#7a5cc8', '#d84a8c',
+
+/* 6 色糖果调色板 (跟 picture-scene PALETTE / bg-fx CANDY 同源) */
+const CANDY = [
+  '#ff6b81', '#ff9f43', '#ffd93d', '#6bcb77', '#4d96ff', '#b66ce5',
 ];
-
-/* ---------------- 背景散落数字 (确定性生成 22 个) ---------------- */
-interface BgNum {
-  i: number;
-  n: string;
-  x: number; // %
-  y: number; // %
-  size: number; // px
-  rot: number; // deg
-  o: number; // opacity 0.05-0.16
-  c: string;
-}
-const BG_COLORS = ['#ffffff', '#9fd0ff', '#ffe08a', '#ff9f8a', '#b3f0a8', '#d6b3ff'];
-
-function buildBgNums(): BgNum[] {
-  const arr: BgNum[] = [];
-  let seed = 20260903;
-  const rnd = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
-  for (let i = 0; i < 22; i++) {
-    arr.push({
-      i,
-      n: String(1 + Math.floor(rnd() * 9)),
-      x: Math.round(2 + rnd() * 92),
-      y: Math.round(2 + rnd() * 92),
-      size: Math.round(30 + rnd() * 48),
-      rot: Math.round(rnd() * 44 - 22),
-      o: 0.05 + rnd() * 0.12,
-      c: BG_COLORS[Math.floor(rnd() * BG_COLORS.length)],
-    });
-  }
-  return arr;
-}
 
 interface SudokuCell {
   i: number;
@@ -78,8 +44,6 @@ Component({
   options: { virtualHost: false },
   data: {
     pulse: false,
-    /** 背景散落数字 */
-    bgNums: [] as BgNum[],
     /** 81 个数独单元格 (完整解) */
     sudokuCells: [] as SudokuCell[],
     /** TS 私有字段声明 (非渲染数据) */
@@ -88,10 +52,6 @@ Component({
 
   lifetimes: {
     attached() {
-      // 背景散落数字
-      const bgNums = buildBgNums();
-
-      // 81 格: 全部填入数字, 指定格上 6 色方块 (白数字)
       const popSet = new Set(CELL_POP.map(([r, c]) => r * 9 + c));
       const sudokuCells: SudokuCell[] = [];
       let popIdx = 0;
@@ -103,15 +63,14 @@ Component({
             i,
             n: String(SUDOKU_SOLUTION[r][c]),
             pop: isPop,
-            cc: isPop ? POP_COLORS[popIdx++ % POP_COLORS.length] : '',
+            cc: isPop ? CANDY[popIdx++ % CANDY.length] : '',
           });
         }
       }
-
-      this.setData({ bgNums, sudokuCells });
+      this.setData({ sudokuCells });
       this.data._pulseTimer = setTimeout(() => {
         this.setData({ pulse: true });
-      }, 1000);
+      }, 600);
     },
     detached() {
       if (this.data._pulseTimer) {

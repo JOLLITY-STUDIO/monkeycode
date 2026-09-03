@@ -4,9 +4,9 @@
          动画结束后 (index.ts 定时器) 才移除 leaving 层。
    只用 transform + opacity (GPU 友好, skyline 渲染器支持)。 */
 
-/* 页面底色: V0.36 改为暗夜书桌色, fade 交叉瞬间两层半透明露出深色更自然 */
+/* 页面底色: V0.44 糖果提亮 (透出 bg-fx 亮背景; fade 交叉瞬间露出浅色更自然) */
 page {
-  background: #0d1426;
+  background: #fff0f5;
 }
 
 /* 根容器: 全屏 flex 纵向 */
@@ -15,34 +15,34 @@ page {
   flex-direction: column;
   height: 100vh;
   box-sizing: border-box;
-  background: #0d1426;
+  background: #fff0f5;
 }
 
-/* ---------- 顶部广告位 (V0.36: 半透明深色玻璃, 让位给暗夜书桌) ---------- */
+/* ---------- 顶部广告位 (V0.44: 半透明亮玻璃, 配糖果背景) ---------- */
 
 .top-ad {
   flex-shrink: 0;
   padding: 8px 12px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, rgba(13, 20, 38, 0.55) 0%, rgba(13, 20, 38, 0.18) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 100%);
 }
 
-/* banner 广告位: 深色玻璃占位 (V0.35 已移除 title.nbm.png 引用, V0.36 配暗夜主题) */
+/* banner 广告位: 亮玻璃占位 (V0.44 配糖果主题) */
 .ad-slot {
   height: 10vh;
   min-height: 56px;
   max-height: 96px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(22, 30, 50, 0.92) 0%, rgba(22, 30, 50, 0.78) 100%);
-  border: 1px solid rgba(245, 210, 122, 0.28);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.68) 100%);
+  border: 1px solid rgba(182, 108, 229, 0.35);
+  box-shadow: 0 3px 12px rgba(255, 107, 129, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .ad-slot-text {
-  color: #f5d27a;
+  color: #b66ce5;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 3px;

@@ -1,14 +1,13 @@
 /* components/scenes/title-scene/title-scene.wxss
-  V0.42 极简封面 (贴合 DS 原版封面视觉):
-  - .title-page     全屏容器 (column 布局: 网格撑中间, 底部按钮固定)
-  - .cover-bg       深黑蓝渐变底
-  - .bg-num-layer   满屏散落大数字 (绝对定位层, 在 bg 之上、网格之下)
-  - .bg-num         单个数字 (font 由 inline style 控制, 负 z 压在网格下)
+  V0.44 封面透明化 (视觉背景交给全局 bg-fx 糖果动态背景):
+  - .title-page     全屏透明容器 (column 布局: 网格撑中间, 底部按钮固定)
+  - .brand-en       顶部品牌标题 (糖果渐变文字 + 白描边, 浅背景可读)
   - .board-center   中央数独容器 (flex:1 垂直居中)
-  - .board          9×9 网格 (CSS 细线 + 3×3 宫粗线, nth-child 分割)
-  - .cell / .cell-n 单格与数字 (6 色宫格白字)
-  - .press-start    底部 Press START (蓝光胶囊)
-  - .copyright      版权两行
+  - .board          9×9 网格 (白底卡片 + 柔和彩框 + 阴影)
+  - .cell / .cell-n 单格与数字; 宫粗线 (糖果紫) 分割 3×3
+  - .cell-pop       6 色糖果格 (白字 + 高光)
+  - .press-start    Press START 糖果粉橙渐变胶囊 + 脉冲
+  - .copyright      版权两行 (灰蓝, 浅背景可读)
   全项目禁用 rpx, 一律 px。
 */
 
@@ -19,7 +18,7 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-  background: transparent;
+  background: transparent; /* 关键: 透出 bg-fx */
   overflow: hidden;
   box-sizing: border-box;
   display: flex;
@@ -27,54 +26,30 @@
   align-items: center;
 }
 
-/* 背景: 深黑蓝渐变 (给散落数字当底) */
-.cover-bg {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg,
-    #05070f 0%,
-    #0a1022 30%,
-    #0d1b2a 62%,
-    #0a1522 100%);
-  z-index: 0;
-}
-
-/* 中央光晕 (微微提亮网格后方, 不干扰数字) */
-.cover-glow {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse 60% 45% at 50% 40%,
-    rgba(64, 128, 255, 0.12) 0%,
-    rgba(64, 128, 255, 0) 70%);
-  z-index: 1;
-}
-
 /* ===========================================================
- * 散落数字背景层
+ * 顶部品牌标题
  * =========================================================== */
-.bg-num-layer {
-  position: absolute;
-  left: 0;
-  top: 0;
+.brand-wrap {
+  position: relative;
+  flex: 0 0 auto;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 1;
+  padding-top: 42px;
+  display: flex;
+  justify-content: center;
+  z-index: 3;
 }
 
-.bg-num {
-  position: absolute;
-  font-family: 'Georgia', 'Times New Roman', serif;
-  font-weight: 700;
-  line-height: 1;
-  pointer-events: none;
-  user-select: none;
+.brand-en {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+  background: linear-gradient(180deg, #ff6b81 0%, #ff9f43 55%, #ffd93d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.55);
+  line-height: 1.2;
 }
 
 /* ===========================================================
@@ -89,50 +64,50 @@
   align-items: center;
   justify-content: center;
   z-index: 3;
-  padding-top: 8px;
 }
 
 .board {
-  width: 216px;
-  height: 216px;
+  width: 225px;
+  height: 225px;
   display: flex;
   flex-wrap: wrap;
-  background: rgba(245, 248, 252, 0.97);
-  border: 2px solid #cfe0f2;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2.5px solid #b66ce5;
+  border-radius: 10px;
   box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.45),
-    0 0 40px rgba(90, 160, 255, 0.12),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+    0 10px 30px rgba(182, 108, 229, 0.28),
+    0 4px 14px rgba(255, 120, 140, 0.2),
+    0 0 0 4px rgba(255, 255, 255, 0.6);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* 单格: 24px = 216 / 9, 细线仅描右边/下边避免双边框 */
+/* 单格: 25px = 225 / 9 */
 .cell {
-  width: 24px;
-  height: 24px;
+  width: 25px;
+  height: 25px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid #c8d6e8;
-  border-bottom: 1px solid #c8d6e8;
+  border-right: 1px solid #e3d6f0;
+  border-bottom: 1px solid #e3d6f0;
   position: relative;
 }
 
 /* 宫 (3×3) 粗分割: 第 3/6 列右粗线, 第 3/6 行下粗线 */
 .cell:nth-child(3n):not(:nth-child(9n)) {
-  border-right: 2px solid #0d1b2a;
-  border-right-color: #24486e;
+  border-right-width: 2px;
+  border-right-color: #b66ce5;
 }
 .cell:nth-child(6n):not(:nth-child(9n)) {
   border-right-width: 2px;
-  border-right-color: #24486e;
+  border-right-color: #b66ce5;
 }
 .cell:nth-child(n+19):nth-child(-n+27),
 .cell:nth-child(n+46):nth-child(-n+54) {
   border-bottom-width: 2px;
-  border-bottom-color: #24486e;
+  border-bottom-color: #b66ce5;
 }
 /* 去掉最右列 / 最下行边框 (board 自身已包边) */
 .cell:nth-child(9n) { border-right: none; }
@@ -140,69 +115,87 @@
 
 .cell-n {
   font-size: 14px;
-  font-weight: 700;
-  color: #12233a;
+  font-weight: 800;
+  color: #4a3b63;
   font-family: 'Georgia', 'Times New Roman', serif;
   line-height: 1;
 }
 
-/* 6 色方块格 (背景色由 inline style 注入) → 白色粗数字 */
+/* 糖果格 (背景色 inline 注入) → 白色粗数字 */
+.cell-pop {
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.45);
+}
 .cell-n-pop {
   color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
 }
 
 /* ===========================================================
- * 底部: Press START + 版权
+ * Press START
  * =========================================================== */
-.bottom-area {
+.press-area {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding-bottom: 20px;
+  gap: 8px;
+  padding-bottom: 10px;
   z-index: 4;
 }
 
 .press-start {
-  padding: 8px 34px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, #3a8cff 0%, #1f5fd0 100%);
-  border: 1px solid rgba(150, 200, 255, 0.7);
+  padding: 11px 40px;
+  border-radius: 26px;
+  background: linear-gradient(180deg, #ff6b81 0%, #ff4f6e 60%, #e83c5c 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
   box-shadow:
-    0 4px 14px rgba(31, 95, 208, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 6px 18px rgba(232, 60, 92, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .press-start-text {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 900;
   color: #ffffff;
   letter-spacing: 3px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.hint-line {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(90, 70, 120, 0.6);
+  letter-spacing: 2px;
 }
 
 .pulse {
   animation: pulse 1.7s ease-in-out infinite;
 }
-
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.78; transform: scale(0.97); }
+  50% { opacity: 0.82; transform: scale(0.97); }
 }
 
+/* ===========================================================
+ * 版权
+ * =========================================================== */
 .copyright {
+  position: relative;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  padding-bottom: 14px;
+  z-index: 4;
 }
 
 .copyright-text {
   font-size: 9px;
-  color: rgba(150, 180, 215, 0.5);
+  color: rgba(70, 55, 100, 0.55);
   letter-spacing: 0.5px;
 }

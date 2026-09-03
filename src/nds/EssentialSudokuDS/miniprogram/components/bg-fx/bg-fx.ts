@@ -1,20 +1,159 @@
 /* components/bg-fx/bg-fx.ts
- * 全局动态背景层 (Night Study Desk, V0.36): 暗夜书桌 + 思考主题
+ * 全局动态背景层 (Playful Sudoku, V0.44): 欢快糖果风
  * 由 pages/index/index 放置在 .scene-area 第一层 (z-index 0),
  * 场景 (z-index 1/2) 浮在其上, 场景根背景已设为 transparent。
  *
- * 结构 (从后到前 4 层):
- *   1. .fx-base   深夜书桌渐变 (蓝紫 → 暖琥珀 → 暗木) + 台灯柔光晕 (左上)
- *   2. 远景 band-distal : 漂浮数字小方块 1-9 (think tiles), 最慢横滚 (~75s)
- *   3. 中景 band-drafts  : 半透明草稿方块 (虚线格/已填一部分), 中速横滚 (~45s)
- *   4. 近景 band-thought : 思考光点 (柔光圆 + 慢飘), 最快横滚 (~22s)
- *   5. .fx-beat   台灯呼吸光晕 (左侧偏中), 周期 = pulseMs (平缓不闪)
+ * 结构 (从后到前 5 层):
+ *   1. .fx-base   糖果渐变底 (粉 → 暖黄 → 天蓝 → 薄荷) + 4 团彩色柔光
+ *   2. 远景 band-distal : 满屏漂浮大数字 1-9 (糖果 6 色), 最慢横滚 (~90s)
+ *   3. 中景 band-grids  : 3×3 / 4×4 / 5×5 / 6×6 小网格方块
+ *                        (代表"图画谜题"玩法, 若干小格已填糖果色), 中速横滚 (~60s)
+ *   4. 近景 band-thought: 彩色柔光点 (6 色淡光, 慢飘 + 闪烁), 最快横滚 (~30s)
+ *   5. .fx-beat   顶部暖白呼吸光晕 (周期 = pulseMs, 平缓不闪)
  *
  * 无缝循环实现: 每个横滚层 = .roll (width:200%) 内两个相同 .seg,
  *   roll 动画 translateX 0 → -50% (= 恰好一个 seg 宽度), 循环无缝。
  *   层上再包一层 .bob 做缓慢上下浮动 → 斜向走动感。
- * 不依赖 NBM 提取图, 全部纯色 + 渐变 + 几何形, skyline 兼容良好。
+ * 全部纯 CSS 绘制 (数字 + 网格线), skyline 兼容良好, 不依赖任何图片。
+ * 全项目禁用 rpx, 一律 px。
  */
+
+/* ---------------- 6 色糖果调色板 (跟 picture-scene PALETTE 同源) ---------------- */
+const CANDY = [
+  '#ff6b81', // 草莓红
+  '#ff9f43', // 蜜橙
+  '#ffd93d', // 柠檬黄
+  '#6bcb77', // 薄荷绿
+  '#4d96ff', // 天蓝
+  '#b66ce5', // 葡萄紫
+];
+
+interface FloatNum {
+  i: number;
+  x: number; // %
+  y: number; // %
+  n: string;
+  s: number; // font px
+  r: number; // rot deg
+  o: number; // opacity
+  c: string;
+}
+function buildBigNums(): FloatNum[] {
+  const arr: FloatNum[] = [];
+  let seed = 20260904;
+  const rnd = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  // 28 个/屏, 满铺 2-96%
+  for (let i = 0; i < 28; i++) {
+    arr.push({
+      i,
+      x: Math.round(2 + rnd() * 92),
+      y: Math.round(3 + rnd() * 88),
+      n: String(1 + Math.floor(rnd() * 9)),
+      s: Math.round(34 + rnd() * 48), // 34-82
+      r: Math.round(rnd() * 40 - 20),
+      o: 0.5 + rnd() * 0.3, // 0.5-0.8 (亮底上醒目不抢戏)
+      c: CANDY[Math.floor(rnd() * CANDY.length)],
+    });
+  }
+  return arr;
+}
+
+/* ---------------- 中景: 小网格方块 (图画谜题玩法代表) ---------------- */
+interface MiniCell {
+  f: number; // 1 = 已填糖果色
+  l: number; // left %
+  t: number; // top %
+}
+interface MiniGrid {
+  i: number;
+  x: number; // %  (左上)
+  y: number; // %
+  size: number; // px 整块
+  n: number;     // 每边格数 3-6
+  rot: number;   // deg
+  o: number;     // opacity
+  c: string;     // 线色
+  cells: MiniCell[];
+}
+function buildMiniGrids(): MiniGrid[] {
+  // [x, y, size, n, rot]
+  const seeds: Array<[number, number, number, number, number]> = [
+    [3, 8, 92, 3, -8],
+    [72, 4, 76, 4, 6],
+    [14, 24, 62, 3, 12],
+    [84, 26, 88, 5, 10],
+    [4, 46, 100, 4, -5],
+    [86, 54, 74, 6, -10],
+    [6, 74, 86, 5, 8],
+    [22, 88, 68, 4, -6],
+    [66, 82, 96, 6, 10],
+    [40, 12, 64, 3, 12],
+    [52, 48, 54, 3, -12],
+    [56, 66, 60, 4, 6],
+  ];
+  return seeds.map((s, i) => {
+    const n = s[3];
+    const c = CANDY[i % CANDY.length];
+    const cellPct = 100 / n;
+    const cellTotal = n * n;
+    const cells: MiniCell[] = [];
+    // 约 1/4 格子填色 (图画谜题"已着色"观感), 位置确定性错开
+    const fillCount = Math.max(2, Math.round(cellTotal / 4));
+    for (let k = 0; k < cellTotal; k++) {
+      const r = Math.floor(k / n);
+      const col = k % n;
+      cells.push({
+        f: k % (fillCount + 1) === 0 ? 1 : 0,
+        l: Math.round(col * cellPct * 100) / 100,
+        t: Math.round(r * cellPct * 100) / 100,
+      });
+    }
+    return {
+      i,
+      x: s[0],
+      y: s[1],
+      size: s[2],
+      n,
+      rot: s[4],
+      o: 0.24 + (i % 4) * 0.06, // 0.24-0.42
+      c,
+      cells,
+    };
+  });
+}
+
+/* ---------------- 近景: 彩色柔光点 ---------------- */
+interface Thought {
+  i: number;
+  x: number;
+  y: number;
+  s: number; // px
+  o: number;
+  c: string; // 光色
+}
+function buildThoughts(): Thought[] {
+  let seed = 77777;
+  const rnd = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  const arr: Thought[] = [];
+  for (let i = 0; i < 18; i++) {
+    arr.push({
+      i,
+      x: Math.round(2 + rnd() * 94),
+      y: Math.round(3 + rnd() * 90),
+      s: Math.round(10 + rnd() * 18),
+      o: 0.55 + rnd() * 0.35,
+      c: CANDY[Math.floor(rnd() * CANDY.length)],
+    });
+  }
+  return arr;
+}
+
 Component({
   options: { virtualHost: true, multipleSlots: false },
   properties: {
@@ -22,66 +161,25 @@ Component({
     pulseMs: { type: Number, value: 2600 },
   },
   data: {
-    /** 每个横滚层的两个相同片段 (首尾相接实现无缝) */
-    segs: [0, 1],
+    segs: [0, 1] as number[],
 
-    /* ---------- 远景: 漂浮数字小方块 1-9 (think tiles) ----------
-     * V0.37 提亮: opacity 0.55-0.85 (旧 0.2-0.32 太暗), 数字更醒目 */
-    thinkTiles: [
-      { i: 0, x: 5, y: 6, n: '5', c: '#f5d27a', o: 0.78 },
-      { i: 1, x: 14, y: 28, n: '3', c: '#7fc8ff', o: 0.82 },
-      { i: 2, x: 23, y: 4, n: '9', c: '#f5d27a', o: 0.72 },
-      { i: 3, x: 32, y: 30, n: '1', c: '#a8dcff', o: 0.78 },
-      { i: 4, x: 41, y: 10, n: '7', c: '#f5d27a', o: 0.74 },
-      { i: 5, x: 50, y: 36, n: '4', c: '#7fc8ff', o: 0.7 },
-      { i: 6, x: 58, y: 12, n: '6', c: '#f5d27a', o: 0.78 },
-      { i: 7, x: 66, y: 32, n: '2', c: '#a8dcff', o: 0.72 },
-      { i: 8, x: 75, y: 6, n: '8', c: '#f5d27a', o: 0.76 },
-      { i: 9, x: 84, y: 22, n: '5', c: '#7fc8ff', o: 0.7 },
-      { i: 10, x: 92, y: 14, n: '9', c: '#f5d27a', o: 0.66 },
-      { i: 11, x: 8, y: 50, n: '6', c: '#a8dcff', o: 0.7 },
-      { i: 12, x: 28, y: 56, n: '8', c: '#f5d27a', o: 0.74 },
-      { i: 13, x: 47, y: 60, n: '3', c: '#7fc8ff', o: 0.7 },
-      { i: 14, x: 70, y: 54, n: '7', c: '#a8dcff', o: 0.72 },
-      { i: 15, x: 88, y: 56, n: '1', c: '#f5d27a', o: 0.7 },
-    ],
+    /* 远景: 满屏大数字 1-9 (糖果 6 色) */
+    bigNums: [] as FloatNum[],
 
-    /* ---------- 中景: 草稿方块 (虚线/已填一部分) ----------
-     * V0.37 提亮: opacity 0.55-0.85, 加尺寸, 内容更显眼 */
-    drafts: [
-      { i: 0, x: 4, y: 36, w: 60, h: 60, kind: 'dashed', o: 0.62 },
-      { i: 1, x: 12, y: 64, w: 48, h: 48, kind: 'partial', o: 0.7 },
-      { i: 2, x: 23, y: 40, w: 70, h: 70, kind: 'dashed', o: 0.58 },
-      { i: 3, x: 36, y: 70, w: 56, h: 56, kind: 'partial', o: 0.68 },
-      { i: 4, x: 48, y: 42, w: 80, h: 80, kind: 'dashed', o: 0.55 },
-      { i: 5, x: 62, y: 68, w: 50, h: 50, kind: 'partial', o: 0.72 },
-      { i: 6, x: 73, y: 38, w: 66, h: 66, kind: 'dashed', o: 0.6 },
-      { i: 7, x: 84, y: 64, w: 54, h: 54, kind: 'partial', o: 0.68 },
-      { i: 8, x: 94, y: 40, w: 48, h: 48, kind: 'dashed', o: 0.56 },
-      { i: 9, x: 18, y: 22, w: 56, h: 56, kind: 'partial', o: 0.66 },
-      { i: 10, x: 56, y: 18, w: 64, h: 64, kind: 'dashed', o: 0.58 },
-      { i: 11, x: 80, y: 20, w: 50, h: 50, kind: 'partial', o: 0.7 },
-    ],
+    /* 中景: 小网格方块 (图画谜题玩法代表) */
+    miniGrids: [] as MiniGrid[],
 
-    /* ---------- 近景: 思考光点 (柔光圆) ----------
-     * V0.37 提亮: opacity 0.7-0.95, 数量增至 16, 尺寸更大 */
-    thoughts: [
-      { i: 0, x: 8, y: 18, s: 16, o: 0.85 },
-      { i: 1, x: 18, y: 50, s: 12, o: 0.72 },
-      { i: 2, x: 28, y: 12, s: 24, o: 0.92 },
-      { i: 3, x: 38, y: 64, s: 11, o: 0.7 },
-      { i: 4, x: 49, y: 28, s: 18, o: 0.82 },
-      { i: 5, x: 60, y: 70, s: 14, o: 0.78 },
-      { i: 6, x: 70, y: 16, s: 22, o: 0.9 },
-      { i: 7, x: 80, y: 48, s: 13, o: 0.75 },
-      { i: 8, x: 90, y: 30, s: 16, o: 0.82 },
-      { i: 9, x: 95, y: 80, s: 12, o: 0.72 },
-      { i: 10, x: 4, y: 76, s: 14, o: 0.8 },
-      { i: 11, x: 22, y: 82, s: 10, o: 0.7 },
-      { i: 12, x: 44, y: 86, s: 16, o: 0.85 },
-      { i: 13, x: 66, y: 84, s: 12, o: 0.78 },
-      { i: 14, x: 84, y: 86, s: 14, o: 0.82 },
-      { i: 15, x: 54, y: 50, s: 10, o: 0.7 },
-    ],
+    /* 近景: 彩色柔光点 */
+    thoughts: [] as Thought[],
+  },
+
+  lifetimes: {
+    attached() {
+      // 确定性生成 (多次进入保持一致视觉)
+      const bigNums = buildBigNums();
+      const miniGrids = buildMiniGrids();
+      const thoughts = buildThoughts();
+      this.setData({ bigNums, miniGrids, thoughts });
+    },
   },
 });
