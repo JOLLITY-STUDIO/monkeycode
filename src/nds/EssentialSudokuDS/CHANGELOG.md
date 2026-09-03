@@ -4,6 +4,38 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.49.6 — 产品重新命名「点豆成画」+ 界面 title 全面替换
+
+### 2026-09-03
+
+#### 用户决策 (第 4 轮对话)
+- 产品不是纯数独: **主玩法 = 图画谜题 (绘逻辑)**, 数独只是附带
+- 核心定位: 图画谜题通关结果 = 像素答案图, **将来与拼豆 (PBA) 结合** — 可拿去拼 / 生成图纸
+- 不再沿用 NDS 原版名字, 要求重新起名 + 改界面 title
+
+#### 新品牌名: 点豆成画
+- 含义: 一格一格"点"下去, 像豆子一样拼成画 — 天然串起「谜题 → 像素画 → 拼豆」闭环
+- 英文副标: `PUZZLE · PICTURE · BEADS` (从谜题到图画到拼豆)
+- 备选 (未采纳): 豆落成图 / 谜豆工坊 / 一格一画
+- 版权行保留原作血统标注: "源自 NDS Essential Sudoku DS 图画谜题"
+
+#### 界面 title 改动清单 (5 文件)
+1. `title-scene.wxml`: brand 大字 `ESSENTIAL SUDOKU DS` → `点豆成画` + 新增 `.brand-sub` 英文副标 `PUZZLE · PICTURE · BEADS`
+2. `title-scene.wxss`: `.brand-wrap` 改 column 布局 (加 gap 6px); `.brand-en` 字号 28→30px + letter-spacing 6px + 中文字体栈 (PingFang SC / Microsoft YaHei); 新增 `.brand-sub` 11px 副标样式
+3. `menu-scene.wxml`: 大标题 `ESSENTIAL PUZZLE DS` → `点豆成画`; 副标 `每日拼图` → `图画谜题 · 拼豆图纸`; 版权行 → `点豆成画 · 源自 NDS Essential Sudoku DS 图画谜题 · v...`
+4. `about-scene.wxml`: 游戏名 → `点豆成画`; 新增"原版"行保留 `Essential Sudoku DS (NDS)`; 玩法行主次对调 (图画谜题 1525 在前); 版本行 → `H5 复刻版 · 支持拼豆图纸导出`
+5. `pages/index/index.wxml`: 顶部 ad-slot 占位文本 `ESSENTIAL SUDOKU DS` → `点豆成画`
+
+#### 保留不动的
+- NDS 原版版权行 (title-scene `© 2006 DIGITALWARE / D3 Publisher`) — 复刻需署名
+- about-scene 开发商 / 原版行 — 真实血统信息
+- 文件夹名 / README 标题暂不动 (结构性改动, 待品牌名最终确认后再做全量替换)
+
+#### 教训
+- 新名字要反映**主玩法与输出闭环**, 而非照抄原作标题
+- 品牌改名后所有界面文案点需要全量扫描 (title/menu/about/index ad-slot), 防止新旧混用
+
+---
 ## V0.49.5 — 删除 sudoku 关卡内误加的"难度切换"控件 (回归原作行为)
 
 ### 2026-09-03

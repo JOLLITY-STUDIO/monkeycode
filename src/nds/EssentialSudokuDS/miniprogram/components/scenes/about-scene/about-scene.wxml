@@ -17,7 +17,11 @@
   <view class="about-card">
     <view class="about-row">
       <text class="about-label">游戏</text>
-      <text class="about-value">Essential Sudoku DS</text>
+      <text class="about-value">点豆成画</text>
+    </view>
+    <view class="about-row">
+      <text class="about-label">原版</text>
+      <text class="about-value">Essential Sudoku DS (NDS)</text>
     </view>
     <view class="about-row">
       <text class="about-label">开发商</text>
@@ -25,11 +29,11 @@
     </view>
     <view class="about-row">
       <text class="about-label">玩法</text>
-      <text class="about-value">数字谜题 1000 题 + 图画谜题 1525 题</text>
+      <text class="about-value">图画谜题 1525 题 + 数字谜题 1000 题</text>
     </view>
     <view class="about-row">
       <text class="about-label">版本</text>
-      <text class="about-value">H5 1:1 复刻版</text>
+      <text class="about-value">H5 复刻版 · 支持拼豆图纸导出</text>
     </view>
   </view>
 

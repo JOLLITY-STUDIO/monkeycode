@@ -3,10 +3,10 @@
   <view class="bg-glow-top"></view>
   <view class="bg-glow-bottom"></view>
 
-  <!-- 顶部纯文字标题 (V0.36 替代已损坏的 title.nbm.png) -->
+  <!-- 顶部纯文字标题 (V0.49.6 重新起名: 主玩法图画谜题 → 拼豆图纸) -->
   <view class="title-banner">
-    <text class="title-text">ESSENTIAL PUZZLE DS</text>
-    <text class="title-sub">每日拼图</text>
+    <text class="title-text">点豆成画</text>
+    <text class="title-sub">图画谜题 · 拼豆图纸</text>
   </view>
 
   <!-- 主视觉: 两行大蓝胶囊按钮 (像 DS Present / VS) -->
@@ -45,6 +45,6 @@
     <view class="sub-btn sub-btn-back" hover-class="sub-btn-press" hover-stay-time="80" bindtap="onBackTitle">返 回</view>
   </view>
 
-  <!-- 版权信息 -->
-  <view class="menu-copyright">Essential Sudoku DS · H5 复刻版 · {{buildVersion}}</view>
+  <!-- 版权信息 (V0.49.6: 品牌名 + 原作血统标注) -->
+  <view class="menu-copyright">点豆成画 · 源自 NDS Essential Sudoku DS 图画谜题 · {{buildVersion}}</view>
 </view>

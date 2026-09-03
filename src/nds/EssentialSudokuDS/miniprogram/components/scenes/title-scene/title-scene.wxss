@@ -35,22 +35,34 @@
   right: 0;
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   z-index: 3;
   pointer-events: none;
 }
 
+/* V0.49.6: 品牌名「点豆成画」(主玩法图画谜题 → 拼豆图纸) */
 .brand-en {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 900;
-  letter-spacing: 2px;
-  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+  letter-spacing: 6px;
+  font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
   background: linear-gradient(180deg, #ff6b81 0%, #ff9f43 55%, #ffd93d 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.55);
   line-height: 1.2;
+}
+
+/* 英文副标: PUZZLE · PICTURE · BEADS (玩法 → 成品链路) */
+.brand-sub {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: rgba(90, 70, 120, 0.65);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* ===========================================================

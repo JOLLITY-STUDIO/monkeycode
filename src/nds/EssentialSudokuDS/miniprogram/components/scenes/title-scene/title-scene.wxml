@@ -9,9 +9,10 @@
 -->
 <view class="title-page" bind:tap="onTapStart">
 
-  <!-- 前景: 品牌标题 -->
+  <!-- 前景: 品牌标题 (V0.49.6 重新起名: 主玩法图画谜题 → 拼豆图纸闭环) -->
   <view class="brand-wrap">
-    <view class="brand-en">ESSENTIAL SUDOKU DS</view>
+    <view class="brand-en">点豆成画</view>
+    <view class="brand-sub">PUZZLE · PICTURE · BEADS</view>
   </view>
 
   <!-- Press START (V0.48: 原中央封面删掉, press 上移到中部留白区) -->

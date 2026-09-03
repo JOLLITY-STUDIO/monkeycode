@@ -32,7 +32,7 @@
 <template name="adBanner">
   <view class="top-ad">
     <view class="ad-slot">
-      <text class="ad-slot-text">ESSENTIAL SUDOKU DS</text>
+      <text class="ad-slot-text">点豆成画</text>
     </view>
   </view>
 </template>
