@@ -1,5 +1,7 @@
 // components/scenes/sudoku-scene/sudoku-scene.ts — 数字谜题对局场景组件
-// 9x9 grid 渲染 / 选中 / 数字键盘 / 清除 / 提示 / 计时 / 完成检测 / 难度切换
+// 9x9 grid 渲染 / 选中 / 数字键盘 / 清除 / 提示 / 计时 / 完成检测
+// 关卡难度在 select-scene 选题页锁定 (A/B/C/D 各 250 题共 1000 题),
+// 进关卡后只能解题, 不能再换难度。difficultyLabel 仅作关卡 metadata 显示。
 // puzzleId property 支持选题页跳入; 返回 → triggerEvent('back')
 
 import { SudokuGameService } from '../../../utils/sudoku/game_service';
@@ -33,8 +35,6 @@ const DIFF_LABELS: Record<string, string> = {
   daily: '每日一题',
 };
 
-const DIFF_ORDER: Array<Difficulty | 'daily'> = ['easy', 'medium', 'hard', 'expert', 'daily'];
-
 const service = new SudokuGameService();
 
 Component({
@@ -52,8 +52,6 @@ Component({
     timerText: '00:00',
     moves: 0,
     complete: false,
-    diffChips: DIFF_ORDER,
-    diffLabels: DIFF_LABELS,
     notesMode: false, // V0.18 候选笔记模式
     canUndo: false,
     canRedo: false,
@@ -309,14 +307,6 @@ Component({
       this._sync();
       this._scheduleSave();
       this._checkComplete();
-    },
-
-    /** 难度切换 (主动换题 = 放弃当前题 → 清其进度再随机新题) */
-    onTapDifficulty(e: any) {
-      const d = e.currentTarget.dataset.diff as Difficulty | 'daily';
-      const oldId = service.getPuzzleId();
-      if (oldId) clearSudokuProgress(oldId);
-      this._startGame(d);
     },
 
     /** 完成检测 */

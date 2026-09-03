@@ -1,5 +1,5 @@
 <view class="sudoku-page">
-  <!-- 顶部: 返回 + 难度 + 步数 + 计时 -->
+  <!-- 顶部: 返回 + 关卡难度 (只读 metadata, 不可切换) + 步数 + 计时 -->
   <view class="game-header">
     <view class="header-left">
       <view
@@ -14,17 +14,6 @@
       <text class="stat">步数 {{moves}}</text>
       <text class="timer">{{timerText}}</text>
     </view>
-  </view>
-
-  <!-- 难度切换 -->
-  <view class="diff-row">
-    <view
-      wx:for="{{diffChips}}"
-      wx:key="*this"
-      class="diff-chip {{difficulty === item ? 'diff-chip-active' : ''}}"
-      data-diff="{{item}}"
-      bindtap="onTapDifficulty"
-    >{{diffLabels[item] || item}}</view>
   </view>
 
   <!-- 9x9 数字谜题棋盘 (旧称数独, V0.36 改名为"数字谜题"贴合用户语义) -->

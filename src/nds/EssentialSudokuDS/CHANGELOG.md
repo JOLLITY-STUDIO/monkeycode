@@ -4,6 +4,62 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.49.5 — 删除 sudoku 关卡内误加的"难度切换"控件 (回归原作行为)
+
+### 2026-09-03
+
+#### 用户反馈 (第 4 轮)
+"我不明白为啥进入关卡玩的时候，还能切换简单中等这些level呢，我都不知道为啥要这么做有啥区别吗，一个关卡还有多种难度，你是不是哪里误会了原作啊？"
+
+#### 原作行为 (NDS Essential Sudoku DS)
+- 选题页 (select-scene): 显示 4 档难度 A/B/C/D (简单/中等/困难/专家), 每档 250 题共 1000 题
+- **每题难度是固定 metadata**, 跟题号绑死 (numpleX.data_NNN → puzzle.difficulty)
+- 关卡页 (sudoku-scene): 只有 **9×9 数独棋盘 + 数字 1-9 键盘 + 操作工具 (撤销/重做/笔记/清除/提示)**
+- **没有"关卡内难度切换"控件**, 这是我之前的误读
+
+#### V0.49.4 之前我的误加
+- wxml line 19-28: `<view class="diff-row">` 整段难度切换 chip (5 个: 简单/中等/困难/专家/每日一题)
+- ts `DIFF_ORDER` 常量 + `diffChips`/`diffLabels` data
+- ts `onTapDifficulty(e)` 方法 - 主动放弃当前题清档再随机新题
+- wxss `.diff-row` / `.diff-chip` / `.diff-chip-active` 样式
+- 顶部 `difficultyLabel` 文字 (只读 metadata) 保留
+
+#### V0.49.5 修复
+1. **wxml**: 删除 `<view class="diff-row">` 整段 (line 19-28 移除)
+2. **ts**:
+   - 删除 `DIFF_ORDER` 常量
+   - 删除 `diffChips` / `diffLabels` data 字段
+   - 删除 `onTapDifficulty(e)` 方法 (连同 JS Doc 注释)
+   - 顶部 `// 难度切换` 注释改为关卡 metadata 说明
+3. **wxss**: 删除 `.diff-row` / `.diff-chip` / `.diff-chip-active` 样式 (3 个选择器块)
+4. 顶部 difficultyLabel 文字保留, 只作关卡 metadata 显示 (不可点击)
+
+#### select-scene 选题页正确性核对
+- `select-scene.ts` 选题页本身是合理的:
+  - 4 档难度按钮 (简单/中等/困难/专家) → 这是正确的, 原作 NDS 也在这里选档
+  - 题号上下箭头 + 输入框 → 也是正确的
+  - 点 Start → `triggerEvent('start', { id, no })` 把题号转 puzzleId 透传 sudoku-scene
+  - sudoku-scene 拿 puzzleId → `getPuzzleById(id)` → `puzzle.difficulty` 锁定
+- **所以只在 sudoku-scene 里删难度切换 UI 即可**, select-scene 不动
+
+#### 改动清单 (3 文件)
+1. `miniprogram/components/scenes/sudoku-scene/sudoku-scene.wxml`: 删 `<view class="diff-row">` 整段 (10 行)
+2. `miniprogram/components/scenes/sudoku-scene/sudoku-scene.ts`:
+   - 顶部注释: 删"难度切换" + 加"原作无切换控件"说明
+   - 删 `DIFF_ORDER` 常量
+   - 删 data `diffChips` / `diffLabels`
+   - 删 `onTapDifficulty` method
+3. `miniprogram/components/scenes/sudoku-scene/sudoku-scene.wxss`:
+   - 删 `.diff-row` / `.diff-chip` / `.diff-chip-active` 3 个选择器块
+   - 顶部注释: "难度切换 chips" → "关卡难度 (只读 metadata)"
+
+#### 教训 (写进 CHANGELOG, 防止复发)
+- **必须先理解原作再设计 UI**: NDS Essential Sudoku DS 关卡页只展示 + 操作, 不允许"换题" 操作
+- **关卡 metadata vs 控件**: 关卡难度/编号/计时器是只读 metadata 文字, **不应该是可点击 chip**
+- **回归原作**: 任何新增 UI 控件, 先问"原作这里有这个控件吗?" → 没就**不加**, 而非"我想加就加"
+
+---
+
 ## V0.49.4 — 网格加大 + 整数边界 + Press START 按钮 Skyline host 修复
 
 ### 2026-09-03
