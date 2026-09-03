@@ -1,84 +1,51 @@
 <!--components/scenes/title-scene/title-scene.wxml — 启动标题场景
-  V0.37 纯 WXML/CSS 封面 (替代 V0.36 Canvas 自绘, 因 Skyline 开发者工具不支持
-  canvas type="2d" 调试, devtools 下整张封面不可见 → 改纯 view + CSS 渐变,
-  真机/devtools 一致显示):
-  - .cover-bg / .cover-glow / .cover-glow-2 三层渐变 + 暖光晕
-  - .cover-header 标题 ESSENTIAL PUZZLE DS + 装饰线 + 副标题 + 英文
-  - .cover-previews 双预览: 数独 9×9 (.sudoku-grid 81 cells) + 图画谜题 6×6
-    (.picture-grid 36 cells), 中间金色细线分隔
-  - .cover-motto 一格一思
-  - .tap-hint-wrap 底部"点击开始" 脉冲
-  - .copyright 版权角标
+  V0.42 极简封面 (贴合 DS 原版封面视觉):
+  - .cover-bg 深色底 (黑蓝渐变)
+  - .bg-num-layer 满屏散落大数字 1-9 (半透明, 微旋转, 数字背景)
+  - .board-center 中央一个 9×9 数独网格 (3×3 宫粗线, 格内填数字,
+    9 宫各一个 6 色方块格 → "3×3 里嵌 3×3 + 彩色数字方块" 观感)
+  - .press-start 底部 Press START 脉冲按钮
+  - .copyright 版权两行
   全屏点击 → onTapStart → triggerEvent('start')
 -->
 <view class="title-page" bindtap="onTapStart">
 
-  <!-- 背景: 渐变 + 双柔光晕 (替代 Canvas 绘底) -->
+  <!-- 背景: 深色底 + 中央微光 -->
   <view class="cover-bg"></view>
   <view class="cover-glow"></view>
-  <view class="cover-glow-2"></view>
 
-  <!-- 顶部主标题 + 装饰线 + 副标题 + 英文小字 -->
-  <view class="cover-header">
-    <view class="cover-title">ESSENTIAL PUZZLE DS</view>
-    <view class="cover-divider">
-      <view class="cover-divider-line"></view>
-      <view class="cover-divider-dot"></view>
-      <view class="cover-divider-line"></view>
-    </view>
-    <view class="cover-subtitle">每日拼图</view>
-    <view class="cover-en">NUMBER  ×  PICTURE</view>
+  <!-- 背景数字层 (满屏散落, 淡淡的) -->
+  <view class="bg-num-layer">
+    <text
+      wx:for="{{bgNums}}"
+      wx:key="i"
+      class="bg-num"
+      style="left: {{item.x}}%; top: {{item.y}}%; font-size: {{item.size}}px; opacity: {{item.o}}; color: {{item.c}}; transform: rotate({{item.rot}}deg);"
+    >{{item.n}}</text>
   </view>
 
-  <!-- 中央双谜题预览 -->
-  <view class="cover-previews">
-
-    <!-- 数字谜题预览 9×9 -->
-    <view class="preview-card preview-sudoku">
-      <view class="preview-grid sudoku-grid">
-        <view
-          wx:for="{{sudokuCells}}"
-          wx:key="i"
-          class="scell scell-{{item.kind}}"
-          style="{{item.c ? '--cc: ' + item.c + ';' : ''}}"
-        >
-          <text wx:if="{{item.n}}" class="scell-n">{{item.n}}</text>
-        </view>
+  <!-- 中央: 9×9 数独网格 (3×3 宫) -->
+  <view class="board-center">
+    <view class="board">
+      <view
+        wx:for="{{sudokuCells}}"
+        wx:key="i"
+        class="cell"
+        style="{{item.pop ? 'background: ' + item.cc + ';' : ''}}"
+      >
+        <text class="cell-n {{item.pop ? 'cell-n-pop' : ''}}">{{item.n}}</text>
       </view>
-      <view class="preview-label">数字谜题</view>
-      <view class="preview-meta">1000 题</view>
-    </view>
-
-    <!-- 中间金色细线 -->
-    <view class="preview-divider"></view>
-
-    <!-- 图画谜题预览 6×6 -->
-    <view class="preview-card preview-picture">
-      <view class="preview-grid picture-grid">
-        <view
-          wx:for="{{pictureCells}}"
-          wx:key="i"
-          class="pcell {{item.filled ? 'pcell-on' : 'pcell-off'}}"
-        ></view>
-      </view>
-      <view class="preview-label">图画谜题</view>
-      <view class="preview-meta">1525 题</view>
-    </view>
-
-  </view>
-
-  <!-- 宣言 -->
-  <view class="cover-motto">一  格  一  思</view>
-
-  <!-- 底部"点击开始"脉冲提示 -->
-  <view class="tap-hint-wrap">
-    <view class="tap-hint {{pulse ? 'pulse' : ''}}">
-      <text class="tap-hint-text">点击开始</text>
     </view>
   </view>
 
-  <!-- 版权角标 -->
-  <view class="copyright">
-    <text class="copyright-text">Essential Sudoku DS · Imagineer</text>
+  <!-- 底部: Press START + 版权 -->
+  <view class="bottom-area">
+    <view class="press-start {{pulse ? 'pulse' : ''}}">
+      <text class="press-start-text">Press START</text>
+    </view>
+    <view class="copyright">
+      <text class="copyright-text">© 2006 DIGITALWARE.</text>
+      <text class="copyright-text">© 2006 D3 Publisher. All Rights Reserved.</text>
+    </view>
   </view>
 </view>

@@ -4,6 +4,32 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.38 — 标题封面改版: 数字背景 + 9×9 数独网格 (贴合 DS 原版封面)
+
+### 2026-09-03
+
+#### 用户反馈
+- "应该是方块和数字,6色" + 参考 DS 模拟器封面截图
+- "其实很简单,就是一个是一堆数字的背景,前面有一个3*3的格子,每个格子里面又是嵌入3*3的格子"
+
+#### title-scene 封面全新布局 (极简 + DS 原版感)
+- **深色底 + 中央微光**: 黑蓝渐变 (cover-bg) + 中央柔光晕 (cover-glow), 压过全局 bg-fx
+- **满屏散落数字背景** (bg-num-layer): 22 个大号 1-9 数字确定性散布 (font 30-78px,
+  半透明 0.05-0.17, 微旋转 ±22°, 6 色系), 模拟 DS 封面"一堆数字"底纹
+- **中央 9×9 数独网格**: 216px 白底棋盘 (24px/格, 细灰蓝线), 3×3 宫深蓝粗线
+  (nth-child 3n/6n 列 + 第 3/6 行), 内嵌完整 9×9 合法解
+- **6 色方块点缀**: 9 宫各 1 格 (CELL_POP 9 格) 填 6 色调色板实色 + 白色粗数字,
+  呼应"方块和数字,6色"与图画谜题 6 色调色板
+- **底部 Press START**: 蓝色渐变胶囊 (蓝光阴影) + 1.7s 脉冲呼吸
+- **版权两行**: © 2006 DIGITALWARE. / © 2006 D3 Publisher. All Rights Reserved.
+- 全屏点击 → onTapStart → triggerEvent('start') (保留 audioService.playSe)
+
+#### bg-fx 还原
+- 移除先前误加的 decorationsEnabled prop (title-scene 自带不透明 cover-bg,
+  无需 bg-fx 参与); bg-fx 保持原样服务其余深色场景
+
+---
+
 ## V0.37 — 标题封面 WXML 化 (Skyline canvas 兼容) + 暗夜书桌提亮
 
 ### 2026-09-03
