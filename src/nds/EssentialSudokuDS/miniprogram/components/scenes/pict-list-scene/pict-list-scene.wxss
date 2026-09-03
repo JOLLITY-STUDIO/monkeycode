@@ -1,4 +1,4 @@
-/* pict-list-scene.wxss — 图画谜题类别列表 (双态文本按钮 + 深色主题) */
+/* pict-list-scene.wxss — 图画谜题类别列表 (V0.45 糖果亮底主题 + 双态文本按钮) */
 @import '../../../styles/ds-buttons.wxss';
 
 .pict-list-page {
@@ -22,39 +22,41 @@
   gap: 6px;
   padding: 14px 0;
   margin-bottom: 12px;
-  background: rgba(22, 42, 66, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(182, 108, 229, 0.45);
   border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(182, 108, 229, 0.14);
 }
 
 .pict-title {
   font-size: 20px;
-  font-weight: 700;
-  color: #f0f4f8;
+  font-weight: 800;
+  color: #6a3aa0;
 }
 
 .pict-subtitle {
   font-size: 13px;
-  color: #9fb6d3;
+  color: #8f7ba6;
 }
 
 .list-card {
   width: 100%;
   flex: 1;
   min-height: 0;
-  background: rgba(255, 255, 255, 0.08);
-  border: 0.5px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(182, 108, 229, 0.35);
+  border-radius: 12px;
   padding: 10px 12px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 3px 14px rgba(182, 108, 229, 0.12);
 }
 
 .list-label {
   font-size: 14px;
   font-weight: 700;
-  color: #e0e6ec;
+  color: #6a3aa0;
   margin-bottom: 6px;
   display: flex;
   flex-direction: row;
@@ -65,8 +67,9 @@
   margin-left: 8px;
   font-size: 11px;
   font-weight: 700;
-  color: #7ce89a;
-  background: rgba(30, 142, 62, 0.35);
+  color: #1e7a3c;
+  background: rgba(30, 158, 90, 0.16);
+  border: 1px solid rgba(30, 158, 90, 0.3);
   padding: 2px 8px;
   border-radius: 9px;
 }
@@ -82,15 +85,15 @@
   flex-direction: row;
   align-items: center;
   padding: 11px 8px;
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 0.5px solid rgba(182, 108, 229, 0.18);
 }
 
 .cat-row-hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(182, 108, 229, 0.12);
 }
 
 .cat-row-active {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(182, 108, 229, 0.2);
   border-radius: 6px;
 }
 
@@ -99,7 +102,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #4db8ff;
+  background: #b66ce5;
   margin-right: 8px;
   flex-shrink: 0;
 }
@@ -109,12 +112,12 @@
   min-width: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #f0f4f8;
+  color: #4a3558;
 }
 
 .cat-count {
   font-size: 12px;
-  color: #9aa7b4;
+  color: #8f7ba6;
   margin-right: 6px;
 }
 
@@ -122,21 +125,22 @@
 .cat-done {
   font-size: 12px;
   font-weight: 700;
-  color: #7ce89a;
-  background: rgba(30, 142, 62, 0.35);
+  color: #1e7a3c;
+  background: rgba(30, 158, 90, 0.16);
+  border: 1px solid rgba(30, 158, 90, 0.3);
   padding: 2px 8px;
   border-radius: 9px;
   margin-right: 6px;
 }
 
 .cat-done-full {
-  background: rgba(30, 142, 62, 0.85);
+  background: #1e8e3e;
   color: #ffffff;
 }
 
 .cat-arrow {
   font-size: 18px;
-  color: #7c8a9a;
+  color: #b66ce5;
 }
 
 /* 底部 Return (双态文本按钮) */

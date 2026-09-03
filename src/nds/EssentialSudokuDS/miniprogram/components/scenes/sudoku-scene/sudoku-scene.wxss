@@ -1,4 +1,4 @@
-/* sudoku-scene.wxss — V0.36 数字谜题对局 (旧称数独) DS 化深色主题 (双态文本按钮 + 深蓝底) */
+/* sudoku-scene.wxss — V0.45 数字谜题对局 (旧称数独) 糖果亮底主题 (双态文本按钮 + 白玻璃紫字) */
 @import '../../../styles/ds-buttons.wxss';
 
 .sudoku-page {
@@ -50,23 +50,23 @@
 
 .diff-label {
   font-size: 16px;
-  font-weight: 700;
-  color: #f0f4f8;
+  font-weight: 800;
+  color: #6a3aa0;
   white-space: nowrap;
 }
 
 .stat {
   font-size: 13px;
-  color: #9aa7b4;
+  color: #8f7ba6;
 }
 
 .timer {
   font-size: 15px;
-  font-weight: 600;
-  color: #f0f4f8;
+  font-weight: 700;
+  color: #6a3aa0;
 }
 
-/* 难度切换 chips (DS 深色胶囊) */
+/* 难度切换 chips (白玻璃 + 紫字, 糖果亮底一致) */
 .diff-row {
   width: 100%;
   display: flex;
@@ -81,15 +81,16 @@
   font-size: 12px;
   padding: 5px 0;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #c6d2de;
-  border: 0.5px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.82);
+  color: #6a3aa0;
+  font-weight: 700;
+  border: 1px solid rgba(182, 108, 229, 0.4);
 }
 
 .diff-chip-active {
-  background: #2e6fc7;
+  background: linear-gradient(180deg, #cf8ff5 0%, #b66ce5 60%, #a050d0 100%);
   color: #ffffff;
-  border-color: #3f83e0;
+  border-color: #a050d0;
 }
 
 /* 9x9 棋盘 — 标准数字谜题网格 (旧称数独): 白底 + 深色粗 3x3 分块线 (数独必须清晰, 保持白底) */
@@ -192,9 +193,10 @@
 }
 
 .tool-key-primary {
-  background: #2e6fc7;
-  border-color: #3f83e0;
+  background: linear-gradient(180deg, #45b4f8 0%, #28a0f0 55%, #1e8fe8 100%);
+  border-color: transparent;
   color: #ffffff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
 }
 
 /* V0.18 候选笔记显示 */
@@ -208,9 +210,9 @@
 }
 
 .tool-key-active {
-  background: #2e6fc7;
+  background: linear-gradient(180deg, #cf8ff5 0%, #b66ce5 60%, #a050d0 100%);
   color: #ffffff;
-  border-color: #3f83e0;
+  border-color: #a050d0;
 }
 
 .tool-key-disabled {

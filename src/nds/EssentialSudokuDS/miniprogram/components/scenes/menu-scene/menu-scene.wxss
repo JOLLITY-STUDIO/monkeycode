@@ -166,18 +166,18 @@
 .divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(245, 210, 122, 0) 0%, rgba(245, 210, 122, 0.35) 50%, rgba(245, 210, 122, 0) 100%);
+  background: linear-gradient(90deg, rgba(182, 108, 229, 0) 0%, rgba(182, 108, 229, 0.45) 50%, rgba(182, 108, 229, 0) 100%);
 }
 
 .divider-dot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(245, 210, 122, 0.7);
-  box-shadow: 0 0 6px rgba(245, 210, 122, 0.45);
+  background: rgba(182, 108, 229, 0.8);
+  box-shadow: 0 0 6px rgba(182, 108, 229, 0.5);
 }
 
-/* ---------- 底部 4 个辅助小按钮 (深色玻璃胶囊, 暗底上保持可读) ----------
+/* ---------- 底部 4 个辅助小按钮 (白玻璃胶囊 + 紫字, 糖果亮底一致)
    V0.37: 改 display:grid; grid-template-columns:repeat(4,1fr) 为 flex 4 等分,
    因 Skyline 渲染器不支持 grid-template-columns (报 warning 还不渲染) */
 .bottom-links {
@@ -196,33 +196,33 @@
   height: 38px;
   padding: 0 8px;
   border-radius: 18px;
-  background: rgba(22, 42, 66, 0.55);
-  border: 1px solid rgba(245, 210, 122, 0.28);
-  color: #e9eef3;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(182, 108, 229, 0.45);
+  color: #6a3aa0;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 2px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(182, 108, 229, 0.16);
   transition: background 0.08s ease, border-color 0.08s ease, color 0.08s ease, transform 0.08s ease;
 }
 
 .sub-btn-press {
-  background: rgba(245, 210, 122, 0.65);
-  border-color: rgba(255, 255, 255, 0.85);
-  color: #1a1206;
+  background: rgba(182, 108, 229, 0.14);
+  border-color: rgba(182, 108, 229, 0.65);
+  color: #6a3aa0;
   transform: scale(0.96);
 }
 
 .sub-btn-back {
-  background: rgba(13, 27, 42, 0.4);
-  border-color: rgba(245, 210, 122, 0.18);
-  color: #d7e3f0;
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(182, 108, 229, 0.3);
+  color: #8a5ab8;
 }
 
 .sub-btn-back.sub-btn-press {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #ffffff;
+  background: rgba(182, 108, 229, 0.18);
+  border-color: rgba(182, 108, 229, 0.5);
+  color: #6a3aa0;
 }
 
 /* ---------- 页脚版权 (V0.44 糖果亮底, 深紫灰字) ---------- */

@@ -8,7 +8,7 @@
     <!-- BGM 音量 -->
     <view class="option-row">
       <text class="option-label-text">背景音乐音量</text>
-      <slider class="option-slider" min="0" max="100" value="{{bgmVolume}}" bindchanging="onBgmVolumeChange" bindchange="onBgmVolumeChange" activeColor="#4db8ff" block-color="#ffffff" block-size="20" />
+      <slider class="option-slider" min="0" max="100" value="{{bgmVolume}}" bindchanging="onBgmVolumeChange" bindchange="onBgmVolumeChange" activeColor="#b66ce5" block-color="#ffffff" block-size="20" />
       <text class="option-value">{{bgmVolume}}</text>
     </view>
 

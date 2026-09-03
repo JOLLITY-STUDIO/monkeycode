@@ -14,16 +14,17 @@
   width: 100%;
   padding: 10px 12px;
   box-sizing: border-box;
-  background: rgba(22, 42, 66, 0.85);
+  background: rgba(255, 255, 255, 0.82);
   border-radius: 7px;
-  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(182, 108, 229, 0.45);
+  box-shadow: 0 2px 10px rgba(182, 108, 229, 0.14);
   margin-bottom: 16px;
 }
 
 .scene-bar-text {
   font-size: 14px;
-  color: #4db8ff;
-  font-weight: 600;
+  color: #6a3aa0;
+  font-weight: 700;
 }
 
 /* 2 个按钮纵向列表 */
@@ -37,15 +38,15 @@
   margin-top: 10px;
 }
 
-/* normal 态: 半透明深色胶囊 + 白 8% 细边 */
+/* normal 态: 白玻璃胶囊 + 紫边 (糖果亮底) */
 .mode-button {
   position: relative;
   padding: 14px 16px;
   box-sizing: border-box;
-  background: rgba(22, 42, 66, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(182, 108, 229, 0.45);
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(182, 108, 229, 0.14);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -55,15 +56,15 @@
 
 /* hover (按下瞬态) */
 .mode-button-hover {
-  background: rgba(77, 184, 255, 0.12);
-  border-color: rgba(77, 184, 255, 0.4);
+  background: rgba(182, 108, 229, 0.14);
+  border-color: rgba(182, 108, 229, 0.65);
 }
 
-/* selected 态: 蓝边 + 蓝底 + 亮起箭头 */
+/* selected 态: 糖果紫实底 + 白字 + 亮起箭头 */
 .mode-button-active {
-  background: rgba(77, 184, 255, 0.22);
-  border-color: #4db8ff;
-  box-shadow: 0 0 0 1px #4db8ff, 0 3px 10px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, #cf8ff5 0%, #b66ce5 60%, #a050d0 100%);
+  border-color: #a050d0;
+  box-shadow: 0 0 0 2px rgba(182, 108, 229, 0.5), 0 2px 10px rgba(182, 108, 229, 0.25);
 }
 
 .mode-main {
@@ -74,14 +75,14 @@
 
 .mode-button-label {
   font-size: 18px;
-  font-weight: 700;
-  color: #e9eef3;
+  font-weight: 800;
+  color: #6a3aa0;
   line-height: 1.2;
 }
 
 .mode-button-desc {
   font-size: 12px;
-  color: #9fb6d3;
+  color: #8f7ba6;
   line-height: 1.3;
 }
 
@@ -90,23 +91,28 @@
 }
 
 .mode-button-active .mode-button-desc {
-  color: #cfe4ff;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-/* selected 时右侧小蓝三角箭头 */
+/* selected 时右侧小三角箭头 (糖果紫) */
 .mode-button-arrow {
   width: 0;
   height: 0;
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
-  border-left: 11px solid #4db8ff;
+  border-left: 11px solid #b66ce5;
+}
+
+.mode-button-active .mode-button-arrow {
+  border-left-color: #ffffff;
 }
 
 .hint-text {
   margin-top: 20px;
   font-size: 13px;
-  color: #cfe0f5;
-  background: rgba(22, 42, 66, 0.55);
+  color: #5a4a80;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(182, 108, 229, 0.3);
   border-radius: 8px;
   padding: 8px 14px;
   line-height: 1.5;

@@ -1,14 +1,14 @@
-/* miniprogram/styles/ds-buttons.wxss — 全项目统一按钮规范 (V0.32)
+/* miniprogram/styles/ds-buttons.wxss — 全项目统一按钮规范 (V0.32, V0.45 糖果亮底版)
  * 用法: 各 scene wxss 顶部 @import '../../../styles/ds-buttons.wxss';
  *
  * 两套系列 (一个项目只用一套, 不能混):
- *   A. .ds-btn-* 系列: 半透明深色胶囊 (适合菜单/列表/次要入口)
+ *   A. .ds-btn-* 系列: 白玻璃胶囊 + 葡萄紫字 (适配 V0.39 糖果亮背景, 列表/次级入口)
  *      - .ds-btn       基础 (列表/小行)
  *      - .ds-btn-lg    大按钮 (V0.30 menu 用过, 已废弃)
  *      - .ds-btn-sm    小按钮 (返回/底部链接)
  *      - .ds-btn-key   方块键 (数独数字键盘)
  *      - .ds-btn-ghost 幽灵弱化
- *      - 双态: normal 半透明深色 / active 蓝边高亮
+ *      - 双态: normal 白玻璃紫字 / active 糖果紫渐变白字
  *
  *   B. .game-btn-* 系列 (V0.32 新加, 全项目主按钮规范):
  *      - .game-btn          基础 (主模式按钮, 宽屏通栏)
@@ -30,7 +30,7 @@
  *      0 3-5px 8-10px rgba(0,0,0,0.3)          ← 外部投影
  */
 
-/* ---------- normal 基础 ---------- */
+/* ---------- normal 基础 (白玻璃 + 葡萄紫字, 糖果亮底) ---------- */
 .ds-btn {
   display: flex;
   flex-direction: row;
@@ -39,30 +39,31 @@
   box-sizing: border-box;
   padding: 10px 18px;
   border-radius: 10px;
-  background: rgba(22, 42, 66, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #c8d5e8;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(182, 108, 229, 0.45);
+  color: #6a3aa0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   text-align: center;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 8px rgba(182, 108, 229, 0.16);
   transition: background 0.08s ease, border-color 0.08s ease, color 0.08s ease;
 }
 
 /* 按下瞬态 (配合 hover-class="ds-btn-hover") */
 .ds-btn-hover {
-  background: rgba(77, 184, 255, 0.12);
-  border-color: rgba(77, 184, 255, 0.4);
-  color: #ffffff;
+  background: rgba(182, 108, 229, 0.14);
+  border-color: rgba(182, 108, 229, 0.65);
+  color: #6a3aa0;
 }
 
-/* ---------- active / selected 常驻 ---------- */
+/* ---------- active / selected 常驻 (糖果紫渐变白字) ---------- */
 .ds-btn-active {
-  background: rgba(77, 184, 255, 0.22);
-  border-color: #4db8ff;
-  box-shadow: 0 0 0 1px #4db8ff, 0 3px 10px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, #cf8ff5 0%, #b66ce5 60%, #a050d0 100%);
+  border-color: #a050d0;
   color: #ffffff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 2px rgba(182, 108, 229, 0.5), 0 2px 8px rgba(182, 108, 229, 0.25);
 }
 
 /* ---------- 尺寸变体 ---------- */
@@ -94,7 +95,7 @@
 .ds-btn-arrow {
   margin-left: 6px;
   font-size: 14px;
-  color: #4db8ff;
+  color: #b66ce5;
 }
 
 /* ==========================================================

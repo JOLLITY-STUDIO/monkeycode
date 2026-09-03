@@ -14,17 +14,17 @@
   width: 100%;
   padding: 12px 14px;
   box-sizing: border-box;
-  background: rgba(22, 42, 66, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(182, 108, 229, 0.45);
   border-radius: 10px;
   margin-bottom: 10px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(182, 108, 229, 0.14);
 }
 
 .scene-bar-text {
   font-size: 14px;
-  color: #c8d5e8;
-  font-weight: 600;
+  color: #6a3aa0;
+  font-weight: 700;
 }
 
 .logo-block {
@@ -33,8 +33,8 @@
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 12px;
-  background: rgba(22, 42, 66, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(182, 108, 229, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,8 +51,8 @@
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 12px;
-  background: rgba(22, 42, 66, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(182, 108, 229, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,12 +65,12 @@
 
 .about-card {
   width: 100%;
-  background: rgba(22, 42, 66, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(182, 108, 229, 0.35);
   border-radius: 12px;
   padding: 14px;
   box-sizing: border-box;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 14px rgba(182, 108, 229, 0.12);
 }
 
 .about-row {
@@ -78,7 +78,7 @@
   flex-direction: row;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 0.5px solid rgba(182, 108, 229, 0.16);
 }
 
 .about-row:last-child {
@@ -89,14 +89,14 @@
   width: 70px;
   flex-shrink: 0;
   font-size: 13px;
-  color: #9fb6d3;
+  color: #8f7ba6;
 }
 
 .about-value {
   flex: 1;
   font-size: 14px;
   font-weight: 600;
-  color: #e9eef3;
+  color: #4a3558;
   text-align: right;
 }
 
@@ -106,5 +106,5 @@
 
 .about-footer-text {
   font-size: 11px;
-  color: rgba(159, 182, 211, 0.55);
+  color: rgba(106, 58, 160, 0.65);
 }

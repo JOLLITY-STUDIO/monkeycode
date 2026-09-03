@@ -4,6 +4,41 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.45 — 全场景糖果亮底视觉统一 (标题 / 按钮 / 文本风格一致)
+
+### 2026-09-03
+
+#### 用户反馈
+- "还有那个标题可以统一吗 我发现去掉别的场景样式又变了 都检查统一一下吧, 跟背景一样啊, 每个场景背景风格都一致"
+- "按钮和文本也要风格一致啊"
+
+#### 统一设计规范 (糖果亮底系, 背景 V0.39+ 为 #fff0f5 + bg-fx 糖果)
+- 白玻璃卡: rgba(255,255,255,0.72~0.82) + 糖果紫边 rgba(182,108,229,0.35~0.45)
+- 主标题/返回条字: 葡萄紫 #6a3aa0 (800), 次文字紫灰 #8f7ba6, 正文深紫灰 #4a3558
+- 选中/active 态: 糖果紫渐变 (cf8ff5→b66ce5→a050d0) 白字
+- 主操作按钮 (进入/开始/提示): 亮蓝渐变胶囊 (45b4f8→28a0f0→1e8fe8) — 全项目统一
+
+#### 改动清单 (11 文件, 旧深色玻璃 rgba(22,42,66,…) 全部翻成白玻璃紫字)
+1. styles/ds-buttons.wxss (公共): .ds-btn A 系 normal 深色玻璃→白玻璃紫字,
+   hover 淡紫, active 糖果紫渐变白字 — 辐射 sudoku/pict-list/picture 全部 ds-btn 按钮
+2. menu-scene: sub-btn 深色玻璃金边→白玻璃紫字, divider 金→紫, 主 game-btn 蓝渐变保留
+3. select-scene: header 深蓝玻璃→白玻璃紫字, preview-text 亮底深字
+4. picture-mode-scene: scene-bar/mode-button/hint-text → 白玻璃, active 糖果紫渐变白字+白箭头
+5. pict-list-scene: pict-header/list-card 白玻璃紫字, cat 行 hover/active 淡紫,
+   cat-dot/arrow 紫, 完成绿徽章亮底版
+6. options-scene: scene-bar/options-card 白玻璃, label/正文紫系, value/滑块强调改紫
+7. tutorial/about/staff: scene-bar + 卡片/图块容器 白玻璃, 标题紫/正文深紫灰
+8. sudoku-scene: diff-label/timer 紫, stat 紫灰, diff-chip 白玻璃 + active 紫渐变,
+   提示键亮蓝渐变
+9. picture-scene: scene-bar/puzzle-name/timer 紫, cat-chip/nav-key 白玻璃 + active 紫渐变,
+   调色板选中框/need 徽章/教程条/清空键危险红 全部亮底适配
+10. title-scene (无改动, V0.39 已糖果化) + index 顶栏 (已亮玻璃紫边)
+
+#### 验证
+- IDE 语言服务 read_lints 0 诊断 (scenes 目录 + ds-buttons.wxss)
+
+---
+
 ## V0.39 — 封面视觉下沉到全局 bg-fx 糖果动态背景 + 整屏提亮
 
 ### 2026-09-03
