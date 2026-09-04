@@ -152,6 +152,9 @@ Component({
     completed: false,
     /** 通关庆祝动画中 */
     celebrate: false,
+    /** 通关时的用户作品快照 (PICTURE-V0.47: 拼豆图纸闭环, 在 celebrate-panel 里 15×15 渲染用户涂色结果)
+     *  每个元素仅含 v (玩家涂色 0..5), 跟 PALETTE_HEX 对照出 bg. */
+    completedWork: [] as Array<{ v: number }>,
     showingAnswer: false,
     correctCount: 0,           // 已正确格数 (进度)
     /** 每色剩余待涂格数 paletteNeed[color] (color 0 恒为 0) */
@@ -475,6 +478,8 @@ Component({
         complete: false,
         completed: !!done,
         celebrate: false,
+        /** PICTURE-V0.47: 切题时清空上一题通关作品快照 */
+        completedWork: [],
         showingAnswer: false,
         correctCount: hasSaved ? TOTAL_CELLS - this._countWrong(cells) : 0,
         paletteNeed: need,
@@ -680,6 +685,11 @@ Component({
       return PALETTE_HEX[color] || '#9aa7b4';
     },
 
+    /** PICTURE-V0.47: completed-grid 单元背景色 (玩家涂色 v → PALETTE_HEX hex) */
+    completedColor(v: number): string {
+      return PALETTE_HEX[v] || '#9aa7b4';
+    },
+
     /** 提示 band 文字色 class — 黄色块用黑字 (cb-yellow) 避免糊, 其余沿用 .clue-band 默认白字 */
     clueTextClass(color: number): string {
       return color === 2 ? ' cb-yellow' : '';
@@ -766,7 +776,9 @@ Component({
           clearProgress(session.file, session.indexInFile);
         }
         const { puzzleName } = this.data;
-        this.setData({ complete: true, completed: true, celebrate: true });
+        /** PICTURE-V0.47: 通关瞬间快照玩家涂色结果 → celebrate-panel 渲染作品大图 */
+        const completedWork = this.data.cells.map((c) => ({ i: c.i, v: c.v as number }));
+        this.setData({ complete: true, completed: true, celebrate: true, completedWork });
         audioService.playSe('complete');
         this._clearCelebrateTimer();
         this.data._celebrateTimer = setTimeout(() => {

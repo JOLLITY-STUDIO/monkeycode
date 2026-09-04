@@ -130,6 +130,15 @@
     <view class="celebrate-panel">
       <view class="celebrate-check">✓</view>
       <view class="celebrate-title">通关成功!</view>
+      <!-- PICTURE-V0.47: 拼豆图纸闭环 — celebrate-panel 内 15×15 渲染用户涂色结果作品大图 -->
+      <view class="completed-grid">
+        <view
+          wx:for="{{completedWork}}"
+          wx:key="i"
+          class="completed-cell"
+          style="background: {{completedColor(item.v)}};"
+        ></view>
+      </view>
       <view class="celebrate-sub">{{puzzleName}} · {{timerText}} · {{moves}} 步</view>
     </view>
   </view>

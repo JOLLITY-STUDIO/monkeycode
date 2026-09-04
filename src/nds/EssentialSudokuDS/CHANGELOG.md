@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.47 — 通关拼豆图纸闭环: celebrate-panel 内 15×15 渲染玩家涂色结果
+
+### 2026-09-04
+
+#### 背景
+- 图画谜题通关庆祝弹层 (`celebrate-panel`) 之前只有 ✓ + 文案 + 数据 (用时/步数), 玩家看不到自己刚涂完的作品
+- 结合项目定位 (拼豆图纸), 通关瞬间应把玩家涂色结果以 15×15 作品大图形式展示, 形成 "涂色 → 通关 → 图纸" 闭环
+
+#### 修改
+- ✅ `picture-scene.ts`: `data.completedWork` (通关时用户作品快照, 元素含 `{i, v}`); `_startPuzzle` 切题时清空上一题快照; `_checkComplete` 通关瞬间用 `this.data.cells.map()` 快照玩家涂色 (`v` 0..5) → setData; 新增 `completedColor(v)` 方法 (v → PALETTE_HEX, wxml 表达式调用)
+- ✅ `picture-scene.wxml`: celebrate-panel 内新增 `completed-grid` (15×15 cell, `wx:key="i"`, `background: completedColor(item.v)`)
+- ✅ `picture-scene.wxss`: `.completed-grid` 156px 白底 + 红框, flex-wrap 15/行; `.completed-cell` 1/15 宽高; 5×5 宫粗红线 (列 5/10/15 border-right + 行 5/10/15 border-bottom), 与主网格视觉一致
+
+#### 修复 (收尾时发现)
+- `_checkComplete` 里原草稿引用未定义的局部变量 `cells` (ReferenceError) → 改为 `this.data.cells`
+- `wx:key="i"` 需要 item 带 `i` 字段 → 快照 map 同时带 `i: c.i`
+
+#### 验证
+- IDE 语言服务 0 诊断 (picture-scene.ts/.wxml/.wxss)
+
+---
+
 ## V0.49.8 — tutorial-scene 还原原版: 只保留原版触屏示意图, 移除自造中文卡片
 
 ### 2026-09-04

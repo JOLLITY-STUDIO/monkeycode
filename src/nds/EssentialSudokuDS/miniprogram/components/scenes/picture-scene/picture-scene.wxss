@@ -593,6 +593,43 @@
   100% { top: 105%; opacity: 0; transform: rotate(560deg); }
 }
 
+/* ===== 通关作品大图 (PICTURE-V0.47 拼豆图纸闭环) =====
+   celebrate 弹层里 15×15 渲染玩家涂色结果, 每格 10px,
+   细线分隔 + 5×5 宫粗线 (跟主网格视觉一致, 让用户看清自己作品). */
+.completed-grid {
+  width: 156px;
+  height: 156px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background: #ffffff;
+  border: 1.5px solid #d83a3a;
+  border-radius: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.completed-cell {
+  width: calc(100% / 15);
+  height: calc(100% / 15);
+  box-sizing: border-box;
+  border: none;
+}
+
+/* 5×5 宫粗红线 (cell nth-child 算 idx 0-based) */
+.completed-cell:nth-child(15n+5),
+.completed-cell:nth-child(15n+10),
+.completed-cell:nth-child(15n) {
+  border-right: 1.5px solid #d83a3a;
+}
+.completed-grid > .completed-cell:nth-child(n+61):nth-child(-n+75),
+.completed-grid > .completed-cell:nth-child(n+136):nth-child(-n+150),
+.completed-grid > .completed-cell:nth-child(n+211):nth-child(-n+225) {
+  border-bottom: 1.5px solid #d83a3a;
+}
+
 /* ===== 图文教程弹层 (A) ===== */
 .tut-mask {
   position: fixed;
