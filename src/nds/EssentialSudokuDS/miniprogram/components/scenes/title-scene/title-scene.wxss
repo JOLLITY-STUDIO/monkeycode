@@ -21,8 +21,24 @@
   height: 100%;
   min-height: 100%;
   background: transparent; /* 关键: 透出 bg-fx */
-  overflow: hidden;
+  /* V0.53: 去掉 overflow:hidden — 内容全 absolute 定位, 若本层高度计算异常
+     (宿主高度塌陷) 会被 overflow 裁剪掉整块前景 (start 按钮消失 + 点击无效).
+     边界裁剪已由 .scene-stage overflow:hidden 兜底, 本层无需再裁. */
   box-sizing: border-box;
+}
+
+/* 透明点击捕获层 (V0.53 恢复 V0.28): 全屏 view 承接点击 → 冒泡到根 bindtap.
+   Skyline 下普通 view 事件冒泡最可靠, 且该层不透明背景为 0 不影响透出 bg-fx. */
+.tap-catcher {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: transparent;
 }
 
 /* ===========================================================
@@ -42,17 +58,18 @@
   pointer-events: none;
 }
 
-/* V0.49.6: 品牌名「点豆成画」(主玩法图画谜题 → 拼豆图纸) */
+/* V0.53: 品牌名「点豆成画」— skyline 渲染器不支持 -webkit-background-clip:text,
+   原 color:transparent + background-clip 组合在 skyline 下文字直接隐形 (warning 已报).
+   改纯色 + 双层白描边近似糖果感, 保证任何渲染器都可见. */
 .brand-en {
   font-size: 30px;
   font-weight: 900;
   letter-spacing: 6px;
   font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
-  background: linear-gradient(180deg, #ff6b81 0%, #ff9f43 55%, #ffd93d 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.55);
+  color: #ff5d7a;
+  text-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.9),
+    0 4px 8px rgba(255, 95, 120, 0.35);
   line-height: 1.2;
 }
 

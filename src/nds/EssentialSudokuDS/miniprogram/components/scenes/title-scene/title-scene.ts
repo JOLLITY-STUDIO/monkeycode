@@ -18,6 +18,7 @@ Component({
 
   lifetimes: {
     attached() {
+      console.log('[title-scene] attached -> instance created');
       this.data._pulseTimer = setTimeout(() => {
         this.setData({ pulse: true });
       }, 600);

@@ -4,6 +4,44 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.53 — title-scene 启动页 start 按钮消失 + 点击无响应修复 (skyline 3.17.2)
+
+### 2026-09-04
+
+#### 背景 (用户报告)
+- 用户: "start按钮不见了，点了屏幕也没反应首页？"
+- devtools 升级灰度基础库 3.17.2 / skyline 1.4.21, 出现 skyline wxss warning:
+  - `-webkit-background-clip: text;` unsupported (title-scene.wxss) — 渐变文字
+    `color: transparent` 在 skyline 下直接**隐形** (标题不可见)
+- title-scene 是 V0.48 重构的透明版: 无点击捕获层 + 根 `overflow: hidden` +
+  内容全 absolute 定位 — 宿主高度计算异常时整块前景被裁剪 (start 消失) + 点击无反应
+
+#### 修复
+- `title-scene.wxml`: 恢复 V0.28 成功方案的**全屏透明点击捕获层**
+  (普通 view 承接落到空白处的点击 → 冒泡到根 bindtap; 根仍持有 bind:tap 保证
+  press/brand 等上层节点点击也触发)
+- `title-scene.wxss`:
+  - `.title-page` 去掉 `overflow: hidden` (边界裁剪由 .scene-stage 兜底,
+    避免本层高度异常时裁剪掉全部 absolute 前景)
+  - 新增 `.tap-catcher` 全屏层 (z-index 1, 透明)
+  - `.brand-en` 去掉 `-webkit-background-clip: text` / `color: transparent`
+    → 改纯色 `#ff5d7a` + 双层白描边近似糖果感 (任何渲染器都可见)
+- `title-scene.ts`: attached 加 `[title-scene] attached` 日志, 便于确认组件
+  是否被实例化 (若日志缺失 → 属上层路由/渲染层问题, 与组件无关)
+
+#### 验证
+- IDE 语言服务 0 诊断 (title-scene 三件套)
+
+#### 请用户确认
+1. 重新编译后 title 页是否显示 品牌 + Press START + 点击进 menu
+2. 若 still 全空且无 `[title-scene] attached` 日志 → 是 devtools 渲染层
+   routeDone/webview 问题 (日志开头 `routeDone with a webviewId 128 is not found`),
+   建议: 工具栏「清缓存 → 全部清除」后重新编译 / 切回非灰度基础库验证
+3. 日志中剩余 3 条 picture-scene/tutorial-scene wxss unsupported warning
+   (grid repeat(6,minmax(0,1fr)) / image-rendering) 与本问题无关, 后续单独处理
+
+---
+
 ## PICTURE-V0.52 — 画布网格线清晰可见: 改由 cell 单边 border 绘制
 
 ### 2026-09-04

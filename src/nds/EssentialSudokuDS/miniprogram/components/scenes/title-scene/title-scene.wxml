@@ -9,6 +9,11 @@
 -->
 <view class="title-page" bind:tap="onTapStart">
 
+  <!-- 透明点击捕获层 (V0.53 恢复 V0.28 成功方案):
+       Skyline 下普通 view 的事件冒泡最可靠, 该层承接落到空白/背景上的点击再冒泡到根 bindtap.
+       同时它给 title-page 提供 in-flow 内容撑高, 兜底宿主高度计算异常导致的塌陷. -->
+  <view class="tap-catcher"></view>
+
   <!-- 前景: 品牌标题 (V0.49.6 重新起名: 主玩法图画谜题 → 拼豆图纸闭环) -->
   <view class="brand-wrap">
     <view class="brand-en">点豆成画</view>
