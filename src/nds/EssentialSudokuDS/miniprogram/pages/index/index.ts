@@ -131,6 +131,7 @@ Page({
   onReady() {
     if (this.data._directArrival) return;
     // 等首帧渲染完成再切, 避免与 onLoad 直连 setData 并发 (直连场景无需路由)
+    console.log('[index] onReady -> schedule _switchScene(title)');
     setTimeout(() => this._switchScene('title'), 0);
   },
 
@@ -145,6 +146,7 @@ Page({
     if (cur === next) return;
     const effect = SCENE_TRANSITIONS[`${cur}-${next}`] || 'fade';
     const leaving = cur;
+    console.log(`[index] _switchScene ${JSON.stringify(cur) || '(empty)'} -> ${next} effect=${effect}`);
     this.setData({
       scene: next,
       leavingScene: leaving,

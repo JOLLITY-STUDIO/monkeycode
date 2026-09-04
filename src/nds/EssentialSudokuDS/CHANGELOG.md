@@ -4,6 +4,44 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.53.3 — title 点击无响应再修: tap 下沉直绑 + 微透明命中层 (Skyline)
+
+### 2026-09-04
+
+#### 背景
+- V0.53.2 (scene 置空 + onReady 动态插入) 已生效: 日志确认 title-scene attached (动态插入成功)
+- 但点击仍无 `[title-scene] onTapStart` — 事件根本没到达 handler
+
+#### 真根因 (对照 menu-scene 成功模式)
+- menu-scene (能点): `bindtap` 直接绑在**内部实色 view** (.game-btn 胶囊) 上
+- title-scene (点不动): `bind:tap` 绑在**组件根 .title-page**, 点击靠"全透明层承接 → 冒泡到根"
+- Skyline 命中测试**跳过全透明层** (background:transparent) → 空白处点击穿透到下层无人处理
+- 即使用户点 Press START (实色可命中), 事件也需**冒泡到组件根绑定**才触发 — Skyline 下该路径并不可靠
+- 结论: 透明全屏"承接+冒泡"方案在 Skyline 下两条腿都断
+
+#### 修复
+1. **tap 下沉直绑** (对齐 menu 模式): `.tap-catcher` 与 `.press-start` 各自直接 `bind:tap="onTapStart"`,
+   不再依赖冒泡到根; 根 `.title-page` 保留 bind:tap 作冒泡兜底
+2. **微透明命中层**: `.title-page` + `.tap-catcher` 背景 `transparent` → `rgba(255,255,255,0.01)`
+   (0.01 alpha 视觉无差, bg-fx 照常透出; 但 Skyline 命中测试不再跳过该层)
+3. **300ms 去重**: 同一事件路径 press-start/tap-catcher/根 多处直绑, 冒泡会再触发根绑定 →
+   `_lastTapTs` 时间戳去重, 保证最多 fire 一次
+4. **布局诊断**: attached 后 `_logHitbox()` 量 `.title-page`/`.tap-catcher` boundingClientRect 打日志 —
+   若仍点不动, 日志可区分是命中面积 0 (宿主塌陷) 还是事件分发问题
+5. **index.ts 诊断日志**: onReady / _switchScene 打印场景切换时序 (确认 title 动态插入时刻)
+
+#### 验证
+- IDE 语言服务 0 诊断 (title-scene 三件套 + index.ts)
+- 请用户重新编译后看 console:
+  - 应看到 `[index] _switchScene (empty) -> title effect=fade` (title 动态插入确认)
+  - 应看到 `[title-scene] hitbox .tap-catcher = WxH @(t,l)` (命中层真实尺寸, 非 0)
+  - 点击任意处 → `[title-scene] onTapStart -> trigger start` → 切 menu
+- 若 hitbox 为 0x0 → 宿主塌陷, 属布局问题 (另案); 若 hitbox 正常但无 onTapStart → 基础库 3.17.2 灰度事件 bug, 切稳定版
+
+---
+
+---
+
 ## V0.53.2 — 首屏 title「看到但点了没反应」修复: 场景统一动态路由
 
 ### 2026-09-04

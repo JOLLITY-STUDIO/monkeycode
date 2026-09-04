@@ -9,10 +9,12 @@
 -->
 <view class="title-page" bind:tap="onTapStart">
 
-  <!-- 透明点击捕获层 (V0.53 恢复 V0.28 成功方案):
-       Skyline 下普通 view 的事件冒泡最可靠, 该层承接落到空白/背景上的点击再冒泡到根 bindtap.
+  <!-- 点击捕获层 (V0.53.3: tap 直接绑本层 — 对齐 menu-scene 每个实色 view 直绑 bindtap 的成功模式.
+       V0.53 之前仅靠"透明层承接 → 冒泡到根 bindtap", Skyline 下透明命中 + 组件根冒泡两条都不可靠 →
+       "看到但点了没反应". 现在该层有微透明背景 (wxss rgba .01, 视觉无差) 保证命中测试认可,
+       且自身直绑 onTapStart, 不再依赖冒泡.
        同时它给 title-page 提供 in-flow 内容撑高, 兜底宿主高度计算异常导致的塌陷. -->
-  <view class="tap-catcher"></view>
+  <view class="tap-catcher" bind:tap="onTapStart"></view>
 
   <!-- 前景: 品牌标题 (V0.49.6 重新起名: 主玩法图画谜题 → 拼豆图纸闭环) -->
   <view class="brand-wrap">
@@ -20,9 +22,11 @@
     <view class="brand-sub">PUZZLE · PICTURE · BEADS</view>
   </view>
 
-  <!-- Press START (V0.48: 原中央封面删掉, press 上移到中部留白区) -->
+  <!-- Press START (V0.48: 原中央封面删掉, press 上移到中部留白区)
+       V0.53.3: press-start 胶囊本身也直绑 onTapStart — 实色节点命中最可靠,
+       即使用户点在胶囊上且冒泡被 Skyline 打断也能直接触发. -->
   <view class="press-area">
-    <view class="press-start {{pulse ? 'pulse' : ''}}">
+    <view class="press-start {{pulse ? 'pulse' : ''}}" bind:tap="onTapStart">
       <text class="press-start-text">Press START</text>
     </view>
     <view class="hint-line">TAP ANYWHERE TO BEGIN</view>
