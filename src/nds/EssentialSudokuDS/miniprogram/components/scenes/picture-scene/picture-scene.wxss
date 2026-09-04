@@ -181,10 +181,11 @@
   box-sizing: border-box;
 }
 
-/* V0.51: 21×21 渲染网格 → puzzle-area 总高 = 5 band + 21 行 = 26 份 cell height.
-   clue-header (5 band) = 5/26 ≈ 19.23%, puzzle-body (21 行) = 21/26 ≈ 80.77%.
-   cell 高 = puzzle-body 高 / 21 = (21/26 W)/21 = W/26; band 高 = clue-header 高 / 5 = (5/26 W)/5 = W/26,
-   band 与网格行水平像素对齐. minmax(0, 1fr) 让空 grid row/col 收缩到 0, bands 撑满. */
+/* V0.53: puzzle-area = 26 unit 见方 (unit = 内容格尺寸 W/26).
+   clue-header (5 unit 高) + puzzle-body (21 unit 高) 仅作几何占位: 白色 21×21 paint-grid
+   位于 puzzle-body 内 row-clues(5 unit 宽) 之右, 内容 15×15 白区左上角 = (5+3, 5+3) unit = 8/26.
+   行列 run 提示数字块 (.clue-box) 是绝对定位 overlay (style 里带 left/top/width/height%),
+   紧贴白区由内向外铺 (先入先出: 第 1 段贴画布, 段 0 = 行左→右 / 列上→下 扫描首个同色段). */
 .clue-header {
   width: 100%;
   height: calc(100% * 5 / 26);
@@ -198,20 +199,6 @@
   width: calc(100% * 5 / 26);
   height: 100%;
   flex-shrink: 0;
-}
-
-/* V0.46: 6 行 grid 预留, minmax(0, 1fr) 让空 row 0 高度; bands 5 个 stretch 撑满 clue-header.
-   DS 原版 numclo_waku 数字 bands 从底部向上排 (贴近画布), 当前顺序填 row 1-5 = 顶部对齐已贴底 */
-.col-clue {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  display: grid;
-  grid-template-rows: repeat(6, minmax(0, 1fr));
-  align-items: stretch;
-  justify-items: stretch;
-  box-sizing: border-box;
-  overflow: hidden;
 }
 
 .puzzle-body {
@@ -233,62 +220,50 @@
   overflow: hidden;
 }
 
-/* V0.46: 行 hint 同列, 6 列 grid 预留 (numclo_waku 红框预留 6 列 × 15 行), minmax(0, 1fr) 让空 col 收缩.
-   5 个 band 按顺序填 col 1-5, col 6 空 = 0 宽度, bands 撑满 row-clue 全部宽度贴右 */
-.row-clue {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  align-items: stretch;
-  justify-items: stretch;
+/* V0.53: 行列 run 提示数字块 (绝对定位, style 已带 left/top/width/height/background).
+   每块白色格线 = 数字被网格包围; 段色 = 该段同色格颜色; 黄底 (color 2) 配黑字, 其余白字. */
+.clue-box {
+  position: absolute;
   box-sizing: border-box;
-  overflow: hidden;
-}
-
-.clue-band {
+  border: 1px solid rgba(255, 255, 255, 0.92);
   display: flex;
   align-items: center;
   justify-content: center;
-  /* V0.49.8: 15px 加大, 900 weight 颗粒粗白字; text-shadow 4 方向黑描边应对亮色块 */
-  font-size: 15px;
+  /* 内容格 ~12px, 字号略小保证整块可见; 白字 + 黑描边 4 方向 (应对红/蓝/绿/黑底) */
+  font-size: 11px;
   font-weight: 900;
   color: #ffffff;
   line-height: 1;
+  letter-spacing: -0.5px;
   text-shadow:
     -1px 0 0 rgba(0, 0, 0, 0.9),
     1px 0 0 rgba(0, 0, 0, 0.9),
     0 -1px 0 rgba(0, 0, 0, 0.9),
     0 1px 0 rgba(0, 0, 0, 0.9),
     0 0 2px rgba(0, 0, 0, 0.8);
-  box-sizing: border-box;
-  letter-spacing: -0.5px;
-  /* V0.49.9: grid item 不再 flex:1, 父级 grid 6 等分给位 */
-  min-height: 0;
-  min-width: 0;
+  overflow: hidden;
 }
 
-/* V0.49.8: 黄色块用黑字避免糊; 黑/红/蓝/绿用白字 (默认) */
-.cb-yellow {
+/* 黄色块 (color 2) 用黑字避免糊; 黑/红/蓝/绿用白字 (默认) */
+.clue-box.cb-yellow {
   color: #181818;
   text-shadow:
-    -1px 0 0 rgba(255, 255, 255, 0.7),
-    1px 0 0 rgba(255, 255, 255, 0.7),
-    0 -1px 0 rgba(255, 255, 255, 0.7),
-    0 1px 0 rgba(255, 255, 255, 0.7),
+    -1px 0 0 rgba(255, 255, 255, 0.75),
+    1px 0 0 rgba(255, 255, 255, 0.75),
+    0 -1px 0 rgba(255, 255, 255, 0.75),
+    0 1px 0 rgba(255, 255, 255, 0.75),
     0 0 2px rgba(255, 255, 255, 0.6);
 }
 
-/* V0.49.9: grid item, 不要 flex:1 让父级 grid 分配 1/6 等分 */
-.clue-band-col {
-  width: 100%;
-  border-top: 0.5px solid rgba(255, 255, 255, 0.45);
+/* 段长 ≥10 (两位数) → 小字号避免挤出块 */
+.clue-wide {
+  font-size: 9px;
 }
 
-.clue-band-row {
-  height: 100%;
-  border-left: 0.5px solid rgba(255, 255, 255, 0.45);
-  /* 行 hint 数字居中在 cell 内, 默认 text-align 已居中 (display:flex + justify-content:center) */
+/* 该线段数 > 8 (压缩模式, 每块 < 1 unit) → 再小一号 */
+.clue-compact {
+  font-size: 8px;
+  letter-spacing: -0.6px;
 }
 
 .paint-grid {

@@ -4,6 +4,36 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.53.4 — picture-scene 行列提示改 Picross run-length 连续段 + 紧贴白区网格包围
+
+### 2026-09-05
+
+#### 背景
+- 用户反馈页面不对: 外部数字需要"网格包围", 且应紧贴白色绘制区域、从最里面往外排
+- 旧提示是"每色计数"固定 5 band (countByColor), 每线最多 5 个数字, 位置靠外, 不是真 DS 图画谜题格式
+- 数据统计: 1401 题中每线 run 数可到 14 (>5), 证明真格式 = run-length 连续同色段, 不是颜色计数
+
+#### 修复 (picture-scene 三件套)
+1. **算法 (picture-scene.ts)**:
+   - 删 countByColor/computeClues/ColorCount (旧固定色带计数格式)
+   - 新增 extractRuns(seq) + computeClueData(target): 扫描 15 格内容区 (跳过 PADDING),
+     颜色相同且相连的格子合成 {color,len}; 换色/隔空另起一段
+   - 先入先出 (FIFO): 段 0 = 行左→右 / 列上→下 扫描首个同色段, 排在最里面 (贴白区)
+   - 返回平铺 overlay 数组 rowBoxes/colBoxes (ClueBox[]), 每块 style 内联 left/top/width/height/background (%)
+   - 几何: puzzle-area = 26 unit 见方, 白区左上 = 8/26; 行提示向左叠、列提示向上叠, 每段 = 1 unit
+   - CLUE_CAP=8: 段数 ≤8 覆盖 ~91% 题; >8 的线整线压缩为 8/n unit 仍由内向外铺满
+2. **wxml**: 旧 col-clue/row-clue/clue-band 嵌套色带全删; 保留 clue-header/puzzle-body/row-clues 作 5U 几何占位;
+   行列提示改为两层 wx:for 绝对定位 .clue-box overlay (每个 = 彩色块 + 白格线 = 数字被网格包围, 黄底黑字)
+3. **wxss**: 删 .col-clue/.row-clue/.clue-band*/.cb-yellow(旧), 新增 .clue-box/.cb-yellow/.clue-wide(两位数)/.clue-compact(压缩线)
+4. **文案**: 引导 step1 + 图文教程第 1/2 页改为"连续段"读法 (数字 = 段长, 颜色 = 段色, 由里向外 = 扫描顺序);
+   教程页 2 示例改为自洽 RRR/BBB/YYY (列提示 Y1/B1/R1 由外到里 = 上→下扫描序, 行提示 3R/3B/3Y)
+
+#### 验证
+- IDE 语言服务 0 诊断; grep 确认 rowClues/colClues/clueColor/computeClues/ColorCount/clue-band 无遗留引用
+- 真机请检查: Crab(单色)/Cat(5 色) 顶部与左侧数字块紧贴画布、逐段向外、带网格边框
+
+---
+
 ## V0.53.3 — title 点击无响应再修: tap 下沉直绑 + 微透明命中层 (Skyline)
 
 ### 2026-09-04

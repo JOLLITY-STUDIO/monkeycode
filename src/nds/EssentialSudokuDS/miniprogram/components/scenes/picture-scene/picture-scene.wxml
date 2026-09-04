@@ -40,32 +40,15 @@
     <view class="nav-key" bindtap="onJumpTo">跳转</view>
   </view>
 
-  <!-- 15x15 彩色网格 + 行列提示 (ナンクロ / Number Cross 每色计数) -->
+  <!-- 15x15 彩色网格 + 行列 run 提示: 同色连续格 = 一段, 彩色数字块紧贴白区由内向外排 (每块带网格线) -->
   <view class="puzzle-area">
+    <!-- 几何占位 (5U 顶带 + 5U 左带): 白色 21×21 paint-grid 仍由 .puzzle-body/.row-clues 撑出,
+         行列数字块是绝对定位 overlay, 直接铺在 puzzle-area 上, 见下方两层 wx:for -->
     <view class="clue-header">
       <view class="clue-corner"></view>
-      <view wx:for="{{colClues}}" wx:key="index" class="col-clue">
-        <view
-          wx:for="{{item}}"
-          wx:key="key"
-          wx:for-item="band"
-          class="clue-band clue-band-col{{clueTextClass(band.color)}}"
-          style="background: {{clueColor(band.color)}};"
-        >{{band.count || ''}}</view>
-      </view>
     </view>
     <view class="puzzle-body">
-      <view class="row-clues">
-        <view wx:for="{{rowClues}}" wx:key="index" class="row-clue">
-          <view
-            wx:for="{{item}}"
-            wx:key="key"
-            wx:for-item="band"
-            class="clue-band clue-band-row{{clueTextClass(band.color)}}"
-            style="background: {{clueColor(band.color)}};"
-          >{{band.count || ''}}</view>
-        </view>
-      </view>
+      <view class="row-clues"></view>
       <view class="paint-grid {{showingAnswer || complete ? 'paint-grid-reveal' : ''}}">
         <view
           wx:for="{{cells}}"
@@ -77,6 +60,20 @@
         ></view>
       </view>
     </view>
+    <!-- 列提示: 每一段数字块贴在对应列上方, 第 1 段 (自上而下扫描先遇到) 贴白区上缘, 再向上叠加 -->
+    <view
+      wx:for="{{colClues}}"
+      wx:key="key"
+      class="clue-box{{item.color === 2 ? ' cb-yellow' : ''}}{{item.wide ? ' clue-wide' : ''}}{{item.compact ? ' clue-compact' : ''}}"
+      style="{{item.style}}"
+    >{{item.t}}</view>
+    <!-- 行提示: 每一段数字块贴在对应行左侧, 第 1 段 (自左而右扫描先遇到) 贴白区左缘, 再向左叠加 -->
+    <view
+      wx:for="{{rowClues}}"
+      wx:key="key"
+      class="clue-box{{item.color === 2 ? ' cb-yellow' : ''}}{{item.wide ? ' clue-wide' : ''}}{{item.compact ? ' clue-compact' : ''}}"
+      style="{{item.style}}"
+    >{{item.t}}</view>
   </view>
 
   <!-- 教程类别 (numclo_tu.data): 打开玩法图文教程 -->
@@ -188,41 +185,43 @@
           </view>
           <view class="tut-title">1 · 认识对局界面</view>
           <view class="tut-point">• 中间是 15×15 画板：把每一格涂上正确的颜色</view>
-          <view class="tut-point">• <text class="dot dot-r"></text> 顶部色条 = 每一列各颜色格数</view>
-          <view class="tut-point">• <text class="dot dot-y"></text> 左侧色条 = 每一行各颜色格数</view>
-          <view class="tut-point">• 色条数字会告诉你怎么涂，不需要猜</view>
+          <view class="tut-point">• <text class="dot dot-r"></text> 顶部彩色数字块 = 每一列的同色「连续段」提示</view>
+          <view class="tut-point">• <text class="dot dot-y"></text> 左侧彩色数字块 = 每一行的同色「连续段」提示</view>
+          <view class="tut-point">• 数字块紧贴画布、由里向外排，块的颜色 = 这一段格子的颜色</view>
         </block>
 
-        <!-- 页 2: 行列提示读法 -->
+        <!-- 页 2: 行列提示读法 (run-length 连续段; demo 与读法自洽: 板 RRR/BBB/YYY) -->
         <block wx:if="{{tutPage === 1}}">
           <view class="tut-demo tut-demo-layout">
             <view class="demo-top-clues">
-              <view class="demo-col"><view class="demo-c dot-r">3</view><view class="demo-c dot-b">2</view></view>
-              <view class="demo-col"><view class="demo-c dot-y">1</view><view class="demo-c dot-b">2</view></view>
+              <view class="demo-col"><view class="demo-c dot-y">1</view><view class="demo-c dot-b">1</view><view class="demo-c dot-r">1</view></view>
+              <view class="demo-col"><view class="demo-c dot-y">1</view><view class="demo-c dot-b">1</view><view class="demo-c dot-r">1</view></view>
+              <view class="demo-col"><view class="demo-c dot-y">1</view><view class="demo-c dot-b">1</view><view class="demo-c dot-r">1</view></view>
             </view>
             <view class="demo-middle">
               <view class="demo-row-clues">
-                <view class="demo-c dot-r">2</view>
+                <view class="demo-c dot-r">3</view>
                 <view class="demo-c dot-b">3</view>
+                <view class="demo-c dot-y">3</view>
               </view>
               <view class="demo-mini-grid">
+                <view class="demo-g demo-g-fill-r"></view>
                 <view class="demo-g demo-g-fill-r"></view>
                 <view class="demo-g demo-g-fill-r"></view>
                 <view class="demo-g demo-g-fill-b"></view>
                 <view class="demo-g demo-g-fill-b"></view>
                 <view class="demo-g demo-g-fill-b"></view>
                 <view class="demo-g demo-g-fill-y"></view>
-                <view class="demo-g demo-g-fill-b"></view>
-                <view class="demo-g demo-g-fill-r"></view>
-                <view class="demo-g"></view>
+                <view class="demo-g demo-g-fill-y"></view>
+                <view class="demo-g demo-g-fill-y"></view>
               </view>
             </view>
           </view>
           <view class="tut-title">2 · 提示怎么读</view>
-          <view class="tut-point">• <text class="dot dot-r"></text>红块 3 + <text class="dot dot-y"></text>黄块 2 → 这一行有 3 个红色格、2 个黄色格</view>
-          <view class="tut-point">• 提示只按「颜色」计数，不看位置</view>
-          <view class="tut-point">• 某色数字 = 0 时不会显示，这行/列就没有该颜色</view>
-          <view class="tut-point">• 上下、左右推理着涂，越来越简单</view>
+          <view class="tut-point">• 颜色相同又连着的格子 = 一段；空格会把左右两段隔开</view>
+          <view class="tut-point">• 每段给 1 个数字 = 长度。这行红「3」贴行首 → 行最左 3 格全红</view>
+          <view class="tut-point">• 数字颜色 = 段的颜色；贴画布的是先遇到的那段，越往外越靠后</view>
+          <view class="tut-point">• 行从左到右、列从上到下读；隔开再出现的段会再给一个数字</view>
         </block>
 
         <!-- 页 3: 选色涂色 -->

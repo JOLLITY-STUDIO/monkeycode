@@ -88,39 +88,114 @@ interface PictureCell {
   pad: boolean;    // 留白区 (内容区外 3 格边距), 不可涂色 (渲染浅灰衬底)
 }
 
-/** 行列提示: 某一行/列中某种颜色的总个数 (ナンクロ / Number Cross 风格)。 */
-interface ColorCount {
-  color: CellColor; // 1..5
-  count: number;    // 0..15
-  key: number;      // 列内唯一 key (wx:key)
+/**
+ * 行列提示 = Picross run-length (连续同色段)。
+ * 真实玩法语义: 每一行/列从读取方向 (行→右, 列→下) 扫描,
+ * 颜色相同且相连的格子合成一段 {color,len}; 换色或隔空则另起一段。
+ * 界面把每一段的彩色数字块按 FIFO 顺序紧贴白色 15×15 画布由内向外排列
+ * (第一个数字在画布内侧, 其余逐段向外), 每块带网格边框。
+ */
+
+/** 一段连续同色格 */
+interface ClueRun {
+  color: number; // 1..5
+  len: number;   // 1..15
 }
 
-/** 统计序列中颜色 1..5 的出现次数, 按颜色顺序返回 5 条提示。 */
-function countByColor(seq: number[]): ColorCount[] {
-  const hist = [0, 0, 0, 0, 0, 0];
-  for (const v of seq) {
-    if (v >= 0 && v <= 5) hist[v] += 1;
-  }
-  return [1, 2, 3, 4, 5].map((c, i) => ({ color: c as CellColor, count: hist[c], key: i }));
+/** overlay 提示方块 (绝对定位, 坐标/尺寸已换算成 puzzle-area 百分比) */
+interface ClueBox {
+  key: number;
+  t: string;       // 显示文本 = 段长
+  color: number;   // 段颜色 1..5
+  style: string;   // left/top/width/height/background (%)
+  wide: boolean;   // 数字 ≥10 需更小字号
+  compact: boolean; // 该线段数超过容量 → 压缩宽度模式
 }
 
 /**
- * 从目标网格计算 15 行 + 15 列的每色计数。
- * ナンクロ / Number Cross 规则: 提示只告诉每行/列里各颜色共有多少格,
- * 不表示连续段, 与 DS 原版 5×5 块边界布局对应 (V0.25 起 waku 改 CSS 自绘, 见 picture-scene.wxss).
+ * 内容区到画框之间可容纳的最大提示单元数 = 原提示条 5 + PADDING 3 = 8.
+ * 绝大多数题每线 ≤5 段 (占 ~53%), ≤8 段覆盖 91%; 极少高密度多色题 (>8)
+ * 对那一行/列启用压缩模式: 每段宽 = 8/段数 unit, 仍贴紧画布由内向外铺满.
  */
-function computeClues(target: CellColor[]): { rows: ColorCount[][]; cols: ColorCount[][] } {
-  const rows: ColorCount[][] = [];
-  const cols: ColorCount[][] = [];
-  for (let r = 0; r < GRID; r++) {
-    rows.push(countByColor(target.slice(r * GRID, r * GRID + GRID)));
+const CLUE_CAP = 8;
+/** 原提示条占 5 个 unit (顶部/左侧, 作为空占位保持内容区几何) */
+const STRIP_UNITS = 5;
+
+/** 扫描 15 格序列, 返回连续同色段列表 (先入先出: 段 0 = 读取方向第一段) */
+function extractRuns(seq: number[]): ClueRun[] {
+  const out: ClueRun[] = [];
+  let cur: ClueRun | null = null;
+  for (const v of seq) {
+    if (v <= 0 || v > 5) {
+      cur = null;
+      continue;
+    }
+    if (cur && cur.color === v) {
+      cur.len += 1;
+    } else {
+      cur = { color: v, len: 1 };
+      out.push(cur);
+    }
   }
-  for (let c = 0; c < GRID; c++) {
-    const col: number[] = [];
-    for (let r = 0; r < GRID; r++) col.push(target[r * GRID + c]);
-    cols.push(countByColor(col));
+  return out;
+}
+
+/**
+ * 从目标网格计算 15 行 + 15 列 run-length 提示 overlay 方块。
+ * 几何 (puzzle-area 为正方形, 内容 15×15 白区左上角 = (STRIP_UNITS+PADDING) unit):
+ *   - 行提示: 位于白区左侧, 第 k 段 (k=0 最贴近画布) 从内容左缘向左叠 k+1 段宽
+ *   - 列提示: 位于白区上方, 第 k 段从内容上缘向上叠 k+1 段高
+ * 每一段方块 = 1 unit 见方 (超过 CLUE_CAP 段的线 → 整线压缩到 CLUE_CAP/段数).
+ */
+function computeClueData(target: CellColor[]): { colBoxes: ClueBox[]; rowBoxes: ClueBox[] } {
+  const U = 100 / 26; // 1 unit = puzzle-area 内容宽/26 (与 paint-cell 同单位)
+  const base = (STRIP_UNITS + PADDING) * U; // 白色内容区左上角百分比
+  let key = 0;
+  const rowBoxes: ClueBox[] = [];
+  for (let r = PADDING; r < PADDING + GRID_ROM; r++) {
+    const seq: number[] = [];
+    for (let c = PADDING; c < PADDING + GRID_ROM; c++) seq.push(target[r * GRID + c]);
+    const runs = extractRuns(seq);
+    if (!runs.length) continue;
+    const n = runs.length;
+    const w = (n <= CLUE_CAP ? 1 : CLUE_CAP / n) * U; // unit → pct
+    let x = base; // 内容左缘: 第 0 段贴它, 之后逐段向左
+    for (let k = 0; k < n; k++) {
+      x -= w;
+      const run = runs[k];
+      rowBoxes.push({
+        key: key++,
+        t: String(run.len),
+        color: run.color,
+        style: `left:${x.toFixed(4)}%;top:${(base + (r - PADDING) * U).toFixed(4)}%;width:${w.toFixed(4)}%;height:${U.toFixed(4)}%;background:${PALETTE_HEX[run.color]};`,
+        wide: run.len >= 10,
+        compact: n > CLUE_CAP,
+      });
+    }
   }
-  return { rows, cols };
+  const colBoxes: ClueBox[] = [];
+  for (let c = PADDING; c < PADDING + GRID_ROM; c++) {
+    const seq: number[] = [];
+    for (let r = PADDING; r < PADDING + GRID_ROM; r++) seq.push(target[r * GRID + c]);
+    const runs = extractRuns(seq);
+    if (!runs.length) continue;
+    const n = runs.length;
+    const h = (n <= CLUE_CAP ? 1 : CLUE_CAP / n) * U; // unit → pct
+    let y = base; // 内容上缘: 第 0 段贴它, 之后逐段向上
+    for (let k = 0; k < n; k++) {
+      y -= h;
+      const run = runs[k];
+      colBoxes.push({
+        key: key++,
+        t: String(run.len),
+        color: run.color,
+        style: `left:${(base + (c - PADDING) * U).toFixed(4)}%;top:${y.toFixed(4)}%;width:${U.toFixed(4)}%;height:${h.toFixed(4)}%;background:${PALETTE_HEX[run.color]};`,
+        wide: run.len >= 10,
+        compact: n > CLUE_CAP,
+      });
+    }
+  }
+  return { colBoxes, rowBoxes };
 }
 
 const service = new PictureGameService();
@@ -170,8 +245,9 @@ Component({
     contentTotal: CONTENT_CELLS, // 内容区总格数 225 (进度分母, 不含 padding)
     /** 每色剩余待涂格数 paletteNeed[color] (color 0 恒为 0) */
     paletteNeed: [0, 0, 0, 0, 0, 0],
-    rowClues: [] as ColorCount[][],
-    colClues: [] as ColorCount[][],
+    /** 行列 run 提示 overlay 方块 (ClueBox[], 绝对定位在 puzzle-area 内紧贴白区由内向外) */
+    rowClues: [] as ClueBox[],
+    colClues: [] as ClueBox[],
     /** 操作历史栈, 用于撤销 (undo) */
     history: [] as Array<{ i: number; prev: CellColor }>,
     /** 重做栈: undo 弹出的操作, from=撤销后格值, to=撤销前格值 (redo 恢复) */
@@ -199,7 +275,7 @@ Component({
       {
         sel: '.puzzle-area',
         title: '认识提示区',
-        desc: '顶部和左侧的彩色小方块 + 数字，告诉你每一行/每一列里各种颜色各有几格。先看懂它，再动手涂。',
+        desc: '顶部/左侧紧贴画布的彩色数字块 = 这一行/列里每段「连续同色格」的长度。数字颜色 = 段的颜色；从里(贴画布)向外排的顺序 = 从左(上)往右(下)遇到的连续段顺序。先看懂它，再动手涂。',
       },
       {
         sel: '.palette',
@@ -452,7 +528,7 @@ Component({
       const resolved = this._resolveName(fileKey, indexInFile, enName);
       const list = service.listFilePuzzleIds(fileKey);
       const target = service.getTarget();
-      const clues = computeClues(target);
+      const clue = computeClueData(target);
       const cells: PictureCell[] = [];
       for (let i = 0; i < TOTAL_CELLS; i++) {
         const t = target[i];
@@ -511,8 +587,8 @@ Component({
         showingAnswer: false,
         correctCount: hasSaved ? CONTENT_CELLS - this._countWrong(cells) : 0,
         paletteNeed: need,
-        rowClues: clues.rows,
-        colClues: clues.cols,
+        rowClues: clue.rowBoxes,
+        colClues: clue.colBoxes,
         history: [],
         redoStack: [],
       });
@@ -719,19 +795,9 @@ Component({
       this._checkComplete();
     },
 
-    /** 提示 run 颜色 hex (color 0 占位灰) — wxml 表达式调用 */
-    clueColor(color: number): string {
-      return PALETTE_HEX[color] || '#9aa7b4';
-    },
-
     /** PICTURE-V0.47: completed-grid 单元背景色 (玩家涂色 v → PALETTE_HEX hex) */
     completedColor(v: number): string {
       return PALETTE_HEX[v] || '#9aa7b4';
-    },
-
-    /** 提示 band 文字色 class — 黄色块用黑字 (cb-yellow) 避免糊, 其余沿用 .clue-band 默认白字 */
-    clueTextClass(color: number): string {
-      return color === 2 ? ' cb-yellow' : '';
     },
 
     /** 类别中文 label (CATEGORIES 查找; 找不到回退空串) */
