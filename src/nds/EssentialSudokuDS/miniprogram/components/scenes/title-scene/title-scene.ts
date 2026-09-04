@@ -32,15 +32,16 @@ Component({
   },
 
   methods: {
-    /** 点击任意处 → 通知页面进入主菜单 */
+    /** 点击任意处 → 通知页面进入主菜单.
+        V0.53.2: triggerEvent 放在最前, 不被 playSe 阻塞/异常拦住. */
     onTapStart() {
+      console.log('[title-scene] onTapStart -> trigger start');
+      this.triggerEvent('start');
       try {
         audioService.playSe('start');
       } catch (_e) {
         // 音频异常不阻断跳转
       }
-      console.log('[title-scene] onTapStart -> trigger start');
-      this.triggerEvent('start');
     },
   },
 });

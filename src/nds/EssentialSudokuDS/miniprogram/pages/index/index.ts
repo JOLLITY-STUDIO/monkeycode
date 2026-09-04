@@ -67,14 +67,17 @@ const SCENE_TRANSITIONS: Record<string, SceneEffect> = {
 
 Page({
   data: {
-    scene: 'title' as SceneName,
+    // V0.53.2: 首屏 scene 初始为空串 — 不静态渲染任何场景.
+    //   Skyline 对「页面初始渲染」的组件不分发 tap (其他场景都经 _switchScene 动态插入可点击,
+    //   唯独 title 首屏静态挂载收不到点击). 现在统一在 onReady (初始渲染完成) 后经
+    //   _switchScene('title') 动态插入, 让 title 也走可点路径.
+    scene: '' as SceneName,
     /** 正在退场的旧场景 (动画播放中, 结束后清空) */
     leavingScene: '' as SceneName | '',
     /** 当前过渡效果 (驱动 stage-enter-{{effect}} / stage-leave-{{effect}}).
-        V0.53.1: 首屏初始为空串 — entering stage 首帧不带 animation class,
-        直接以默认 opacity 显示 (Skyline 页面级初始渲染的 animation 可能不触发,
-        fill-mode:both 会停 from opacity:0 → 整层透明, 只有首屏 title 中招).
-        首次 _switchScene 才写入真实 effect, 由动态插入的组件节点正常播动画. */
+        V0.53.1: 初始为空串 — entering stage 首帧不带 animation class 直接显示,
+        规避 Skyline 页面级初始渲染 animation 不触发 + fill-mode:both 停 opacity:0.
+        现在 title 也经 _switchScene 动态插入, effect 由引擎写入真实值, 初始值保持空串即可. */
     effect: '' as SceneEffect,
     /** 全局动态背景 (bg-fx) 呼吸光周期 (ms) = 当前场景 BGM 一小节, 平缓不闪 */
     pulseMs: 2449, // title 98 BPM → barMs ≈ 2449ms
@@ -88,6 +91,8 @@ Page({
     aboutOrigin: 'options' as 'menu' | 'options',
     /** TS 私有字段声明 (非渲染数据): 离场动画清理定时器 */
     _leaveTimer: null as number | null,
+    /** 外部 query 直达 (id/file) 标记 — onReady 不再路由 title, 避免覆盖直达场景 */
+    _directArrival: false as boolean,
   },
 
   /** 场景音频 + 背景节拍联动: 切 BGM, 并让 bg-fx 呼吸光周期跟随该 BGM 的一小节 */
@@ -103,9 +108,11 @@ Page({
     // 支持外部直达: ?id=numpleX.data_NNN → 直接进数字谜题; ?file=xxx&idx=N → 进图画
     // 首屏直达无需过渡 (title 从未显示过)
     if (query && query.id) {
+      this.data._directArrival = true;
       this.setData({ scene: 'sudoku', puzzleId: String(query.id) });
       this._syncSceneAudio('sudoku');
     } else if (query && query.file) {
+      this.data._directArrival = true;
       this.setData({
         scene: 'picture',
         fileKey: String(query.file),
@@ -113,8 +120,18 @@ Page({
       });
       this._syncSceneAudio('picture');
     } else {
+      // 非直达: scene 保持 '' 空串, 由 onReady 统一 _switchScene('title') 动态插入
       this._syncSceneAudio('title');
     }
+  },
+
+  /** V0.53.2: 首屏场景统一动态路由 — 初始渲染完成后才插入 title-scene.
+      Skyline 对「页面级初始渲染」的组件 (首屏 title) 不分发 tap; 经 _switchScene
+      动态插入的组件才可点击. 所有场景统一走此路径, 杜绝"首屏看得见但点了没反应". */
+  onReady() {
+    if (this.data._directArrival) return;
+    // 等首帧渲染完成再切, 避免与 onLoad 直连 setData 并发 (直连场景无需路由)
+    setTimeout(() => this._switchScene('title'), 0);
   },
 
   onUnload() {

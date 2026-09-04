@@ -4,6 +4,37 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.53.2 — 首屏 title「看到但点了没反应」修复: 场景统一动态路由
+
+### 2026-09-04
+
+#### 背景 (用户 V0.53.1 后报 "看到了就是点了没反应")
+- V0.53.1 已修好首屏 title 可见 (Press START 能看到)
+- 但点击仍无反应; console 无 `[title-scene] onTapStart` 日志
+
+#### 真根因 (V0.53.2)
+- Skyline 对「页面级初始渲染」的自定义组件**不分发 tap** (首屏 title-scene 静态挂载)
+- 其余所有场景 (menu/select/picture/...) 都是经 `_switchScene` **动态插入**的, 故可正常点击
+- 唯独 title 是 onLoad 时 `scene:'title'` 静态初始渲染 → 收不到 tap
+- title-scene 绑定/handler/index 端 onTitleStart/_switchScene 全部正常 (已逐一核验)
+
+#### 修复
+- `index.ts` `data.scene` 初始 `'title'` → `''` (空串); 新增 `_directArrival` 标记
+- 新增 `onReady()` (初始渲染完成后): 非直达时 `setTimeout(() => _switchScene('title'), 0)`
+  - title 也走 `_switchScene` 动态插入 → 与所有可点场景同路径, 恢复 tap 分发
+  - 首屏呈现: 糖果背景一帧 → title 淡入 (动态插入, fade 动画正常触发, 不再有 opacity:0 冻结)
+- `title-scene.ts` `onTapStart`: `triggerEvent('start')` 提前到 `playSe` 之前, 音频不阻塞导航
+- 外部 query 直达 (id/file): onLoad 置 `_directArrival=true`, onReady 不再路由 title, 不覆盖直达场景
+
+#### 验证
+- IDE 语言服务 0 诊断 (index.ts / title-scene.ts)
+- 请用户重新编译: 首屏糖果背景后 title 淡入 (点豆成画 + Press START),
+  点击任意处 → 切 menu (淡入淡出过渡)
+
+---
+
+---
+
 ## V0.53.1 — 首屏 title 场景层透明修复: 初始 effect 置空跳过首帧动画
 
 ### 2026-09-04
