@@ -5,6 +5,14 @@
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
 import { CellColor } from '../../../utils/sudoku/numclo_puzzles';
 import { NUMCLO_ANSWERS } from '../../../utils/sudoku/numclo_answers';
+import {
+  NBM_NUMCLO00_COLOR_1_RED,
+  NBM_NUMCLO00_COLOR_2_YELLOW,
+  NBM_NUMCLO00_COLOR_3_BLUE,
+  NBM_NUMCLO00_COLOR_4_GREEN,
+  NBM_NUMCLO00_ERASE,
+  NBM_NUMCLO00_CLEAR,
+} from '../../../utils/sudoku/nbmAssets';
 import { audioService } from '../../../utils/audio/audioService';
 import {
   isGridEmpty,
@@ -35,6 +43,16 @@ const PALETTE_HEX = ['#ffffff', '#f80000', '#f8f800', '#4868f8', '#48b048', '#18
 const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
 /** 边框深色 = numclo_00.nbm 按钮暗边 idx7-10 (红黄蓝绿) + 黑 #606060 (V0.25 起 waku 网格改 CSS 自绘) */
 const PALETTE_BORDERS = ['#c8d0d8', '#c00000', '#c8c800', '#000090', '#308830', '#606060'];
+/** V0.45.1 恢复 DS 原版 NBM 调色板按钮 (5 画笔色 + 擦除), 不再用纯 CSS 色块.
+ *  1=红 / 2=黄 / 3=蓝 / 4=绿, 5=黑 (PALETTE_HEX 索引 1..5). 0=擦除 (用 erase 切片). */
+const PALETTE_IMAGES: string[] = [
+  NBM_NUMCLO00_ERASE,
+  NBM_NUMCLO00_COLOR_1_RED,
+  NBM_NUMCLO00_COLOR_2_YELLOW,
+  NBM_NUMCLO00_COLOR_3_BLUE,
+  NBM_NUMCLO00_COLOR_4_GREEN,
+  '', // 5=黑目前没有专用 NBM 切片, 继续用纯色块
+];
 /** 15 个类别 (numclo0-9 主题库 + numclo_00-03 附加 + numclo_tu 教程) */
 const CATEGORIES: Array<{ key: string; label: string }> = [
   { key: 'numclo0.data', label: '动物' },
@@ -116,12 +134,16 @@ Component({
     puzzleName: '',
     puzzleIndex: 0,      // 文件内索引 0-based
     puzzleCount: 0,
+    /** DS 原版 NBM 切片 (5 画笔色 + 擦除) — V0.45.1 起恢复 1:1 NBM 调色板按钮, 不用纯 CSS 色块 */
     palette: PALETTE_HEX.map((color, id) => ({
       id,
       color,
       label: PALETTE_LABELS[id],
       border: PALETTE_BORDERS[id],
+      imageUrl: PALETTE_IMAGES[id] || '',
     })),
+    /** V0.45.1: 清空画板按钮图 (numclo_00.nbm clear 切片) */
+    clearImageUrl: NBM_NUMCLO00_CLEAR,
     selectedColor: 1 as number,
     timerText: '00:00',
     moves: 0,

@@ -88,7 +88,7 @@
     <text class="progress-text">已正确 {{correctCount}} / {{cells.length}}</text>
   </view>
 
-  <!-- 调色板 (0=擦除 CSS 斜线 + 5 画笔色 CSS 色块, 选中态蓝框) -->
+  <!-- 调色板 (V0.45.1: 1:1 DS 原版 NBM 切片, 0=擦除 NBM_NUMCLO00_ERASE, 1-4=红黄蓝绿 4 色 NBM 切片, 5=黑用纯色块 fallback) -->
   <view class="palette">
     <view
       wx:for="{{palette}}"
@@ -100,20 +100,20 @@
       bindtap="onTapPalette"
     >
       <view
-        class="palette-key {{item.id === 0 ? 'palette-key-erase' : ''}}"
-        style="background-color: {{item.color}}; border-color: {{item.border}};"
+        class="palette-key {{item.id === 5 ? 'palette-key-fallback' : ''}}"
+        style="background-image: {{item.imageUrl ? ('url(' + item.imageUrl + ')') : 'none'}}; background-color: {{item.imageUrl ? 'transparent' : item.color}}; border-color: {{item.border}};"
       ></view>
       <text wx:if="{{item.id === 0}}" class="palette-tool-label">擦除</text>
       <text wx:else class="palette-need {{paletteNeed[item.id] === 0 ? 'palette-need-zero' : ''}}">{{paletteNeed[item.id]}}</text>
     </view>
   </view>
 
-  <!-- 工具: 显示答案 / 撤销 / 重做 / 清空画板 (统一 ds-btn 双态) -->
+  <!-- 工具: 显示答案 / 撤销 / 重做 / 清空画板 (清空 = numclo_00.nbm clear NBM 原版图标) -->
   <view class="tool-row">
     <view class="ds-btn tool-key" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
     <view class="ds-btn tool-key" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onUndo">撤销</view>
     <view class="ds-btn tool-key" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onRedo">重做</view>
-    <view class="ds-btn tool-key tool-key-danger" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onClearAll">清空</view>
+    <view class="ds-btn tool-key tool-key-icon" hover-class="ds-btn-hover" hover-stay-time="80" style="background-image: url({{clearImageUrl}}); background-color: transparent;" bindtap="onClearAll"></view>
   </view>
 
   <!-- 完成提示条 -->
