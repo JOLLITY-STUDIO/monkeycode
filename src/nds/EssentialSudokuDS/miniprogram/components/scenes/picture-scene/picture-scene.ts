@@ -5,6 +5,7 @@
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
 import { CellColor, GRID_RENDER, GRID_ROM, PADDING } from '../../../utils/sudoku/numclo_puzzles';
 import { NUMCLO_ANSWERS } from '../../../utils/sudoku/numclo_answers';
+import { NUMCLO_ANSWERS_ZH } from '../../../utils/sudoku/numclo_answers_zh';
 import {
   NBM_NUMCLO00_COLOR_1_RED,
   NBM_NUMCLO00_COLOR_2_YELLOW,
@@ -135,6 +136,10 @@ Component({
     categories: CATEGORIES,
     currentFile: 'numclo0.data',
     puzzleName: '',
+    /** 双语图片信息: 中文名 (来自 NUMCLO_ANSWERS_ZH, 无则回退类别 label) */
+    puzzleNameZh: '',
+    /** 双语图片信息: 英文名 (来自 NUMCLO_ANSWERS) */
+    puzzleNameEn: '',
     puzzleIndex: 0,      // 文件内索引 0-based
     puzzleCount: 0,
     /** DS 原版 NBM 切片 (5 画笔色 + 擦除) — V0.45.1 起恢复 1:1 NBM 调色板按钮, 不用纯 CSS 色块 */
@@ -155,9 +160,9 @@ Component({
     completed: false,
     /** 通关庆祝动画中 */
     celebrate: false,
-    /** 通关时的用户作品快照 (PICTURE-V0.47: 拼豆图纸闭环, 在 celebrate-panel 里 15×15 渲染用户涂色结果)
-     *  每个元素仅含 v (玩家涂色 0..5), 跟 PALETTE_HEX 对照出 bg. */
-    completedWork: [] as Array<{ v: number }>,
+    /** 通关大图快照 (15×15 内容区 225 格, 行主序): {i, v = 真实答案 t (0..5)}.
+     *  V0.50 起只取内容区 (去掉 padding), 与 .completed-grid 15/行 CSS 对齐渲染真实答案图. */
+    completedWork: [] as Array<{ i: number; v: number }>,
     showingAnswer: false,
     correctCount: 0,           // 已正确内容格数 (进度, 只计 15×15 内容区)
     contentTotal: CONTENT_CELLS, // 内容区总格数 225 (进度分母, 不含 padding)
@@ -439,7 +444,10 @@ Component({
       }
       const info = service.getPuzzleInfo();
       const answers = NUMCLO_ANSWERS[fileKey] || [];
-      const name = info?.name || answers[indexInFile] || '第 ' + (indexInFile + 1) + ' 题';
+      const enName = info?.name || answers[indexInFile] || '';
+      const name = enName || '第 ' + (indexInFile + 1) + ' 题';
+      // 双语图片信息: zh = NUMCLO_ANSWERS_ZH 中文名 (无则回退类别 label), en = ROM 英文名
+      const resolved = this._resolveName(fileKey, indexInFile, enName);
       const list = service.listFilePuzzleIds(fileKey);
       const target = service.getTarget();
       const clues = computeClues(target);
@@ -476,6 +484,10 @@ Component({
         cells,
         currentFile: fileKey,
         puzzleName: name,
+        /** V0.50: 双语图片信息 — 中文名 (NUMCLO_ANSWERS_ZH; 无翻译回退类别 label 如「动物」) */
+        puzzleNameZh: resolved.zh,
+        /** V0.50: 双语图片信息 — 英文名 (ROM numclo_seikai 名) */
+        puzzleNameEn: resolved.en,
         puzzleIndex: indexInFile,
         puzzleCount: list.length,
         moves,
@@ -700,6 +712,34 @@ Component({
       return color === 2 ? ' cb-yellow' : '';
     },
 
+    /** 类别中文 label (CATEGORIES 查找; 找不到回退空串) */
+    _categoryLabel(fileKey: string): string {
+      const cat = CATEGORIES.find((c) => c.key === fileKey);
+      return cat ? cat.label : '';
+    },
+
+    /** 解析双语图片信息: { zh, en }.
+     *  en = ROM 英文名 (NUMCLO_ANSWERS 或 info.name);
+     *  zh = NUMCLO_ANSWERS_ZH 中文名, 无则回退类别 label (仍保持双语展示, 不空白). */
+    _resolveName(fileKey: string, indexInFile: number, en: string): { zh: string; en: string } {
+      const zhArr = NUMCLO_ANSWERS_ZH[fileKey];
+      const zh = (zhArr && zhArr[indexInFile]) || this._categoryLabel(fileKey);
+      return { zh: zh || en || '', en: en || '' };
+    },
+
+    /** 通关大图预览数据: 只取 15×15 内容区 (去掉四周 PADDING 留白), 行主序 225 格,
+     *  颜色取目标色 t (= 通关瞬间真实答案, 与玩家涂色一致). 与 .completed-grid 15/行对齐. */
+    _snapshotContentWork(): Array<{ i: number; v: number }> {
+      const out: Array<{ i: number; v: number }> = [];
+      for (let r = PADDING; r < PADDING + GRID_ROM; r++) {
+        for (let c = PADDING; c < PADDING + GRID_ROM; c++) {
+          const cell = this.data.cells[r * GRID + c];
+          out.push({ i: out.length, v: cell ? (cell.t as number) : 0 });
+        }
+      }
+      return out;
+    },
+
     /** 每色剩余待涂格数: 目标该色总格数 - 已正确涂成该色格数 (0 号色恒为 0) */
     _computeNeed(cells: PictureCell[]): number[] {
       const need = [0, 0, 0, 0, 0, 0];
@@ -780,17 +820,19 @@ Component({
           });
           clearProgress(session.file, session.indexInFile);
         }
-        const { puzzleName } = this.data;
-        /** PICTURE-V0.47: 通关瞬间快照玩家涂色结果 → celebrate-panel 渲染作品大图 */
-        const completedWork = this.data.cells.map((c) => ({ i: c.i, v: c.v as number }));
+        const { puzzleName, puzzleNameZh, puzzleNameEn } = this.data;
+        /** 通关大图: 真实答案 (target t) 15×15 内容区快照, 不再含 padding → celebrate-panel 正确 15 列对齐 */
+        const completedWork = this._snapshotContentWork();
         this.setData({ complete: true, completed: true, celebrate: true, completedWork });
         audioService.playSe('complete');
         this._clearCelebrateTimer();
         this.data._celebrateTimer = setTimeout(() => {
           this.setData({ celebrate: false });
+          const nameLine = puzzleNameZh || puzzleName;
+          const enLine = puzzleNameEn && puzzleNameEn !== puzzleNameZh ? ` (${puzzleNameEn})` : '';
           wx.showModal({
             title: '🎉 完成!',
-            content: `${puzzleName} 用时 ${this.data.timerText}，${info?.moves ?? 0} 步。下一题?`,
+            content: `${nameLine}${enLine} 用时 ${this.data.timerText}，${info?.moves ?? 0} 步。下一题?`,
             confirmText: '下一题',
             cancelText: '返回',
             success: (r) => {

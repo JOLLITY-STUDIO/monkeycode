@@ -4,6 +4,32 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.50 — 通关直显真实答案 15×15 + 图片信息中英双语 (含 numclo1-9 全量中文名表)
+
+### 2026-09-04
+
+#### 背景 (用户诉求)
+- 图画谜题 15×15 是绘制区, 四周 6 行/列是数字提示区 (已结构确认: 21×21 渲染网格居中)
+- 用户要求: "拼成功了就直接在 15×15 显示真实答案啊, 并显示中文/英文显示图片信息"
+- ROM 名字只有英文 (numclo_seikai 已 probe 验证), 中文名必须人工翻译字典补齐
+
+#### 修改
+- ✅ `numclo_answers_zh.ts` (新建): 全量中文名表 `NUMCLO_ANSWERS_ZH`, 覆盖 numclo0-9 十类 × 100 题 = 1000 条, 与 `numclo_answers.ts` 逐索引对齐 (脚本核对 ALL MATCH)
+- ✅ `picture-scene.ts`: 新增 `puzzleNameZh`/`puzzleNameEn` data; `_categoryLabel(fileKey)` + `_resolveName(fileKey, i, en)` → {zh, en} (无中文回退类别 label, 保持双语不空白); `_snapshotContentWork()` 只取 15×15 内容区 225 格 (去掉 PADDING), `v = cell.t` 真实答案, 与 `.completed-grid` 15/行 CSS 对齐 (修复旧 441 格含 padding 乱序)
+- ✅ `picture-scene.wxml`: 顶部 header 改 `.name-stack` (中文主名 + done-badge + 英文次行, en≠zh 才显示); 通关时 `paint-grid` 切 `paint-grid-reveal` (去网格线 → 主棋盘直接呈现真实答案色图); celebrate-panel 改标题"真实答案" + 中英双行名字 + 225 格内容区作品大图
+- ✅ `picture-scene.wxss`: `.name-stack`/`.name-row`/`.puzzle-name-en` + `.celebrate-name`/`.celebrate-name-en`; `paint-grid-reveal { background-image: none; }` 去网格线; `.completed-grid` 15/行 225 格真实答案色块
+- ✅ CHANGELOG 记录本条目
+
+#### 验证
+- IDE 语言服务 0 诊断 (picture-scene 三件套 + numclo_answers_zh)
+- 数量脚本: en/zh 各 key 均 100 条, 10 key ALL MATCH
+
+#### 后续候选
+- numclo_00-03 / numclo_tu (附加/教程) 无正规 ROM 名表 → 仍回退类别 label; 待真机截图补齐
+- 真机验证通关 reveal + celebrate 大图渲染 + 双语标题显示
+
+---
+
 ## SOUND-V0.6.1 — 场景 BGM 映射全部收敛到官方循环 BGM: 消灭"几秒音效循环"听感
 
 ### 2026-09-04

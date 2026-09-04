@@ -48,6 +48,23 @@
   min-width: 0;
 }
 
+/* 双语谜题名: 中文主名 (可截断) + 英文次名一行 (小字) */
+.name-stack {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.name-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+}
+
 .puzzle-name {
   font-size: 16px;
   font-weight: 800;
@@ -55,7 +72,18 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 60%;
+  max-width: 100%;
+  flex-shrink: 1;
+}
+
+.puzzle-name-en {
+  font-size: 11px;
+  color: #9a8ab0;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .stat {
@@ -306,7 +334,11 @@
   border-bottom: 1.5px solid #d83a3a;
 }
 
-/* 显示答案时: 去掉格子线, 纯色块拼图效果 */
+/* 显示答案 / 通关后: 去掉网格线, 纯色块拼图效果 (直接看真实答案图像) */
+.paint-grid-reveal {
+  background-image: none;
+}
+
 .paint-grid-reveal .paint-cell {
   border-color: transparent;
 }
@@ -551,6 +583,22 @@
   margin-top: 6px;
   font-size: 13px;
   color: #6b7a8a;
+}
+
+/* 通关大图中英双语名 (在图片下方, 与 header 一致的配色) */
+.celebrate-name {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #6a3aa0;
+  text-align: center;
+}
+
+.celebrate-name-en {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #9a8ab0;
+  text-align: center;
 }
 
 /* 彩带小条 (颜色对应 5 画笔色 + 金色) */

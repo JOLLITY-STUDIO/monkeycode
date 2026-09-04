@@ -4,11 +4,16 @@
     <text class="scene-bar-text">← 返回</text>
   </view>
 
-  <!-- 顶部: 谜题名 + 通关标记 + 序号 + 计时 -->
+  <!-- 顶部: 谜题双语名 (中/英) + 通关标记 + 序号 + 计时 -->
   <view class="game-header">
     <view class="header-left">
-      <text class="puzzle-name">{{puzzleName}}</text>
-      <text wx:if="{{completed}}" class="done-badge">✓ 已通关</text>
+      <view class="name-stack">
+        <view class="name-row">
+          <text class="puzzle-name">{{puzzleNameZh || puzzleName}}</text>
+          <text wx:if="{{completed}}" class="done-badge">✓ 已通关</text>
+        </view>
+        <text wx:if="{{puzzleNameEn && puzzleNameEn !== puzzleNameZh}}" class="puzzle-name-en">{{puzzleNameEn}}</text>
+      </view>
       <text class="stat">#{{puzzleIndex + 1}}/{{puzzleCount}}</text>
     </view>
     <text class="timer">{{timerText}}</text>
@@ -61,7 +66,7 @@
           >{{band.count || ''}}</view>
         </view>
       </view>
-      <view class="paint-grid {{showingAnswer ? 'paint-grid-reveal' : ''}}">
+      <view class="paint-grid {{showingAnswer || complete ? 'paint-grid-reveal' : ''}}">
         <view
           wx:for="{{cells}}"
           wx:key="i"
@@ -130,7 +135,7 @@
     <view class="celebrate-panel">
       <view class="celebrate-check">✓</view>
       <view class="celebrate-title">通关成功!</view>
-      <!-- PICTURE-V0.47: 拼豆图纸闭环 — celebrate-panel 内 15×15 渲染用户涂色结果作品大图 -->
+      <!-- 通关大图: 直接展示真实答案 15×15 图像 (target t 快照), 中英双语标题在下方 -->
       <view class="completed-grid">
         <view
           wx:for="{{completedWork}}"
@@ -139,7 +144,9 @@
           style="background: {{completedColor(item.v)}};"
         ></view>
       </view>
-      <view class="celebrate-sub">{{puzzleName}} · {{timerText}} · {{moves}} 步</view>
+      <view class="celebrate-name">{{puzzleNameZh || puzzleName}}</view>
+      <view wx:if="{{puzzleNameEn && puzzleNameEn !== puzzleNameZh}}" class="celebrate-name-en">{{puzzleNameEn}}</view>
+      <view class="celebrate-sub">{{timerText}} · {{moves}} 步</view>
     </view>
   </view>
 
