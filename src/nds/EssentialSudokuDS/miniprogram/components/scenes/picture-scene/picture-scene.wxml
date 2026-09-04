@@ -70,8 +70,8 @@
         <view
           wx:for="{{cells}}"
           wx:key="i"
-          class="paint-cell"
-          style="background: {{item.bg}}; border-color: {{item.border}};"
+          class="paint-cell{{item.pad ? ' pad' : ''}}"
+          style="background: {{item.bg}};"
           data-i="{{item.i}}"
           bindtap="onTapCell"
         ></view>

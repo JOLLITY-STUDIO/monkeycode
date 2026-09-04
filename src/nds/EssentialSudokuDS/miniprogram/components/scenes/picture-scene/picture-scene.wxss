@@ -298,16 +298,8 @@
   flex-direction: row;
   flex-wrap: wrap;
   background-color: #ffffff;
-  /* V0.46: 网格线由 background-image 双 gradient 单层绘制 (不叠加 border).
-     旧版 paint-cell 4 边 0.5px border, 两格之间的 border-right + border-left 叠加成 1px,
-     devtools 模拟器 sub-pixel 渲染下经常闪烁/消失. 改 gradient 单层稳定. */
-  background-image:
-    linear-gradient(to right, rgba(180, 190, 200, 0.35) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(180, 190, 200, 0.35) 1px, transparent 1px);
-  /* V0.51: 21×21 渲染网格等分 (内容 15×15 居中, 四周 PADDING=3 留白见 .paint-cell.pad).
-     此前误用 calc(100%/15) → 441 格按 15 列 flex-wrap 错乱溢出, 未被 21×21 固定绘制. */
-  background-size: calc(100% / 21) calc(100% / 21);
-  background-repeat: repeat;
+  /* V0.52: 网格线不再画在 paint-grid background 上 — 会被每个 cell 的不透明色块背景遮挡而不可见.
+     细线改由 .paint-cell 单边 border-right/bottom 绘制 (见下). */
   border: none;
   box-sizing: border-box;
   overflow: hidden;
@@ -318,9 +310,19 @@
   width: calc(100% / 21);
   height: calc(100% / 21);
   box-sizing: border-box;
-  /* V0.46: 去掉 4 边 border, 网格线由 paint-grid background-image 画, cell 只显示色块背景.
-     5×5 块粗红线仍走 nth-child border-right/bottom (单边, 不叠加). */
+  /* V0.52: 网格细线改由 cell 自身单边 border 绘制 (right+bottom 1px, 相邻格共享同一边不叠加).
+     此前画在 .paint-grid background-image 上, 会被每个 cell 的不透明色块背景完全遮挡 → 细线不可见,
+     只看到 5×5 粗红线. 5×5 块粗红线 (nth-child border-right/bottom 1.5px 红) 规则定义在后面,
+     同侧覆盖细线为粗红线; reveal 时 .paint-grid-reveal .paint-cell 置 transparent 隐藏. */
   border: none;
+  border-right: 1px solid rgba(31, 48, 72, 0.55);
+  border-bottom: 1px solid rgba(31, 48, 72, 0.55);
+}
+
+/* 四周 PADDING=3 留白格: 浅灰衬底, 格线更淡 (整块灰带观感但保留 21×21 全格网) */
+.paint-cell.pad {
+  border-right-color: rgba(31, 48, 72, 0.22);
+  border-bottom-color: rgba(31, 48, 72, 0.22);
 }
 
 /* V0.51: 5×5 块粗红线 (21×21 内容区 0-based col/row 3..17, 块边界 7/12/17). */

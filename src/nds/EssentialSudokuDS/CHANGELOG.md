@@ -4,6 +4,40 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.52 — 画布网格线清晰可见: 改由 cell 单边 border 绘制
+
+### 2026-09-04
+
+#### 背景 (用户报告)
+- 用户: "为啥人家的网格线条这么清晰咱们这个看都看不出来呀"
+- 对比原版 DS (格子间有清晰细线 + 5×5 块界线) 与当前画布 (细格线几乎不可见)
+
+#### 根因
+- `.paint-grid` 的细格线用自身 `background-image` 双 linear-gradient 绘制 (V0.46 方案)
+- 但每个 `.paint-cell` 都有**不透明背景色块** (inline `background: #fff` 或涂色), 子元素背景
+  完全遮挡父元素 `.paint-grid` 的 background-image → 细格线一张都看不到, 只剩 5×5 粗红线
+- (V0.46 时格线"可见"是因为当时 cell 背景为半透明/或数据未按格填满, 现全格不透明必然遮挡)
+
+#### 修复
+- `picture-scene.wxml`: paint-cell 内联 style 移除 `border-color: {{item.border}}`
+  (它会把 wxss 设置的格线颜色覆盖掉); class 加 `{{item.pad ? ' pad' : ''}}`
+- `picture-scene.wxss`:
+  - `.paint-cell` 单边 `border-right/bottom: 1px solid rgba(31,48,72,0.55)` 深灰细线
+    (相邻格共享同一边, 不叠加; 对比旧 4 边 0.5px 叠加方案不会闪烁)
+  - 新增 `.paint-cell.pad`: 四周留白格线更淡 `rgba(31,48,72,0.22)` (灰带观感但保留 21×21 全格网)
+  - `.paint-grid` 删除被遮挡的 background-image/background-size/repeat (无用代码)
+  - 5×5 块粗红线规则定义在细线之后, 同侧覆盖为 1.5px 红; reveal 时 cell border 置 transparent
+
+#### 验证
+- IDE 语言服务 0 诊断 (picture-scene.wxml / picture-scene.wxss)
+- 每格右/下 1px 灰线 → 全画布 21×21 细格线均匀清晰, 涂色格间也有分界细线
+
+#### 后续候选
+- 真机确认细线深浅 (rgba 0.55 是否够清晰 / 是否过重)
+- reveal 大图 (通关后) 15×15 答案仍无格线纯色块
+
+---
+
 ## PICTURE-V0.51 — 画布改为 21×21 固定网格 (内容 15×15 居中 + 四周 PADDING=3 留白衬底)
 
 ### 2026-09-04
