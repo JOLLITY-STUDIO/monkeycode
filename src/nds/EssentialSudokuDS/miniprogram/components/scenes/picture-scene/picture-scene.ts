@@ -45,6 +45,9 @@ const PALETTE_HEX = ['#ffffff', '#f80000', '#f8f800', '#4868f8', '#48b048', '#18
 const PALETTE_LABELS = ['擦除', '', '', '', '', ''];
 /** 边框深色 = numclo_00.nbm 按钮暗边 idx7-10 (红黄蓝绿) + 黑 #606060 (V0.25 起 waku 网格改 CSS 自绘) */
 const PALETTE_BORDERS = ['#c8d0d8', '#c00000', '#c8c800', '#000090', '#308830', '#606060'];
+/** 留白区 (内容区外 PADDING=3 四周边距) 浅灰衬底: DS 原版 numclo_waku 四周灰边, cell=0 空, 不参与涂色 */
+const PAD_HEX = '#dfe6ee';
+const PAD_BORDER = 'transparent';
 /** V0.45.1 恢复 DS 原版 NBM 调色板按钮 (5 画笔色 + 擦除), 不再用纯 CSS 色块.
  *  1=红 / 2=黄 / 3=蓝 / 4=绿, 5=黑 (PALETTE_HEX 索引 1..5). 0=擦除 (用 erase 切片). */
 const PALETTE_IMAGES: string[] = [
@@ -453,14 +456,19 @@ Component({
       const cells: PictureCell[] = [];
       for (let i = 0; i < TOTAL_CELLS; i++) {
         const t = target[i];
+        const r = Math.floor(i / GRID);
+        const c = i % GRID;
+        // 内容区 (15×15) 外的四周 PADDING 格 = 留白衬底, 不可涂色
+        const pad = r < PADDING || r >= PADDING + GRID_ROM || c < PADDING || c >= PADDING + GRID_ROM;
         cells.push({
           i,
-          r: Math.floor(i / GRID),
-          c: i % GRID,
+          r,
+          c,
           v: 0,
           t,
-          bg: PALETTE_HEX[0],
-          border: PALETTE_BORDERS[0],
+          pad,
+          bg: pad ? PAD_HEX : PALETTE_HEX[0],
+          border: pad ? PAD_BORDER : PALETTE_BORDERS[0],
         });
       }
       // 已通关题目不恢复旧进度 (从空白重涂); 未通关则恢复上次涂色网格
@@ -474,8 +482,13 @@ Component({
         for (let i = 0; i < TOTAL_CELLS; i++) {
           const v = saved.grid[i] as CellColor;
           cells[i].v = v;
-          cells[i].bg = PALETTE_HEX[v];
-          cells[i].border = PALETTE_BORDERS[v];
+          if (cells[i].pad) {
+            cells[i].bg = PAD_HEX;
+            cells[i].border = PAD_BORDER;
+          } else {
+            cells[i].bg = PALETTE_HEX[v];
+            cells[i].border = PALETTE_BORDERS[v];
+          }
         }
       }
       const need = this._computeNeed(cells);
@@ -496,7 +509,7 @@ Component({
         /** PICTURE-V0.47: 切题时清空上一题通关作品快照 */
         completedWork: [],
         showingAnswer: false,
-        correctCount: hasSaved ? TOTAL_CELLS - this._countWrong(cells) : 0,
+        correctCount: hasSaved ? CONTENT_CELLS - this._countWrong(cells) : 0,
         paletteNeed: need,
         rowClues: clues.rows,
         colClues: clues.cols,
@@ -575,7 +588,7 @@ Component({
       const color = this.data.selectedColor as CellColor;
       const cells = this.data.cells.slice();
       const cell = cells[i];
-      if (!cell) return;
+      if (!cell || cell.pad) return;
       const prev = cell.v as CellColor;
       // 同一格再点一次当前色 = 擦除
       const next = prev === color ? 0 : color;
@@ -608,13 +621,23 @@ Component({
       const cells = this.data.cells.slice();
       if (showing) {
         for (const cell of cells) {
-          cell.bg = PALETTE_HEX[cell.t];
-          cell.border = PALETTE_BORDERS[cell.t];
+          if (cell.pad) {
+            cell.bg = PAD_HEX;
+            cell.border = PAD_BORDER;
+          } else {
+            cell.bg = PALETTE_HEX[cell.t];
+            cell.border = PALETTE_BORDERS[cell.t];
+          }
         }
       } else {
         for (const cell of cells) {
-          cell.bg = PALETTE_HEX[cell.v];
-          cell.border = PALETTE_BORDERS[cell.v];
+          if (cell.pad) {
+            cell.bg = PAD_HEX;
+            cell.border = PAD_BORDER;
+          } else {
+            cell.bg = PALETTE_HEX[cell.v];
+            cell.border = PALETTE_BORDERS[cell.v];
+          }
         }
       }
       this.setData({ showingAnswer: showing, cells });
@@ -628,8 +651,8 @@ Component({
       const cells = this.data.cells.slice();
       for (const cell of cells) {
         cell.v = 0;
-        cell.bg = PALETTE_HEX[0];
-        cell.border = PALETTE_BORDERS[0];
+        cell.bg = cell.pad ? PAD_HEX : PALETTE_HEX[0];
+        cell.border = cell.pad ? PAD_BORDER : PALETTE_BORDERS[0];
       }
       service.clearGrid();
       this.setData({ cells, moves: 0, history: [], redoStack: [] });
@@ -807,7 +830,7 @@ Component({
       const info = service.getSessionInfo();
       const res = service.checkComplete();
       const session = service.getSession();
-      this.setData({ moves: info?.moves ?? 0, correctCount: TOTAL_CELLS - res.wrong });
+      this.setData({ moves: info?.moves ?? 0, correctCount: CONTENT_CELLS - res.wrong });
       if (res.complete) {
         this._stopTimer();
         this._clearSaveTimer();

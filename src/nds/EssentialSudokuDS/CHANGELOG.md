@@ -4,6 +4,47 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.51 — 画布改为 21×21 固定网格 (内容 15×15 居中 + 四周 PADDING=3 留白衬底)
+
+### 2026-09-04
+
+#### 背景 (用户报告)
+- 用户: "这种新画布为啥还是没有按我的21*21固定绘制出网格呀"
+- 截图: 中间画布错乱成一大片白色拼图形状, 不是整齐的 21×21 网格
+
+#### 根因
+- 数据层完全按 21×21 生成: `numclo_puzzles.ts` `GRID_RENDER=21 / GRID_ROM=15 / PADDING=3`,
+  `unpackNumcloGrid()` 把 15×15 内容居中 fill 到 441 格; `cells` 也生成 `TOTAL_CELLS=441`,
+  `colClues/rowClues` 各 21 项.
+- 但渲染层 `picture-scene.wxss` 的 `.paint-grid`/`.paint-cell` 却用 `calc(100%/15)` 等分.
+  → 441 格按 15 列 flex-wrap 成 29.4 行, 网格错乱溢出, 被 `overflow:hidden` 裁掉 → 用户看到拼图块而非网格.
+- `PictureCell.pad` 字段定义了但从未赋值, padding 区没浅灰衬底也没禁涂.
+
+#### 修复
+- `picture-scene.ts`:
+  - `_startPuzzle` cells 构造补 `pad` 字段 (内容区外 3 格 = true), pad 格 bg=`PAD_HEX`(#dfe6ee) 浅灰衬底, border 透明.
+  - `onTapCell` 加 `if (!cell || cell.pad) return` — 留白区不可涂色 (否则涂错导致通关判错).
+  - 恢复进度 / 显示答案 / 清空 三处循环对 pad 格保持浅灰衬底.
+  - 进度正确数分母从 `TOTAL_CELLS(441)` 改 `CONTENT_CELLS(225)` (内容区口径).
+- `picture-scene.wxml`: 进度条 `/{{cells.length}}` → `/{{contentTotal}}`.
+- `picture-scene.wxss`:
+  - `.paint-grid` background-size / `.paint-cell` width/height 从 `calc(100%/15)` 改 `calc(100%/21)`.
+  - 布局比例: `.clue-header` 25%→`calc(100%*5/26)`, `.puzzle-body` 75%→`calc(100%*21/26)`,
+    `.clue-corner`/`.row-clues` 25%→`calc(100%*5/26)` — 使 5 band 高 = 1 cell 高, band 与网格行列像素对齐.
+  - 5×5 块粗红线选择器从 15 列改 21 列 (内容区偏移 PADDING=3, 块边界 0-based 7/12/17):
+    右线 `nth-child(21n+8/13/18)`, 下线 `n+148..168 / n+253..273 / n+358..378`.
+
+#### 验证
+- IDE 语言服务 0 诊断 (picture-scene.ts / picture-scene.wxml)
+- 布局自洽校验: cell 高 = (21/26W)/21 = W/26; band 高 = (5/26W)/5 = W/26 → 完全对齐;
+  paint-grid 宽 = 100%W - 5/26W = 21/26W = 高 → 正方形 21×21.
+
+#### 后续候选
+- 真机确认 21×21 网格 + 四周浅灰留白 + 5×5 块红线是否正确对齐画布
+- 通关 reveal 时 15×15 内容区答案图居中 + 灰边是否美观
+
+---
+
 ## PICTURE-V0.50.1 — 修 picture-scene 加载崩溃: 中文名表并入既有模块
 
 ### 2026-09-04

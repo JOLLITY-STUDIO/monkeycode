@@ -181,12 +181,13 @@
   box-sizing: border-box;
 }
 
-/* V0.46: clue-header 高度 = 25% puzzle-area (= 5 × cell 高度), puzzle-body = 75% (= 15 × cell 高度).
-   这样 5 个 band 高度 = 1 个 cell 高度, band 与网格行水平像素对齐.
-   minmax(0, 1fr) 让 bands=5 时第 6 个空 grid row 收缩到 0 高度, bands 撑满 clue-header 全部高度贴底 */
+/* V0.51: 21×21 渲染网格 → puzzle-area 总高 = 5 band + 21 行 = 26 份 cell height.
+   clue-header (5 band) = 5/26 ≈ 19.23%, puzzle-body (21 行) = 21/26 ≈ 80.77%.
+   cell 高 = puzzle-body 高 / 21 = (21/26 W)/21 = W/26; band 高 = clue-header 高 / 5 = (5/26 W)/5 = W/26,
+   band 与网格行水平像素对齐. minmax(0, 1fr) 让空 grid row/col 收缩到 0, bands 撑满. */
 .clue-header {
   width: 100%;
-  height: 25%;
+  height: calc(100% * 5 / 26);
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
@@ -194,7 +195,7 @@
 }
 
 .clue-corner {
-  width: 25%;
+  width: calc(100% * 5 / 26);
   height: 100%;
   flex-shrink: 0;
 }
@@ -215,7 +216,7 @@
 
 .puzzle-body {
   width: 100%;
-  height: 75%;
+  height: calc(100% * 21 / 26);
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
@@ -223,7 +224,7 @@
 }
 
 .row-clues {
-  width: 25%;
+  width: calc(100% * 5 / 26);
   height: 100%;
   flex-shrink: 0;
   display: flex;
@@ -303,7 +304,9 @@
   background-image:
     linear-gradient(to right, rgba(180, 190, 200, 0.35) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(180, 190, 200, 0.35) 1px, transparent 1px);
-  background-size: calc(100% / 15) calc(100% / 15);
+  /* V0.51: 21×21 渲染网格等分 (内容 15×15 居中, 四周 PADDING=3 留白见 .paint-cell.pad).
+     此前误用 calc(100%/15) → 441 格按 15 列 flex-wrap 错乱溢出, 未被 21×21 固定绘制. */
+  background-size: calc(100% / 21) calc(100% / 21);
   background-repeat: repeat;
   border: none;
   box-sizing: border-box;
@@ -312,25 +315,25 @@
 }
 
 .paint-cell {
-  width: calc(100% / 15);
-  height: calc(100% / 15);
+  width: calc(100% / 21);
+  height: calc(100% / 21);
   box-sizing: border-box;
   /* V0.46: 去掉 4 边 border, 网格线由 paint-grid background-image 画, cell 只显示色块背景.
      5×5 块粗红线仍走 nth-child border-right/bottom (单边, 不叠加). */
   border: none;
 }
 
-/* V0.25 5×5 块粗红线 (模拟 DS numclo_waku.nbm 视觉, 每 5 格一块边界) */
-/* 第 5/10/15 列 (1-based) 红右线 */
-.paint-cell:nth-child(15n+5),
-.paint-cell:nth-child(15n+10),
-.paint-cell:nth-child(15n) {
+/* V0.51: 5×5 块粗红线 (21×21 内容区 0-based col/row 3..17, 块边界 7/12/17). */
+/* 红右线: 列 0-based 7/12/17 → 第 N 子元素 (N-1)%21==7/12/17 → N≡8/13/18 (mod 21) */
+.paint-cell:nth-child(21n+8),
+.paint-cell:nth-child(21n+13),
+.paint-cell:nth-child(21n+18) {
   border-right: 1.5px solid #d83a3a;
 }
-/* 第 5/10/15 行 (1-based) 红下线: 行 5=[61,75], 行 10=[136,150], 行 15=[211,225] */
-.paint-grid > .paint-cell:nth-child(n+61):nth-child(-n+75),
-.paint-grid > .paint-cell:nth-child(n+136):nth-child(-n+150),
-.paint-grid > .paint-cell:nth-child(n+211):nth-child(-n+225) {
+/* 红下线: 行 0-based 7/12/17 → N = r*21+1..r*21+21 */
+.paint-grid > .paint-cell:nth-child(n+148):nth-child(-n+168),
+.paint-grid > .paint-cell:nth-child(n+253):nth-child(-n+273),
+.paint-grid > .paint-cell:nth-child(n+358):nth-child(-n+378) {
   border-bottom: 1.5px solid #d83a3a;
 }
 

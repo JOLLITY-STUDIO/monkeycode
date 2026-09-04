@@ -90,7 +90,7 @@
 
   <!-- 正确进度 -->
   <view class="progress-row">
-    <text class="progress-text">已正确 {{correctCount}} / {{cells.length}}</text>
+    <text class="progress-text">已正确 {{correctCount}} / {{contentTotal}}</text>
   </view>
 
   <!-- 调色板 (V0.45.1: 1:1 DS 原版 NBM 切片, 0=擦除 NBM_NUMCLO00_ERASE, 1-4=红黄蓝绿 4 色 NBM 切片, 5=黑用纯色块 fallback) -->
