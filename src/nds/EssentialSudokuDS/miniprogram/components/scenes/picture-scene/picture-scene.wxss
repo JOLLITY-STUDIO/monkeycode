@@ -153,27 +153,32 @@
   box-sizing: border-box;
 }
 
+/* V0.46: clue-header 高度 = 25% puzzle-area (= 5 × cell 高度), puzzle-body = 75% (= 15 × cell 高度).
+   这样 5 个 band 高度 = 1 个 cell 高度, band 与网格行水平像素对齐.
+   minmax(0, 1fr) 让 bands=5 时第 6 个空 grid row 收缩到 0 高度, bands 撑满 clue-header 全部高度贴底 */
 .clue-header {
   width: 100%;
-  height: 32.22%;
+  height: 25%;
   display: flex;
   flex-direction: row;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .clue-corner {
-  width: 32.22%;
+  width: 25%;
   height: 100%;
   flex-shrink: 0;
 }
 
-/* V0.49.9: 原版 DS clue 区预留固定 6 位 (numclo_waku 红框内 6x15 grid),
-   band 紧密排入顶部 N 位 (N <= 6), 剩余留空; 不用 flex:1 平均撑开造成间隔 */
+/* V0.46: 6 行 grid 预留, minmax(0, 1fr) 让空 row 0 高度; bands 5 个 stretch 撑满 clue-header.
+   DS 原版 numclo_waku 数字 bands 从底部向上排 (贴近画布), 当前顺序填 row 1-5 = 顶部对齐已贴底 */
 .col-clue {
   flex: 1;
   min-width: 0;
   height: 100%;
   display: grid;
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(6, minmax(0, 1fr));
   align-items: stretch;
   justify-items: stretch;
   box-sizing: border-box;
@@ -182,27 +187,32 @@
 
 .puzzle-body {
   width: 100%;
-  height: 67.78%;
+  height: 75%;
   display: flex;
   flex-direction: row;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .row-clues {
-  width: 32.22%;
+  width: 25%;
   height: 100%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-/* V0.49.9: 行 hint 同列, grid 6 列预留, band < 6 时右侧留空 (按数组顺序从左填) */
+/* V0.46: 行 hint 同列, 6 列 grid 预留 (numclo_waku 红框预留 6 列 × 15 行), minmax(0, 1fr) 让空 col 收缩.
+   5 个 band 按顺序填 col 1-5, col 6 空 = 0 宽度, bands 撑满 row-clue 全部宽度贴右 */
 .row-clue {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: stretch;
-  justify-items: start;
+  justify-items: stretch;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -258,7 +268,15 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  background: transparent;
+  background-color: #ffffff;
+  /* V0.46: 网格线由 background-image 双 gradient 单层绘制 (不叠加 border).
+     旧版 paint-cell 4 边 0.5px border, 两格之间的 border-right + border-left 叠加成 1px,
+     devtools 模拟器 sub-pixel 渲染下经常闪烁/消失. 改 gradient 单层稳定. */
+  background-image:
+    linear-gradient(to right, rgba(180, 190, 200, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(180, 190, 200, 0.35) 1px, transparent 1px);
+  background-size: calc(100% / 15) calc(100% / 15);
+  background-repeat: repeat;
   border: none;
   box-sizing: border-box;
   overflow: hidden;
@@ -269,10 +287,9 @@
   width: calc(100% / 15);
   height: calc(100% / 15);
   box-sizing: border-box;
-  border-top: 0.5px solid rgba(230, 235, 240, 0.35);
-  border-left: 0.5px solid rgba(230, 235, 240, 0.35);
-  border-right: 0.5px solid rgba(230, 235, 240, 0.35);
-  border-bottom: 0.5px solid rgba(230, 235, 240, 0.35);
+  /* V0.46: 去掉 4 边 border, 网格线由 paint-grid background-image 画, cell 只显示色块背景.
+     5×5 块粗红线仍走 nth-child border-right/bottom (单边, 不叠加). */
+  border: none;
 }
 
 /* V0.25 5×5 块粗红线 (模拟 DS numclo_waku.nbm 视觉, 每 5 格一块边界) */
