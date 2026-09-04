@@ -70,8 +70,12 @@ Page({
     scene: 'title' as SceneName,
     /** 正在退场的旧场景 (动画播放中, 结束后清空) */
     leavingScene: '' as SceneName | '',
-    /** 当前过渡效果 (驱动 stage-enter-{{effect}} / stage-leave-{{effect}}) */
-    effect: 'fade' as SceneEffect,
+    /** 当前过渡效果 (驱动 stage-enter-{{effect}} / stage-leave-{{effect}}).
+        V0.53.1: 首屏初始为空串 — entering stage 首帧不带 animation class,
+        直接以默认 opacity 显示 (Skyline 页面级初始渲染的 animation 可能不触发,
+        fill-mode:both 会停 from opacity:0 → 整层透明, 只有首屏 title 中招).
+        首次 _switchScene 才写入真实 effect, 由动态插入的组件节点正常播动画. */
+    effect: '' as SceneEffect,
     /** 全局动态背景 (bg-fx) 呼吸光周期 (ms) = 当前场景 BGM 一小节, 平缓不闪 */
     pulseMs: 2449, // title 98 BPM → barMs ≈ 2449ms
     puzzleId: '', // sudoku 场景: 选题页传入的题目 id (numpleX.data_NNN)

@@ -4,6 +4,37 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.53.1 — 首屏 title 场景层透明修复: 初始 effect 置空跳过首帧动画
+
+### 2026-09-04
+
+#### 背景 (用户 V0.53 后仍报 "怎么看不到这个按钮")
+- V0.53 已恢复点击捕获层 + 去 overflow + brand 纯色, 按钮仍不可见
+- 高度链/组件注册/初始 scene 均正常 (scene='title', host absolute fill)
+
+#### 真根因 (V0.53.1)
+- `index.wxml` entering stage (`<view class="scene-stage stage-enter-{{effect}}">`)
+  **无 wx:if 常驻渲染**; data.effect 初始 `'fade'`
+- → 首屏节点在页面**初始渲染**时就携带 `stage-enter-fade` +
+  `animation: scene-fade-in 0.28s ease both` (from opacity:0)
+- Skyline 页面级初始渲染的 animation 可能不触发 → fill-mode `both`
+  使整层**永久停在 opacity:0** → title-scene 前景全透明 (start 按钮不可见)
+- 背景 bg-fx 在 stage 层外独立渲染 → 背景可见、场景内容透明, 与症状吻合
+- 后续场景经 _switchScene 动态插入组件节点, animation 正常跑, 所以只有首屏 title 中招
+
+#### 修复
+- `index.ts`: `data.effect` 初始 `'fade'` → `''` (空串)
+  - 首帧 class = `stage-enter-` (无 animation class) → 默认 opacity 1 直接显示
+  - 首次 _switchScene 才写入真实 effect, 由动态插入的节点正常播过渡动画
+  - 不影响任何场景切换 (menu/title 重进等均走 _switchScene 动态插节点)
+
+#### 验证
+- IDE 语言服务 0 诊断
+- 请用户重新编译: title 首屏应直接可见 brand + Press START (无淡入淡出也正常),
+  点击切 menu 仍有 fade 过渡
+
+---
+
 ## V0.53 — title-scene 启动页 start 按钮消失 + 点击无响应修复 (skyline 3.17.2)
 
 ### 2026-09-04
