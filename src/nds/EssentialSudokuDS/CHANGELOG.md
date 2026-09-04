@@ -4,6 +4,30 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.50.1 — 修 picture-scene 加载崩溃: 中文名表并入既有模块
+
+### 2026-09-04
+
+#### 背景 (用户报告)
+- 点击进入图画谜题场景, picture-scene 组件注入即崩溃, 游玩场景不显示
+- 错误: `module 'utils/sudoku/numclo_answers_zh.js' is not defined, require args is '../../../utils/sudoku/numclo_answers_zh'`
+- 根因: V0.50 新建的 numclo_answers_zh.ts (中文名表) 是全新模块文件,
+  微信开发者工具增量编译 (LazyCodeLoading) 未把新文件收录进模块表
+  → picture-scene.js 已带新 require 但模块表中无此 ID → 组件加载失败
+
+#### 修复
+- NUMCLO_ANSWERS_ZH 全量 1000 条中文名表合并进 numclo_answers.ts (既有已注册模块)
+- 删除独立文件 numclo_answers_zh.ts (不引入任何新模块文件)
+- picture-scene.ts import 改为 `import { NUMCLO_ANSWERS, NUMCLO_ANSWERS_ZH } from '.../numclo_answers'`
+- 全项目扫描确认无 numclo_answers_zh 残留引用
+
+#### 验证
+- IDE 语言服务 0 诊断 (numclo_answers.ts / picture-scene.ts)
+- 教训: 微信小程序新增 .ts 模块文件后必须触发完整重新编译, 否则 require 新模块报 is not defined;
+  双语名这类表尽量并入既有模块文件, 避免依赖新增文件的模块注册
+
+---
+
 ## PICTURE-V0.50 — 通关直显真实答案 15×15 + 图片信息中英双语 (含 numclo1-9 全量中文名表)
 
 ### 2026-09-04

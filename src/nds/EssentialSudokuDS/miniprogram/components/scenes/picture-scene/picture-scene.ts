@@ -4,8 +4,7 @@
 
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
 import { CellColor, GRID_RENDER, GRID_ROM, PADDING } from '../../../utils/sudoku/numclo_puzzles';
-import { NUMCLO_ANSWERS } from '../../../utils/sudoku/numclo_answers';
-import { NUMCLO_ANSWERS_ZH } from '../../../utils/sudoku/numclo_answers_zh';
+import { NUMCLO_ANSWERS, NUMCLO_ANSWERS_ZH } from '../../../utils/sudoku/numclo_answers';
 import {
   NBM_NUMCLO00_COLOR_1_RED,
   NBM_NUMCLO00_COLOR_2_YELLOW,
