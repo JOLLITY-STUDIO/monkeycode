@@ -4,6 +4,38 @@ All notable changes to this project are documented here.
 
 ---
 
+## SOUND-V0.6.1 — 场景 BGM 映射全部收敛到官方循环 BGM: 消灭"几秒音效循环"听感
+
+### 2026-09-04
+
+#### 背景
+- 用户报告图画谜题场景页背景声"才几秒、是 SE 不是 BGM", 追问"原版是这个歌曲吗"
+- 证据链: SDAT 9 首 SSEQ 官方 OST 分类 = BGM #01-05 (SEQ_01/02/03/04/15, 可循环长曲 31-782s)
+  vs Jingle #01-04 (SEQ_10/12/13/14, 无循环短乐句 6-19s, `docs/(EMU)` 资源文件名可证)
+- mp3 体积佐证: SEQ_01-04 = 1.8-2.5MB, SEQ_15 = 329KB (真 BGM); SEQ_10/12/13/14 = 41-75KB (Jingle)
+- 旧 `soundManifest.ts` 把 4 首 Jingle 全部当"场景循环 BGM": picture→SEQ_12 / pictureMode+pictList→SEQ_13
+  / options+about→SEQ_10 / staff→SEQ_14。`audioService.playBgm()` 统一 `ctx.loop=true`,
+  于是这些场景听感 = 几秒音效无限循环
+
+#### 修改
+- ✅ `BGM_MANIFEST` 11 场景全部映射官方 BGM #01-05:
+  - picture (图画对局) → SEQ_04 (与 sudoku 同曲, 60s 循环) — SOUND-V0.6 已修
+  - pictureMode / pictList → SEQ_03 (与 select 同曲) — SOUND-V0.6 已修
+  - options / staff / about → SEQ_02 (主菜单系统 BGM) — SOUND-V0.6.1 补修 (同一 loop 链路同样触发 bug)
+- ✅ `BGM_BPM` 同步 (bg-fx 呼吸光周期跟曲): options/staff/about 52/80/52→79 (SEQ_02),
+  picture 138→62 (SEQ_04), pictureMode/pictList 138→92 (SEQ_03)
+- ✅ 文件头注释升级 SOUND-V0.6.1: 记录 Jingle 分类证据 + 修正决策;
+  Jingle 四首资源保留, 后续按原 DS 动作接入"一次性提示音" (non-loop), 不再作循环背景乐
+
+#### 验证
+- IDE 语言服务 0 诊断 (soundManifest.ts)
+- git grep: 代码内 Jingle 路径仅存于注释, 映射表无残留
+
+#### 已知边界
+- options/about/staff 的 ROM 专曲依据缺失, 暂用主菜单曲 SEQ_02; 待 SDAT 调用链校准后各自配曲
+
+---
+
 ## PICTURE-V0.47 — 通关拼豆图纸闭环: celebrate-panel 内 15×15 渲染玩家涂色结果
 
 ### 2026-09-04

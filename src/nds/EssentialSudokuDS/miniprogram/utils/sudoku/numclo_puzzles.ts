@@ -19,10 +19,17 @@ export interface NumcloPuzzle {
   readonly file: string;
   readonly indexInFile: number;
   readonly name: string;
-  readonly width: 15;
-  readonly height: 15;
-  readonly packed: string; // 75 bytes as 150 hex chars, base-6 packed
+  readonly width: 21;
+  readonly height: 21;
+  readonly packed: string; // 75 bytes as 150 hex chars, base-6 packed (15x15 ROM 数据)
 }
+
+/** ROM 原始谜题尺寸 (15×15, NDS 数据真值) */
+export const GRID_ROM = 15;
+/** 渲染网格尺寸 (21×21, 用户设计: 内容居中留白边距) */
+export const GRID_RENDER = 21;
+/** 四周留白格数 = 3 (21-15)/2 */
+export const PADDING = (GRID_RENDER - GRID_ROM) / 2;
 
 const RAW: ReadonlyArray<readonly [string, string, string, number, string]> = [
   ['numclo0.data_000', 'numclo0.data', 'Crab', 0, '00000000000025000601002b002a01000601250000062b250000242b0700002b2b2b0100242b070000072b2501000000000000000000000000000000000000000000000000000000000000'],
@@ -1429,19 +1436,30 @@ const RAW: ReadonlyArray<readonly [string, string, string, number, string]> = [
 ];
 
 export const NUMCLO_CATALOG: ReadonlyArray<NumcloPuzzle> = RAW.map(([id, file, name, indexInFile, packed]) => ({
-  id, file, name, indexInFile, width: 15, height: 15, packed,
+  id, file, name, indexInFile, width: 21, height: 21, packed,
 }));
 
-/** Unpack 150-hex packed string to 225 CellColor values (row-major 15x15). */
+/**
+ * Unpack 150-hex packed string to 441 CellColor values (row-major 21x21).
+ * ROM 数据是 15x15 = 225 单元 (base-6 packed 3 cells/byte, 75 bytes body),
+ * 按用户思路居中放置到 21x21 渲染网格, 四周各留 3 格 (cell=0 即空/背景色).
+ */
 export function unpackNumcloGrid(packed: string): CellColor[] {
-  const grid: CellColor[] = [];
+  const rom: CellColor[] = [];
   for (let i = 0; i < packed.length; i += 2) {
     const b = parseInt(packed.substr(i, 2), 16);
-    grid.push((b % 6) as CellColor);
-    grid.push(((b / 6 | 0) % 6) as CellColor);
-    grid.push(((b / 36 | 0) % 6) as CellColor);
+    rom.push((b % 6) as CellColor);
+    rom.push(((b / 6 | 0) % 6) as CellColor);
+    rom.push(((b / 36 | 0) % 6) as CellColor);
   }
-  return grid as CellColor[];
+  // 填充 15x15 ROM 数据到 21x21 渲染网格: 四周 PADDING 格留白
+  const render = new Array(GRID_RENDER * GRID_RENDER).fill(0) as CellColor[];
+  for (let r = 0; r < GRID_ROM; r++) {
+    for (let c = 0; c < GRID_ROM; c++) {
+      render[(r + PADDING) * GRID_RENDER + (c + PADDING)] = rom[r * GRID_ROM + c];
+    }
+  }
+  return render;
 }
 
 export function getNumcloPuzzleById(id: string): NumcloPuzzle | undefined {

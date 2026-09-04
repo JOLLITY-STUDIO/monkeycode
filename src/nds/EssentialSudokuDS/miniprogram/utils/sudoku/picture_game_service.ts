@@ -2,7 +2,8 @@
  * utils/sudoku/picture_game_service.ts — Picture Logic / 图画谜题游戏会话 (V0.17.10)
  *
  * Operates on NumcloPuzzle from numclo_puzzles.ts.
- * 15x15 grid, 6 colors per cell (0=empty, 1..5=palette).
+ * ROM 数据 15x15 (225 值); 渲染网格 21x21 (441 值), 内容居中四周 PADDING 留白.
+ * 6 colors per cell (0=empty, 1..5=palette).
  * Player paints cells; completion = player grid exactly matches target grid.
  */
 
@@ -10,7 +11,13 @@ import {
   CellColor,
   NUMCLO_CATALOG,
   unpackNumcloGrid,
+  GRID_ROM,
+  GRID_RENDER,
+  PADDING,
 } from './numclo_puzzles';
+
+/** 渲染网格总单元数 21×21 = 441 */
+const TOTAL_CELLS = GRID_RENDER * GRID_RENDER;
 
 export interface PictureCoord {
   row: number;
@@ -22,12 +29,26 @@ export interface PictureSession {
   file: string;
   name: string;
   indexInFile: number;
-  width: 15;
-  height: 15;
+  width: 21;
+  height: 21;
   startTime: number;
   moves: number;
-  grid: CellColor[];   // player painted state (225 values)
-  target: CellColor[]; // answer state (225 values)
+  grid: CellColor[];   // player painted state (441 values, 21×21 渲染网格)
+  target: CellColor[]; // answer state (441 values)
+}
+
+/** 把旧 15×15 存档网格 (225) 居中迁移到 21×21 渲染网格 (441). 已是 441 则原样返回. */
+function toRenderGrid(grid: CellColor[] | null | undefined): CellColor[] | null {
+  if (!grid || !grid.length) return null;
+  if (grid.length === TOTAL_CELLS) return grid.slice();
+  if (grid.length !== GRID_ROM * GRID_ROM) return null; // 未知长度, 不迁移
+  const out = new Array(TOTAL_CELLS).fill(0) as CellColor[];
+  for (let r = 0; r < GRID_ROM; r++) {
+    for (let c = 0; c < GRID_ROM; c++) {
+      out[(r + PADDING) * GRID_RENDER + (c + PADDING)] = grid[r * GRID_ROM + c];
+    }
+  }
+  return out;
 }
 
 export class PictureGameService {
@@ -45,11 +66,11 @@ export class PictureGameService {
       file: puzzle.file,
       name: puzzle.name,
       indexInFile: puzzle.indexInFile,
-      width: 15,
-      height: 15,
+      width: 21,
+      height: 21,
       startTime: Date.now(),
       moves: 0,
-      grid: new Array(225).fill(0) as CellColor[],
+      grid: new Array(TOTAL_CELLS).fill(0) as CellColor[],
       target,
     };
     return { ok: true };
@@ -109,11 +130,13 @@ export class PictureGameService {
     };
   }
 
-  /** 恢复上次会话进度: 载入已涂网格 + 步数, 并把 startTime 前移以延续计时。 */
+  /** 恢复上次会话进度: 载入已涂网格 + 步数, 并把 startTime 前移以延续计时。
+   *  兼容旧 225 值 (15×15) 存档: 自动居中迁移到 441 值 (21×21 渲染网格). */
   restoreProgress(grid: CellColor[], moves: number, elapsedMs: number): boolean {
     if (!this.session) return false;
-    if (!grid || grid.length !== 225) return false;
-    this.session.grid = grid.slice();
+    const render = toRenderGrid(grid);
+    if (!render) return false;
+    this.session.grid = render;
     this.session.moves = moves >= 0 ? moves : 0;
     this.session.startTime = Date.now() - Math.max(0, elapsedMs);
     return true;
@@ -122,16 +145,17 @@ export class PictureGameService {
   /** 把整个会话清空为未涂状态 (清空画板时同步 service, 不清计时/步数历史) */
   clearGrid(): boolean {
     if (!this.session) return false;
-    this.session.grid = new Array(225).fill(0) as CellColor[];
+    this.session.grid = new Array(TOTAL_CELLS).fill(0) as CellColor[];
     this.session.moves = 0;
     return true;
   }
 
-  /** Paint a cell with the chosen color (0 = erase). */
+  /** Paint a cell with the chosen color (0 = erase). 坐标 = 21×21 渲染网格坐标. */
   paint(row: number, col: number, color: CellColor): boolean {
     if (!this.session) return false;
-    const idx = row * 15 + col;
-    if (idx < 0 || idx >= 225) return false;
+    if (row < 0 || row >= GRID_RENDER || col < 0 || col >= GRID_RENDER) return false;
+    const idx = row * GRID_RENDER + col;
+    if (idx < 0 || idx >= TOTAL_CELLS) return false;
     if (this.session.grid[idx] === color) return false;
     this.session.grid[idx] = color;
     if (color !== 0) {
@@ -146,7 +170,7 @@ export class PictureGameService {
       return { complete: false, wrong: 0 };
     }
     let wrong = 0;
-    for (let i = 0; i < 225; i++) {
+    for (let i = 0; i < TOTAL_CELLS; i++) {
       if (this.session.grid[i] !== this.session.target[i]) {
         wrong += 1;
       }

@@ -1,9 +1,9 @@
 // components/scenes/picture-scene/picture-scene.ts — 图画谜题场景组件
-// 15x15 彩色网格 / 调色板 / 完成检测 / 类别切换 / 上/下/随机导航
+// 21x21 渲染网格 (15x15 ROM 内容居中, 四周 3 格留白) / 调色板 / 完成检测 / 类别切换 / 上/下/随机导航
 // fileKey + puzzleIdx property 支持列表页跳入; 返回 → triggerEvent('back')
 
 import { PictureGameService } from '../../../utils/sudoku/picture_game_service';
-import { CellColor } from '../../../utils/sudoku/numclo_puzzles';
+import { CellColor, GRID_RENDER, GRID_ROM, PADDING } from '../../../utils/sudoku/numclo_puzzles';
 import { NUMCLO_ANSWERS } from '../../../utils/sudoku/numclo_answers';
 import {
   NBM_NUMCLO00_COLOR_1_RED,
@@ -28,8 +28,10 @@ const AUTO_SAVE_MS = 400;
 /** 通关庆祝动画时长 (ms) */
 const CELEBRATE_MS = 1600;
 
-const GRID = 15;
+const GRID = GRID_RENDER; // 21×21 渲染网格 (内容 15×15 居中, 四周 PADDING=3 格留白)
 const TOTAL_CELLS = GRID * GRID;
+/** 内容区实际格数 (15×15=225, 排除四周 PADDING 留白) — 进度/通关按内容区计 */
+const CONTENT_CELLS = GRID_ROM * GRID_ROM;
 
 /**
  * 6 色调色板: 0=擦除(白底), 1..5=画笔色.
@@ -73,13 +75,14 @@ const CATEGORIES: Array<{ key: string; label: string }> = [
 ];
 
 interface PictureCell {
-  i: number;       // 展平索引
-  r: number;       // 行 0..14
-  c: number;       // 列 0..14
+  i: number;       // 展平索引 (0..440, 21×21 渲染网格)
+  r: number;       // 行 0..20
+  c: number;       // 列 0..20
   v: number;       // 玩家当前颜色 0..5
   t: number;       // 目标颜色 0..5
   bg: string;      // 背景色 hex
   border: string;  // 边框色 hex
+  pad: boolean;    // 留白区 (内容区外 3 格边距), 不可涂色 (渲染浅灰衬底)
 }
 
 /** 行列提示: 某一行/列中某种颜色的总个数 (ナンクロ / Number Cross 风格)。 */
@@ -156,7 +159,8 @@ Component({
      *  每个元素仅含 v (玩家涂色 0..5), 跟 PALETTE_HEX 对照出 bg. */
     completedWork: [] as Array<{ v: number }>,
     showingAnswer: false,
-    correctCount: 0,           // 已正确格数 (进度)
+    correctCount: 0,           // 已正确内容格数 (进度, 只计 15×15 内容区)
+    contentTotal: CONTENT_CELLS, // 内容区总格数 225 (进度分母, 不含 padding)
     /** 每色剩余待涂格数 paletteNeed[color] (color 0 恒为 0) */
     paletteNeed: [0, 0, 0, 0, 0, 0],
     rowClues: [] as ColorCount[][],
@@ -275,7 +279,7 @@ Component({
     /** 打开图文教程弹层 (A); 未看过则标记已读 (红点消失) */
     onOpenTutorial() {
       if (!this.data._attachedDone) return;
-      audioService.playSe('tap');
+      audioService.playSe('windopen');
       this.setData({ tutOpen: true, tutPage: 0 });
       if (!this.data.tutSeen) {
         this.setData({ tutSeen: true });
@@ -288,7 +292,7 @@ Component({
     /** 关闭图文教程弹层 (× / 最后一页的「开始涂色」/ 跳过) */
     onCloseTutorial() {
       if (!this.data._attachedDone) return;
-      audioService.playSe('back');
+      audioService.playSe('windclose');
       this.setData({ tutOpen: false });
     },
 
@@ -495,7 +499,7 @@ Component({
     onTapCategory(e: any) {
       const key = e.currentTarget.dataset.key as string;
       if (key === this.data.currentFile) return;
-      audioService.playSe('decide');
+      audioService.playSe('start');
       this._startPuzzle(key, 0);
     },
 
@@ -603,6 +607,7 @@ Component({
         }
       }
       this.setData({ showingAnswer: showing, cells });
+      audioService.playSe(showing ? 'windopen' : 'windclose');
     },
 
     /** 清空画板 (同步 service 会话 + 清除本题进度) */
